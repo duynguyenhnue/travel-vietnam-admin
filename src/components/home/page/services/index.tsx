@@ -10,42 +10,42 @@ export default function Services() {
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
         {
             id: 2,
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
         {
             id: 3,
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
         {
             id: 4,
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
         {
             id: 5,
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
         {
             id: 6,
             title: 'Free Checkup',
             description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque felis vitae tortor augue. Velit nascetur massa in.',
             linkText: 'Learn More',
-            src: 'Images/home/services/checkup.svg'
+            src: '/Images/home/services/checkup.svg'
         },
     ];
 
@@ -88,7 +88,7 @@ export default function Services() {
                                         borderRadius: '50%'
                                     }}
                                 >
-                                    <img src="Images/home/services/icon_checkup.svg"/>
+                                    <img src="/Images/home/services/icon_checkup.svg"/>
                                 </Box>
                             </Box>
                             <Box
@@ -123,7 +123,7 @@ export default function Services() {
                                             fontSize: '16px',
                                         }}
                                     >{card.linkText}</a>
-                                    <img src="Images/home/services/icon_next.svg"/>
+                                    <img src="/Images/home/services/icon_next.svg"/>
                                 </Box>
                             </Box>
                         </Box>

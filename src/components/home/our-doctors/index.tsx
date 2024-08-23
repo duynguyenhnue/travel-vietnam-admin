@@ -6,7 +6,7 @@ export default function OurDoctors() {
         {
             name: "Dr. John Doe",
             specialized: "Neurology",
-            src: "Images/home/home/listDoctors/doctor1.svg",
+            src: "/Images/home/home/listDoctors/doctor1.svg",
             social: [
                 {
                     name: 'facebook',
@@ -25,7 +25,7 @@ export default function OurDoctors() {
         {
             name: "Dr. John Doe",
             specialized: "Neurology",
-            src: "Images/home/home/listDoctors/doctor2.svg",
+            src: "/Images/home/home/listDoctors/doctor2.svg",
             social: [
                 {
                     name: 'facebook',
@@ -44,7 +44,7 @@ export default function OurDoctors() {
         {
             name: "Dr. John Doe",
             specialized: "Neurology",
-            src: "Images/home/home/listDoctors/doctor3.svg",
+            src: "/Images/home/home/listDoctors/doctor3.svg",
             social: [
                 {
                     name: 'facebook',
@@ -114,9 +114,9 @@ export default function OurDoctors() {
                                     {
                                         doctor.social.map((item: any) => (
                                             <a href={item.link}>
-                                                {item.name == "facebook" && <img src="Images/home/home/icon_facebook.svg" />}
-                                                {item.name == "instagram" && <img src="Images/home/home/icon_instagram.svg" />}
-                                                {item.name == "email" && <img src="Images/home/home/icon_email.svg" />}
+                                                {item.name == "facebook" && <img src="/Images/home/home/icon_facebook.svg" />}
+                                                {item.name == "instagram" && <img src="/Images/home/home/icon_instagram.svg" />}
+                                                {item.name == "email" && <img src="/Images/home/home/icon_email.svg" />}
                                             </a>
                                         ))
                                     }

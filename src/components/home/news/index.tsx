@@ -9,7 +9,7 @@ export default function News() {
             createdAt: '2024-08-01T16:26:25.916+00:00',
             view: 68,
             likes: 15,
-            img: "Images/home/home/news.svg"
+            img: "/Images/home/home/news.svg"
         },
         {
             id: "66abb7941cac1cff2a97bc81",
@@ -17,7 +17,7 @@ export default function News() {
             createdAt: '2024-08-01T16:26:25.916+00:00',
             view: 68,
             likes: 15,
-            img: "Images/home/home/news.svg"
+            img: "/Images/home/home/news.svg"
         },
         {
             id: "66abb7941cac1cff2a97bc81",
@@ -25,7 +25,7 @@ export default function News() {
             createdAt: '2024-08-01T16:26:25.916+00:00',
             view: 68,
             likes: 15,
-            img: "Images/home/home/news.svg"
+            img: "/Images/home/home/news.svg"
         },
         {
             id: "66abb7941cac1cff2a97bc81",
@@ -33,7 +33,7 @@ export default function News() {
             createdAt: '2024-08-01T16:26:25.916+00:00',
             view: 68,
             likes: 15,
-            img: "Images/home/home/news.svg"
+            img: "/Images/home/home/news.svg"
         }
     ]
     return (
@@ -82,11 +82,11 @@ export default function News() {
 
                                 <StyleGroupInteract>
                                     <StyleBoxInteract>
-                                        <img src="Images/home/home/icon_view.svg" />
+                                        <img src="/Images/home/home/icon_view.svg" />
                                         <p>{item.view}</p>
                                     </StyleBoxInteract>
                                     <StyleBoxInteract>
-                                        <img src="Images/home/home/icon_like.svg" />
+                                        <img src="/Images/home/home/icon_like.svg" />
                                         <p>{item.likes}</p>
                                     </StyleBoxInteract>
                                 </StyleGroupInteract>

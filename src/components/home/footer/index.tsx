@@ -5,22 +5,22 @@ export default function Footer() {
     const iconsSocial = [
         {
             name: "Facebook",
-            src: "Images/auth/icons/icon-facebook.svg",
+            src: "/Images/auth/icons/icon-facebook.svg",
             href: "https://www.facebook.com/chungg.203"
         },
         {
             name: "Instagram",
-            src: "Images/auth/icons/icon-instagram.svg",
+            src: "/Images/auth/icons/icon-instagram.svg",
             href: "https://www.instagram.com/Chungg.203"
         },
         {
             name: "Tiktok",
-            src: "Images/auth/icons/icon-tiktok.svg",
+            src: "/Images/auth/icons/icon-tiktok.svg",
             href: "https://www.tiktok.com/@chungg.203"
         },
         {
             name: "Twitter",
-            src: "Images/auth/icons/icon-twitter.svg",
+            src: "/Images/auth/icons/icon-twitter.svg",
             href: "#"
         }
     ]
@@ -100,7 +100,7 @@ export default function Footer() {
                                 background: 'transparent',
                                 border: '0'
                             }}
-                        ><img src="Images/home/footer/send.svg" /></button>
+                        ><img src="/Images/home/footer/send.svg" /></button>
                     </Box>
                 </StyleBoxTitle>
             </Box>

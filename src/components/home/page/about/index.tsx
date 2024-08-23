@@ -19,7 +19,7 @@ export default function About() {
         <StyleMainPage>
             <Banner content={{
                 name: "About us",
-                src: "Images/home/home/nav_welcome.svg"
+                src: "/Images/home/home/nav_welcome.svg"
             }} />
             <Box
                 sx={{
@@ -27,7 +27,7 @@ export default function About() {
                     gap: '20px'
                 }}
             >
-                <img src="Images/home/about/bestcare.svg" />
+                <img src="/Images/home/about/bestcare.svg" />
                 <Box
                     sx={{
                         display: 'flex',
@@ -46,7 +46,7 @@ export default function About() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {ourServices.slice(0, 3).map((service, index) => (
                                 <Box sx={{ display: 'flex', gap: '10px' }}>
-                                    <img src="Images/home/home/icon_item.svg" />
+                                    <img src="/Images/home/home/icon_item.svg" />
                                     <p key={index} style={{ fontSize: '18px' }}>{service}</p>
                                 </Box>
                             ))}
@@ -54,7 +54,7 @@ export default function About() {
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                             {ourServices.slice(3, 6).map((service, index) => (
                                 <Box sx={{ display: 'flex', gap: '10px' }}>
-                                    <img src="Images/home/home/icon_item.svg" />
+                                    <img src="/Images/home/home/icon_item.svg" />
                                     <p key={index} style={{ fontSize: '18px' }}>{service}</p>
                                 </Box>
                             ))}
@@ -81,7 +81,7 @@ export default function About() {
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     marginLeft: '-10vw',
-                    backgroundImage: "url(Images/home/about/lorem-content-bg.svg)",
+                    backgroundImage: "url(/Images/home/about/lorem-content-bg.svg)",
                     backgroundRepeat: 'no-repeat',
                     backgroundSize: 'cover'
                 }}
@@ -106,7 +106,7 @@ export default function About() {
                         zIndex: '1'
                     }}
                 >
-                    <img src="Images/home/about/icon-quote.svg"
+                    <img src="/Images/home/about/icon-quote.svg"
                         style={{
                             width: '45px'
                         }}

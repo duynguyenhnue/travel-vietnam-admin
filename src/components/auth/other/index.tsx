@@ -17,10 +17,10 @@ export default function AuthOther() {
     return (
         <Box>
             <Button>
-                <StyleIcon src="Images/auth/icons/icon-google.svg" />
+                <StyleIcon src="/Images/auth/icons/icon-google.svg" />
             </Button>
             <Button>
-                <StyleIcon src="Images/auth/icons/icon-qr.png" onClick={handleClickOpen}/>
+                <StyleIcon src="/Images/auth/icons/icon-qr.png" onClick={handleClickOpen}/>
             </Button>
             <ScannerQRCode />
         </Box>
