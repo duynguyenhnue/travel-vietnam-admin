@@ -13,22 +13,22 @@ export default function Auth() {
     const iconsSocial = [
         {
             name: "Facebook",
-            src: "Images/auth/icons/icon-facebook.svg",
+            src: "/Images/auth/icons/icon-facebook.svg",
             href: "https://www.facebook.com/chungg.203"
         },
         {
             name: "Instagram",
-            src: "Images/auth/icons/icon-instagram.svg",
+            src: "/Images/auth/icons/icon-instagram.svg",
             href: "https://www.instagram.com/Chungg.203"
         },
         {
             name: "Tiktok",
-            src: "Images/auth/icons/icon-tiktok.svg",
+            src: "/Images/auth/icons/icon-tiktok.svg",
             href: "https://www.tiktok.com/@chungg.203"
         },
         {
             name: "Twitter",
-            src: "Images/auth/icons/icon-twitter.svg",
+            src: "/Images/auth/icons/icon-twitter.svg",
             href: "#"
         }
     ]
@@ -54,13 +54,13 @@ export default function Auth() {
                         width: 'calc(100% - 120px)'
                     }}
                 >
-                    <img src="Images/auth/logo.png"
+                    <img src="/Images/auth/logo.png"
                         style={{
                             height: '100px'
                         }}
                     />
                 </Box>
-                <img src="Images/auth/doctor_welcome.png"
+                <img src="/Images/auth/doctor_welcome.png"
                     style={{
                         height: '100%'
                     }}

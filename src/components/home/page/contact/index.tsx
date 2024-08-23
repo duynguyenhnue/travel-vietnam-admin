@@ -8,7 +8,7 @@ export default function Contact() {
         <StyleMainPage>
             <Banner content={{
                 name: "Our Contacts",
-                src: "Images/home/contact/banner.svg"
+                src: "/Images/home/contact/banner.svg"
             }} />
             <Maps />
             <ContactCPN />

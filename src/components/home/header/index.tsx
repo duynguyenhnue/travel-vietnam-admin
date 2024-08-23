@@ -5,17 +5,17 @@ export default function Header() {
     const navigate = useNavigate(); 
     const contact = [
         {
-            icon: "Images/home/header/phone.svg",
+            icon: "/Images/home/header/phone.svg",
             name: "Emergency",
             content: "(84) 708-200-334"
         },
         {
-            icon: "Images/home/header/time.svg",
+            icon: "/Images/home/header/time.svg",
             name: "Work Hour",
             content: "07:00 - 18:00 Everyday"
         },
         {
-            icon: "Images/home/header/location.svg",
+            icon: "/Images/home/header/location.svg",
             name: "Location",
             content: "12 Nghi Xuan"
         }
@@ -80,7 +80,7 @@ export default function Header() {
                         height: '100%'
                     }}
                 >
-                    <img src="Images/auth/logo.png"
+                    <img src="/Images/auth/logo.png"
                         style={{
                             height: '100%',
                         }}
@@ -166,7 +166,7 @@ export default function Header() {
                         alignItems: 'center'
                     }}
                 >
-                    <img src="Images/home/header/search.svg" />
+                    <img src="/Images/home/header/search.svg" />
                     <Button variant="contained"
                         sx={{
                             borderRadius: '50px',

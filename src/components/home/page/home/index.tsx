@@ -17,19 +17,19 @@ export default function HomePage() {
     const contactServices = [
         {
             name: "Free Checkup",
-            src: "Images/home/home/icon_freeCheckUp.svg"
+            src: "/Images/home/home/icon_freeCheckUp.svg"
         },
         {
             name: "Cardiogram",
-            src: "Images/home/home/icon_cardiogram.svg"
+            src: "/Images/home/home/icon_cardiogram.svg"
         },
         {
             name: "Dna Testing",
-            src: "Images/home/home/icon_dnaTesting.svg"
+            src: "/Images/home/home/icon_dnaTesting.svg"
         },
         {
             name: "Blood Bank",
-            src: "Images/home/home/icon_bloodBank.svg"
+            src: "/Images/home/home/icon_bloodBank.svg"
         },
     ];
 
@@ -62,7 +62,7 @@ export default function HomePage() {
                     marginLeft: '-10vw'
                 }}
             >
-                <img src="Images/home/home/decorate.svg"
+                <img src="/Images/home/home/decorate.svg"
                     style={{
                         height: '100%',
                         position: 'absolute',
@@ -104,7 +104,7 @@ export default function HomePage() {
                         }}
                     >Our Services</button>
                 </Box>
-                <img src="Images/home/home/trend_doctors.png"
+                <img src="/Images/home/home/trend_doctors.png"
                     style={{
                         height: '100%',
                     }}
@@ -112,15 +112,15 @@ export default function HomePage() {
                 <StyleGroupBook>
                     <StyleBoxBook sx={{ backgroundColor: '#1F2B6C', color: 'white' }}>
                         <p>Book an Appointment</p>
-                        <img src="Images/home/home/icon_calendar.svg" />
+                        <img src="/Images/home/home/icon_calendar.svg" />
                     </StyleBoxBook>
                     <StyleBoxBook sx={{ backgroundColor: '#BFD2F8', color: '#1F2B6C' }}>
                         <p>Book an Appointment</p>
-                        <img src="Images/home/home/icon_team.svg" />
+                        <img src="/Images/home/home/icon_team.svg" />
                     </StyleBoxBook>
                     <StyleBoxBook sx={{ backgroundColor: '#159EEC', color: 'white' }}>
                         <p>Book an Appointment</p>
-                        <img src="Images/home/home/icon_cash.svg" />
+                        <img src="/Images/home/home/icon_cash.svg" />
                     </StyleBoxBook>
                 </StyleGroupBook>
             </Box>
@@ -157,10 +157,10 @@ export default function HomePage() {
                                 fontSize: '16px'
                             }}
                         >Learn More</p>
-                        <img src="Images/home/home/icon_next.svg" />
+                        <img src="/Images/home/home/icon_next.svg" />
                     </Box>
                 </StyleBoxTitle>
-                <img src="Images/home/home/nav_welcome.svg"
+                <img src="/Images/home/home/nav_welcome.svg"
                     style={{
                         width: '100%'
                     }}
@@ -240,7 +240,7 @@ export default function HomePage() {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                     {ourServices.slice(0, 3).map((service, index) => (
                                         <Box sx={{ display: 'flex', gap: '10px' }}>
-                                            <img src="Images/home/home/icon_item.svg" />
+                                            <img src="/Images/home/home/icon_item.svg" />
                                             <p key={index} style={{ fontSize: '18px' }}>{service}</p>
                                         </Box>
                                     ))}
@@ -248,7 +248,7 @@ export default function HomePage() {
                                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                                     {ourServices.slice(3, 6).map((service, index) => (
                                         <Box sx={{ display: 'flex', gap: '10px' }}>
-                                            <img src="Images/home/home/icon_item.svg" />
+                                            <img src="/Images/home/home/icon_item.svg" />
                                             <p key={index} style={{ fontSize: '18px' }}>{service}</p>
                                         </Box>
                                     ))}
@@ -273,12 +273,12 @@ export default function HomePage() {
                                 height: '100%'
                             }}
                         >
-                            <img src="Images/home/home/our_service_1.svg"
+                            <img src="/Images/home/home/our_service_1.svg"
                                 style={{
                                     height: "calc(50% - 10px)"
                                 }}
                             />
-                            <img src="Images/home/home/our_service_2.svg"
+                            <img src="/Images/home/home/our_service_2.svg"
                                 style={{
                                     height: "calc(50% - 10px)"
                                 }}
@@ -307,7 +307,7 @@ export default function HomePage() {
                                         border: '0.5px solid rgba(0, 0, 0, 0.19)'
                                     }}
                                 >
-                                    <img src="Images/home/home/icon_specialties.svg" />
+                                    <img src="/Images/home/home/icon_specialties.svg" />
                                     <p
                                         style={{
                                             fontSize: '16px'
@@ -338,7 +338,7 @@ export default function HomePage() {
                             height: '100%'
                         }}
                     >
-                        <img src="Images/home/home/bookAnAppointment.svg"
+                        <img src="/Images/home/home/bookAnAppointment.svg"
                             style={{
                                 width: '100vw',
                                 height: '100%',
