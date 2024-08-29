@@ -8,7 +8,6 @@ import Auth from './page/auth';
 import Admin from './page/admin';
 
 function App() {
-
   return (
     <Router>
       <Routes>

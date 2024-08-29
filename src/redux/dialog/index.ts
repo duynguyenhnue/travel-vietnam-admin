@@ -5,6 +5,11 @@ const DialogSlice = createSlice({
     initialState: {
         forgotPassword: false,
         scannerQrCode: false,
+        admin: {
+            show: false,
+            page: "",
+        },
+        showId: []
     },
     reducers: {
         setForgotPassword(state, action) {
@@ -17,6 +22,18 @@ const DialogSlice = createSlice({
             return {
                 ...state,
                 scannerQrCode: action.payload
+            }
+        },
+        setAdmin(state, action) {
+            return {
+                ...state,
+                admin: action.payload
+            }
+        },
+        setShowId(state, action) {
+            return {
+                ...state,
+                showId: action.payload
             }
         }
     },

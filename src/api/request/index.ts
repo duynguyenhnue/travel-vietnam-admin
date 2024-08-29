@@ -3,8 +3,7 @@ import axios from "axios";
 export const request = async (method: string, data: any, param: string) => {
     const res = await axios({
         method: method,
-        // url: `${process.env.DOMAIN}/${param}`,
-        url: `http://localhost:8000/${param}`,
+        url: `${process.env.REACT_APP_API_URL}/${param}`,
         
         data: data,
     });
