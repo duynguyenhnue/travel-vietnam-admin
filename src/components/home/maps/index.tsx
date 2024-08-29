@@ -1,18 +1,20 @@
+import React, { useState, useEffect } from 'react';
 import { LatLngTuple } from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // Nhớ import CSS cho Leaflet
-import { MapContainer, TileLayer, Circle, useMap } from 'react-leaflet';
-import { useState, useEffect } from 'react';
+import 'leaflet/dist/leaflet.css'; // Import CSS for Leaflet
+import { MapContainer, TileLayer, Circle, useMapEvents } from 'react-leaflet';
+import { Box, Button } from '@mui/material';
+import MyLocationIcon from '@mui/icons-material/MyLocation';
 
-const destination: LatLngTuple = [21.03805874352914, 105.78426837711922]; 
+const destination: LatLngTuple = [21.03805874352914, 105.78426837711922];
 
-function ResizableCircle({ center, color }: { center: LatLngTuple, color: string }) {
-    const map = useMap();
-    const [radius, setRadius] = useState(500); 
+function ResizableCircle({ center, color }: { center: LatLngTuple; color: string }) {
+    const map = useMapEvents({});
+    const [radius, setRadius] = useState(500);
 
     useEffect(() => {
         const handleZoom = () => {
             const zoomLevel = map.getZoom();
-            const newRadius = Math.max(500 / (zoomLevel / 2), 100); 
+            const newRadius = Math.max(500 / (zoomLevel / 2), 100);
             setRadius(newRadius);
         };
 
@@ -25,45 +27,82 @@ function ResizableCircle({ center, color }: { center: LatLngTuple, color: string
     }, [map]);
 
     return (
-        <Circle 
-            center={center} 
-            radius={radius} 
-            pathOptions={{ color: color, fillColor: color, fillOpacity: 0.4 }} 
+        <Circle
+            center={center}
+            radius={radius}
+            pathOptions={{ color: color, fillColor: color, fillOpacity: 0.4 }}
         />
     );
 }
 
+function MapEvents({ setMapInstance }: { setMapInstance: (map: any) => void }) {
+    const map = useMapEvents({});
+    useEffect(() => {
+        setMapInstance(map);
+    }, [map, setMapInstance]);
+
+    return null;
+}
+
 export default function Maps() {
-    const [center, setCenter] = useState<LatLngTuple>([21.03029206227961, 105.76805458681068]); 
+    const [center, setCenter] = useState<LatLngTuple>([21.03029206227961, 105.76805458681068]);
+    const [mapInstance, setMapInstance] = useState<any>(null);
 
     useEffect(() => {
         navigator.geolocation.getCurrentPosition(
             (position) => {
                 const { latitude, longitude } = position.coords;
-                setCenter([latitude, longitude]); // Cập nhật tọa độ hiện tại
+                setCenter([latitude, longitude]); // Update current position
             },
             (error) => {
                 console.error('Error getting location:', error);
             }
         );
     }, []);
-    
+
+    const handleFocusCurrentLocation = () => {
+        if (mapInstance) {
+            mapInstance.setView(center, 12); // Đặt lại vị trí tâm và mức zoom
+        }
+    };
 
     return (
-        <MapContainer
-            center={center}
-            zoom={12}
-            style={{
-                width: '100%', 
-                height: '600px'
+        <Box
+            sx={{
+                position: 'relative',
+                width: '100%',
+                height: '600px',
+                '.leaflet-bottom': {
+                    display: 'none',
+                },
             }}
         >
-            <TileLayer
-                url="https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=c9R2t7djj3ThOMuQjEWU"
-                attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
-            />
-            <ResizableCircle center={center} color="orange" />  {/* Vòng tròn cho vị trí hiện tại */}
-            <ResizableCircle center={destination} color="blue" />  {/* Vòng tròn cho điểm đến cố định */}
-        </MapContainer>
+            <MapContainer
+                center={center}
+                zoom={12}
+                style={{ width: '100%', height: '100%' }}
+            >
+                <TileLayer
+                    url="https://api.maptiler.com/maps/basic-v2/256/{z}/{x}/{y}.png?key=c9R2t7djj3ThOMuQjEWU"
+                    attribution='<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>'
+                />
+                <ResizableCircle center={center} color="orange" /> {/* Circle for current location */}
+                <ResizableCircle center={destination} color="blue" /> {/* Circle for fixed destination */}
+                <MapEvents setMapInstance={setMapInstance} />
+            </MapContainer>
+            <Button
+                variant="contained"
+                color="inherit"
+                onClick={handleFocusCurrentLocation}
+                sx={{
+                    position: 'absolute',
+                    bottom: '20px',
+                    right: '20px',
+                    zIndex: 1000,
+                }}
+            >
+                <MyLocationIcon />
+            </Button>
+        </Box>
     );
 }

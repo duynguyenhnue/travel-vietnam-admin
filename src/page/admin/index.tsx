@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import DashBoard from "../../components/admin/page/dashboard";
 import SideBar from "../../components/admin/sidebar";
 import Header from "../../components/admin/header";
+import Permissions from "../../components/admin/page/permissions";
+import Users from "../../components/admin/page/users";
+import Services from "../../components/admin/page/services";
 export default function Admin() {
     const location = useLocation();
     const path = location.pathname.split('/')[2];
@@ -27,6 +30,9 @@ export default function Admin() {
             >
                 <Header />
                 {(path == undefined || path == "" || path == "dashboard") && <DashBoard />}
+                {path == "permissions" && <Permissions />}
+                {path == "users" && <Users />}
+                {path == "services" && <Services />}
             </Box>
         </Box>
     );

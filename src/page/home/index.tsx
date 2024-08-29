@@ -7,10 +7,12 @@ import HomePage from "../../components/home/page/home";
 import About from "../../components/home/page/about";
 import Services from "../../components/home/page/services";
 import Contact from "../../components/home/page/contact";
+import useAuthRedirect from "../../components/auth/auth-redirect";
 
 export default function Home() {
     const location = useLocation();
     const path = location.pathname.split('/')[1];
+    useAuthRedirect();
     return (
         <StyleContainer>
             <Header />

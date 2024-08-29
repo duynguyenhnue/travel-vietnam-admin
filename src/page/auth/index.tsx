@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { StyleBoxForm, StyleBoxRadiusUI, StyleButtonBlur, StyleButtonFocus, StyleContainer, StyleDetailContact, StyleFooterForm, StyleGridLeft, StyleGridRight, StyleGroupContact, StyleGroupIcons, StyleGroupInput, StyleIconEmail, StyleIconPhone, StyleIconsSocial, StyleRadiusUI } from "./style-mui";
 import SignUp from "../../components/auth/signup";
 import SignIn from "../../components/auth/signin";
+import useAuthRedirect from "../../components/auth/auth-redirect";
 
 export default function Auth() {
     const [searchParams] = useSearchParams();
     const [page, setPage] = useState(searchParams.get('page'))
+    useAuthRedirect();
     const navigate = useNavigate();
 
     const iconsSocial = [

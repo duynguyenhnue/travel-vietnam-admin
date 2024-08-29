@@ -16,9 +16,14 @@ export default function SideBar() {
             link: 'statistics'
         },
         {
-            name: 'Hospitals',
-            icon: "/Images/admin/sidebar/hospitals.svg",
-            link: 'hospitals'
+            name: 'Permissions',
+            icon: "/Images/admin/sidebar/permissions.svg",
+            link: 'permissions'
+        },
+        {
+            name: 'Services',
+            icon: "/Images/admin/sidebar/services.svg",
+            link: 'services'
         },
         {
             name: 'Users',
