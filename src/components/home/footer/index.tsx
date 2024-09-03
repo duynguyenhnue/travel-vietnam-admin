@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { StyleBoxDetails, StyleBoxTitle, StyleContentDetails, StyleTitleDetails } from "../style-mui";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
     const iconsSocial = [
@@ -23,7 +24,8 @@ export default function Footer() {
             src: "/Images/auth/icons/icon-twitter.svg",
             href: "#"
         }
-    ]
+    ];
+    const { t } = useTranslation();
     return (
         <Box
             sx={{
@@ -56,28 +58,28 @@ export default function Footer() {
                             fontSize: '16px',
                             fontFamily: 'Work Sans, sans-serif'
                         }}
-                    >Leading the Way in Medical Execellence, Trusted Care.</p>
+                    >{t("Leading the Way in Medical Execellence, Trusted Care.")}</p>
                 </StyleBoxTitle>
                 <StyleBoxTitle>
-                    <StyleTitleDetails>Important Links</StyleTitleDetails>
+                    <StyleTitleDetails>{t("Important Links")}</StyleTitleDetails>
                     <StyleBoxDetails>
-                        <StyleContentDetails>Appointment</StyleContentDetails>
-                        <StyleContentDetails>Doctors</StyleContentDetails>
-                        <StyleContentDetails>Services</StyleContentDetails>
-                        <StyleContentDetails>About Us</StyleContentDetails>
+                        <StyleContentDetails>{t("Appointment")}</StyleContentDetails>
+                        <StyleContentDetails>{t("Doctors")}</StyleContentDetails>
+                        <StyleContentDetails>{t("Services")}</StyleContentDetails>
+                        <StyleContentDetails>{t("About Us")}</StyleContentDetails>
                     </StyleBoxDetails>
                 </StyleBoxTitle>
                 <StyleBoxTitle>
-                    <StyleTitleDetails>Contact Us</StyleTitleDetails>
+                    <StyleTitleDetails>{t("Contact Us")}</StyleTitleDetails>
                     <StyleBoxDetails>
-                        <StyleContentDetails>Call: (84) 708-200-334</StyleContentDetails>
-                        <StyleContentDetails>Email: liorion.nguyen@gmail.com</StyleContentDetails>
-                        <StyleContentDetails>Address: 12 Nghi Xuan</StyleContentDetails>
-                        <StyleContentDetails>Some country</StyleContentDetails>
+                        <StyleContentDetails>{t("Call")}: (84) 708-200-334</StyleContentDetails>
+                        <StyleContentDetails>{t("Email")}: liorion.nguyen@gmail.com</StyleContentDetails>
+                        <StyleContentDetails>{t("Address")}: 12 Nghi Xuan</StyleContentDetails>
+                        <StyleContentDetails>{t("Some country")}</StyleContentDetails>
                     </StyleBoxDetails>
                 </StyleBoxTitle>
                 <StyleBoxTitle>
-                    <StyleTitleDetails>Newsletter</StyleTitleDetails>
+                    <StyleTitleDetails>{t("Newsletter")}</StyleTitleDetails>
                     <Box
                         sx={{
                             backgroundColor: '#BFD2F8',
@@ -125,7 +127,7 @@ export default function Footer() {
                         fontSize: '16px',
                         fontFamily: 'Work Sans, sans-serif'
                     }}
-                >© 2021 Hospital’s name All Rights Reserved by PNTEC-LTD</p>
+                >© 2021 {t("Hospital’s name All Rights Reserved by LIORION")} </p>
                 <Box
                     sx={{
                         display: 'flex',

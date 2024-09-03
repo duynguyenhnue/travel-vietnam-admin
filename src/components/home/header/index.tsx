@@ -1,11 +1,13 @@
 import { Box, Button } from "@mui/material";
 import Cookies from "js-cookie";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Header() {
     const navigate = useNavigate();
     const user = useSelector((state: any) => state.user.user);
+    const { t } = useTranslation();
 
     const contact = [
         {
@@ -50,13 +52,18 @@ export default function Header() {
             name: "Contact",
             link: "/contact"
         },
+        {
+            name: "Advise",
+            link: "/advise"
+        },
     ]
 
     const handleLogin = () => {
         navigate(`/auth?page=signin`);
     }
     const handleLogout = () => {
-        Cookies.set('refreshToken', "", { expires: -1, path: '/' });
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
         navigate(`/auth?page=signin`);
     }
 
@@ -124,7 +131,7 @@ export default function Header() {
                                                 fontSize: '16px',
                                                 fontFamily: 'Work Sans, sans-serif'
                                             }}
-                                        >{item.name}</p>
+                                        >{t(item.name)}</p>
                                         <p style={{
                                             color: '#159EEC',
                                             fontSize: '16px',
@@ -164,7 +171,7 @@ export default function Header() {
                                         textDecoration: 'none'
                                     }}
                                 >
-                                    {item.name}
+                                    {t(item.name)}
                                 </a>
                             ))
                         }
@@ -187,7 +194,7 @@ export default function Header() {
                                 fontFamily: 'Work Sans, sans-serif'
                             }}
                         >
-                            Appointment
+                            {t("Appointment")}
                         </Button>
                         <Button variant="contained"
                             sx={{
@@ -200,7 +207,7 @@ export default function Header() {
                             }}
                             onClick={user ? handleLogout : handleLogin}
                         >
-                            {user ? "Logout" : "Login"}
+                            {t(user ? "Logout" : "Login")}
                         </Button>
                     </Box>
                 </Box>

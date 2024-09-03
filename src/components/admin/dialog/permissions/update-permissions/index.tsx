@@ -10,7 +10,8 @@ import Button from '@mui/material/Button';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { request } from "../../../../../api/request";
 import { SnackbarActions } from "../../../../../redux/snackbar";
-
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -29,7 +30,7 @@ export default function UpdatePermissions() {
         "Delete"
     ]
     const ids = useSelector((state: any) => state.dialog.showId);
-    const id = ids[0];
+    const [numberTab, setNumberTab] = useState(1);
     const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
     const [dataRoles, setDataRoles] = useState<any>([]);
     const [name, setName] = useState<string>("")
@@ -39,7 +40,7 @@ export default function UpdatePermissions() {
 
     const dispatch = useDispatch();
     const fetch = async () => {
-        const data = await request('GET', "", `permissions/${id}`)
+        const data = await request('GET', "", `permissions/${ids[numberTab-1]}`)
         setName(data.name);
         setDescription(data.description);
         setDataRoles(data.role);
@@ -104,7 +105,7 @@ export default function UpdatePermissions() {
             name: name,
             role: filteredRoles,
             description: description,
-        }, `permissions/${id}`);
+        }, `permissions/${ids[numberTab-1]}`);
 
         dispatch(SnackbarActions.OpenSnackbar(
             {
@@ -117,7 +118,7 @@ export default function UpdatePermissions() {
             "event": "permissions-updated",
             "data": {
                 "data": {
-                    id: id,
+                    id: ids[numberTab-1],
                     name: name,
                     role: filteredRoles,
                     description: description,
@@ -128,7 +129,7 @@ export default function UpdatePermissions() {
     }
 
     const handleDeletePermissions = async () => {
-        const fetch = await request('DELETE', "", `permissions/${id}`);
+        const fetch = await request('DELETE', "", `permissions/${ids[numberTab-1]}`);
         dispatch(SnackbarActions.OpenSnackbar(
             {
                 open: true,
@@ -138,11 +139,28 @@ export default function UpdatePermissions() {
         return;
     }
 
+    const handleNext = () => {
+        if (numberTab === ids.length) {
+            setNumberTab(1);
+        } else {
+            setNumberTab((pre) => pre + 1);
+        }
+    }
+
+    const handlePervious = () => {
+        if (numberTab === 1) {
+            setNumberTab(ids.length);
+        } else {
+            setNumberTab((pre) => pre - 1);
+        }
+    }
+
+
     useEffect(() => {
         if (ids) {
             fetch();
         }
-    }, [ids])
+    }, [ids, numberTab])
 
 
     return (
@@ -154,7 +172,18 @@ export default function UpdatePermissions() {
                 minWidth: '35vw'
             }}
         >
-            <StyleTitle>Update Permissions</StyleTitle>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <StyleTitle>Details Permissions</StyleTitle>
+                <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <SkipPreviousIcon
+                        onClick={handlePervious}
+                    />
+                    <p>{numberTab}</p>
+                    <SkipNextIcon
+                        onClick={handleNext}
+                    />
+                </Box>
+            </Box>
             <StyleLineDashed />
             <Box
                 sx={{
@@ -168,7 +197,7 @@ export default function UpdatePermissions() {
                     <StyleBoxInput>
                         <StyleLabel>ID</StyleLabel>
                         <StyleInput type="text" placeholder="ID..."
-                            value={id}
+                            value={ids[numberTab-1]}
                         />
                     </StyleBoxInput>
                     <StyleBoxInput>

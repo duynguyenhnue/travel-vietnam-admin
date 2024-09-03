@@ -2,7 +2,7 @@ import { Box, Button, MenuItem, Select, SelectChangeEvent, TextareaAutosize } fr
 import { StyleAutocomplete, StyleBoxInput, StyleButton, StyleFormControl, StyleInput, StyleLabel, StyleLineDashed, StyleScrollY, StyleSubtitle, StyleTextareaAutosize, StyleTitle } from "../../../../dialog/style-mui";
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { SnackbarActions } from "../../../../../redux/snackbar";
 import { request } from "../../../../../api/request";
@@ -12,6 +12,9 @@ import { DemoItem, DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CameraEnhanceIcon from '@mui/icons-material/CameraEnhance';
+import Resizer from 'react-image-file-resizer';
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -29,15 +32,62 @@ export default function UpdateUser() {
         "Other"
     ])
     const ids = useSelector((state: any) => state.dialog.showId);
-    const id = ids[0];
+    const [numberTab, setNumberTab] = useState(1);
 
     const [dataUser, setDataUser] = useState<any>();
+    const [imgProfile, setImgProfile] = useState<any>();
 
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
     const dispatch = useDispatch();
 
     const handleUpdateUser = async () => {
-        const fetch = await request('PUT', dataUser, `users/${id}`);
+        if (imgProfile) {
+            const maxSizeInMB = 0.5;
+            let fileToUpload = imgProfile;
 
+            if (fileToUpload.size / 1024 / 1024 > maxSizeInMB) {
+                try {
+                    fileToUpload = await resizeImage(fileToUpload);
+                } catch (error) {
+                    console.error('Error resizing image:', error);
+                    return;
+                }
+            }
+            const formData = new FormData();
+            formData.append('file', fileToUpload);
+            const fetch = await request("POST", formData, "firebase/upload");
+            if (fetch.imageUrl) {
+                dispatch(SnackbarActions.OpenSnackbar(
+                    {
+                        open: true,
+                        content: "Image uploaded successfully.",
+                        state: "correct",
+                    }
+                ));
+
+                if (dataUser.profileImage) {
+                    const deleteFetch = await request("DELETE", { "imageUrl": dataUser.profileImage }, "firebase/delete");
+                }
+
+                const updateUser = await request("PUT", {
+                    ...dataUser,
+                    profileImage: fetch.imageUrl
+                }, `users/${dataUser._id}`);
+                setDataUser({
+                    ...dataUser,
+                    profileImage: fetch.imageUrl
+                })
+            } else {
+                console.error('Failed to upload image');
+            }
+        } else {
+            const updateUser = await request("PUT", {
+                ...dataUser
+            }, `users/${dataUser._id}`);
+            setDataUser({
+                ...dataUser
+            })
+        }
 
         dispatch(SnackbarActions.OpenSnackbar(
             {
@@ -63,15 +113,59 @@ export default function UpdateUser() {
     }
 
     const fetch = async () => {
-        const data = await request('GET', "", `users/${id}`);
+        const data = await request('GET', "", `users/${ids[numberTab - 1]}`);
         setDataUser(data);
+    }
+
+
+    const handleIconClick = () => {
+        fileInputRef?.current?.click();
+    };
+
+    const resizeImage = (file: File): Promise<File> => {
+        return new Promise((resolve, reject) => {
+            Resizer.imageFileResizer(
+                file,
+                800,
+                800,
+                'JPEG',
+                80,
+                0,
+                (uri: any) => {
+                    resolve(uri);
+                },
+                'file'
+            );
+        });
+    };
+
+    const handleFileChange = async (event: any) => {
+        const file = event.target.files[0];
+        if (!file) return;
+        setImgProfile(file);
+    };
+
+    const handleNext = () => {
+        if (numberTab === ids.length) {
+            setNumberTab(1);
+        } else {
+            setNumberTab((pre) => pre + 1);
+        }
+    }
+
+    const handlePervious = () => {
+        if (numberTab === 1) {
+            setNumberTab(ids.length);
+        } else {
+            setNumberTab((pre) => pre - 1);
+        }
     }
 
     useEffect(() => {
         if (ids) {
             fetch();
         }
-    }, [ids])
+    }, [ids, numberTab])
 
     return (
         <Box
@@ -82,7 +176,18 @@ export default function UpdateUser() {
                 minWidth: '35vw'
             }}
         >
-            <StyleTitle>Details User</StyleTitle>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <StyleTitle>Details User</StyleTitle>
+                <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <SkipPreviousIcon
+                        onClick={handlePervious}
+                    />
+                    <p>{numberTab}</p>
+                    <SkipNextIcon
+                        onClick={handleNext}
+                    />
+                </Box>
+            </Box>
             <StyleLineDashed />
             {
                 dataUser && <Box
@@ -108,12 +213,16 @@ export default function UpdateUser() {
                                     position: 'relative',
                                 }}
                             >
-                                <img src={dataUser.profileImage ? dataUser.profileImage : "/Images/admin/header/profile.svg"}
+                                <img src={imgProfile ? URL.createObjectURL(imgProfile) : (dataUser.profileImage ? dataUser.profileImage : "/Images/admin/header/profile.svg")}
                                     style={{
+                                        width: '100%',
                                         height: '100%',
+                                        borderRadius: '50%',
+                                        boxShadow: dataUser.profileImage ? "#7b7b7b91 0 0 5px 5px" : '',
+                                        objectFit: 'cover'
                                     }}
                                 />
-                                <CameraEnhanceIcon 
+                                <CameraEnhanceIcon
                                     sx={{
                                         position: 'absolute',
                                         bottom: '10%',
@@ -125,6 +234,14 @@ export default function UpdateUser() {
                                             cursor: 'pointer'
                                         }
                                     }}
+                                    onClick={handleIconClick}
+                                />
+                                <input
+                                    type="file"
+                                    ref={fileInputRef}
+                                    style={{ display: 'none' }}
+                                    onChange={handleFileChange}
+                                    accept="image/*"
                                 />
                             </Box>
                         </Box>

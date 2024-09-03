@@ -1,9 +1,12 @@
 import { Box } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
 import { StyleAmenu } from "./style-mui";
+import Cookies from "js-cookie";
+import { useTranslation } from "react-i18next";
 
 export default function SideBar() {
-    const navigate = useNavigate(); 
+    const navigate = useNavigate();
+    const { t } = useTranslation();
     const listNav = [
         {
             name: 'Dashboard',
@@ -48,6 +51,8 @@ export default function SideBar() {
     const path = location.pathname.split('/')[2];
 
     const handleLogin = () => {
+        Cookies.remove('accessToken');
+        Cookies.remove('refreshToken');
         navigate(`/auth?page=signin`);
     }
     return (
@@ -85,11 +90,11 @@ export default function SideBar() {
                         listNav.map((item: any, index: number) => (
                             <StyleAmenu
                                 href={`/admin/${item.link}`}
-                                check={path === item.link || ((path == undefined  || path == "") && item.name == "Dashboard")}
+                                check={path === item.link || ((path == undefined || path == "") && item.name == "Dashboard")}
                                 key={item.link}
                             >
                                 <img src={item.icon} alt={item.name} />
-                                <p>{item.name}</p>
+                                <p>{t(item.name)}</p>
                             </StyleAmenu>
                         ))
                     }
@@ -104,7 +109,7 @@ export default function SideBar() {
                             margin: '0 10% 30px 10%',
                             color: '#BDBDC3',
                         }}
-                    >SUPPORT</p>
+                    >{t('support')}</p>
                     {
                         support.map((item: any, index: number) => (
                             <StyleAmenu
@@ -113,7 +118,7 @@ export default function SideBar() {
                                 key={item.link}
                             >
                                 <img src={item.icon} alt={item.name} />
-                                <p>{item.name}</p>
+                                <p>{t(item.name)}</p>
                             </StyleAmenu>
                         ))
                     }
@@ -123,12 +128,12 @@ export default function SideBar() {
                 <StyleAmenu
                     onClick={handleLogin}
                 >
-                    <img src="/Images/admin/sidebar/logout.svg"/>
+                    <img src="/Images/admin/sidebar/logout.svg" />
                     <p
                         style={{
                             fontSize: '23px',
                         }}
-                    >Logout</p>
+                    >{t('Logout')}</p>
                 </StyleAmenu>
             </Box>
         </Box>
