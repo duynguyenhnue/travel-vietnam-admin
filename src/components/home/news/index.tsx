@@ -1,5 +1,6 @@
 import { Box, Grid } from "@mui/material";
 import { StyleBoxInteract, StyleBoxTitle, StyleGroupInteract, StyleSubTitle, StyleTitle } from "../page/home/style-mui";
+import { useTranslation } from "react-i18next";
 
 export default function News() {
     const news = [
@@ -36,10 +37,12 @@ export default function News() {
             img: "/Images/home/home/news.svg"
         }
     ]
+    const { t } = useTranslation();
+
     return (
         <StyleBoxTitle>
-            <StyleTitle>Better information, Better health</StyleTitle>
-            <StyleSubTitle>News</StyleSubTitle>
+            <StyleTitle>{t("Better information, Better health")}</StyleTitle>
+            <StyleSubTitle>{t("News")}</StyleSubTitle>
             <Grid container spacing={6} rowSpacing={2}
                 sx={{
                     display: 'flex',

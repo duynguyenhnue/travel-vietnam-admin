@@ -5,6 +5,8 @@ import { DialogActions } from "../../../redux/dialog";
 import { StyleContainerScannerQr } from "../style-mui";
 import SendIcon from '@mui/icons-material/Send';
 import { SnackbarActions } from "../../../redux/snackbar";
+import { request } from "../../../api/request";
+import { useTranslation } from "react-i18next";
 
 export default function ForgotPassword() {
     const dispatch = useDispatch();
@@ -14,6 +16,7 @@ export default function ForgotPassword() {
     const [cfpassword, setCfPassword] = useState<string>("");
     const [step, setStep] = useState("email");
     const modeForgotPassword = useSelector((state: any) => state.dialog.forgotPassword);
+    const { t } = useTranslation();
 
     const handleClose = () => {
         dispatch(DialogActions.setForgotPassword(false))
@@ -24,15 +27,18 @@ export default function ForgotPassword() {
         return emailRegex.test(email);
     }
 
-    const handleSentEmail = () => {
+    const handleSentEmail = async () => {
         if (email) {
             if (isValidEmail(email)) {
-                dispatch(SnackbarActions.OpenSnackbar({
-                    open: true,
-                    content: 'The message has been sent to your inbox',
-                    state: "correct"
-                }));
-                setStep("code");
+                const fetch = await request("POST", { email: email }, "auth/forgotpassword/email");
+                if (fetch.status === 200) {
+                    dispatch(SnackbarActions.OpenSnackbar({
+                        open: true,
+                        content: 'The message has been sent to your inbox',
+                        state: "correct"
+                    }));
+                    setStep("code");
+                }
             } else {
                 dispatch(SnackbarActions.OpenSnackbar({
                     open: true,
@@ -48,15 +54,25 @@ export default function ForgotPassword() {
             }))
         }
     }
-    const handleVerifyCode = () => {
+    const handleVerifyCode = async () => {
         if (code) {
-            if (true) {
-                dispatch(SnackbarActions.OpenSnackbar({
-                    open: true,
-                    content: 'Code entered successfully',
-                    state: "correct"
-                }));
-                setStep("newPassword")
+            if (code.length === 6) {
+                let fetch = await request("POST", { email: email, code: code }, "verification-code/verify");
+
+                if (fetch.isValid.status === 200) {
+                    dispatch(SnackbarActions.OpenSnackbar({
+                        open: true,
+                        content: fetch.isValid.message,
+                        state: "correct"
+                    }));
+                    setStep("newPassword")
+                } else {
+                    dispatch(SnackbarActions.OpenSnackbar({
+                        open: true,
+                        content: fetch.isValid.message,
+                        state: "error"
+                    }));
+                }
             } else {
                 dispatch(SnackbarActions.OpenSnackbar({
                     open: true,
@@ -73,17 +89,20 @@ export default function ForgotPassword() {
         }
     }
 
-    const handleNewPassword = () => {
+    const handleNewPassword = async () => {
         if (password && cfpassword) {
             if (password == cfpassword) {
                 if (true) {
-                    dispatch(SnackbarActions.OpenSnackbar({
-                        open: true,
-                        content: 'Updated password successfully',
-                        state: "correct"
-                    }));
-                    setStep("email");
-                    handleClose();
+                    let fetch = await request("POST", { email: email, password: password }, "users/updatePassword");
+                    if (fetch) {
+                        dispatch(SnackbarActions.OpenSnackbar({
+                            open: true,
+                            content: 'Updated password successfully',
+                            state: "correct"
+                        }));
+                        setStep("email");
+                        handleClose();
+                    }
                 } else {
                     dispatch(SnackbarActions.OpenSnackbar({
                         open: true,
@@ -107,7 +126,7 @@ export default function ForgotPassword() {
             }))
         }
     }
-    
+
     return (
         <Fragment>
             <StyleContainerScannerQr
@@ -130,10 +149,10 @@ export default function ForgotPassword() {
                             fontSize: '32px',
                             fontWeight: '500'
                         }}
-                    >Forgot Password</h2>
+                    >{t("Forgot Password")}</h2>
                     {
                         step == "email" && <>
-                            <p>Enter your email address</p>
+                            <p>{t("Enter your email address")}</p>
                             <TextField
                                 sx={{
                                     width: '100%'
@@ -143,7 +162,7 @@ export default function ForgotPassword() {
                                 variant="filled"
                                 size="small"
                                 type="email"
-                                placeholder="Enter your email address"
+                                placeholder={t("Enter your email address")}
                                 value={email}
                                 onChange={(e: any) => {
                                     setEmail(e.target.value)
@@ -153,7 +172,7 @@ export default function ForgotPassword() {
                     }
                     {
                         step == "code" && <>
-                            <p>Enter your code</p>
+                            <p>{t("Enter your code")}</p>
                             <TextField
                                 sx={{
                                     width: '100%'
@@ -163,7 +182,7 @@ export default function ForgotPassword() {
                                 variant="filled"
                                 size="small"
                                 type="text"
-                                placeholder="Enter your code"
+                                placeholder={t("Enter your code")}
                                 value={code}
                                 onChange={(e: any) => {
                                     setCode(e.target.value)
@@ -173,7 +192,7 @@ export default function ForgotPassword() {
                     }
                     {
                         step == "newPassword" && <>
-                            <p>Enter your new password</p>
+                            <p>{t("Enter your new password")}</p>
                             <TextField
                                 sx={{
                                     width: '100%'
@@ -183,7 +202,7 @@ export default function ForgotPassword() {
                                 variant="filled"
                                 size="small"
                                 type="text"
-                                placeholder="Enter your password"
+                                placeholder={t("Enter your password")}
                                 value={password}
                                 onChange={(e: any) => {
                                     setPassword(e.target.value)
@@ -198,7 +217,7 @@ export default function ForgotPassword() {
                                 variant="filled"
                                 size="small"
                                 type="text"
-                                placeholder="Enter your confirm password"
+                                placeholder={t("Enter your confirm password")}
                                 value={cfpassword}
                                 onChange={(e: any) => {
                                     setCfPassword(e.target.value)
@@ -215,7 +234,7 @@ export default function ForgotPassword() {
                                 step == "code" ? handleVerifyCode() : handleNewPassword()
                         }}
                         variant="contained" endIcon={<SendIcon />}>
-                        Continue
+                        {t("Continue")}
                     </Button>
                 </Box>
             </StyleContainerScannerQr>

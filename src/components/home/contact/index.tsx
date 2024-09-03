@@ -1,5 +1,6 @@
 import { Box, Grid } from "@mui/material";
 import { StyleBoxTitle, StyleIconContact, StyleSubTitle, StyleTitle } from "../page/home/style-mui";
+import { useTranslation } from "react-i18next";
 
 export default function ContactCPN() {
     const contacts = [
@@ -31,10 +32,11 @@ export default function ContactCPN() {
             ],
         }
     ]
+    const { t } = useTranslation();
     return (
         <StyleBoxTitle>
-            <StyleTitle>Get in touch</StyleTitle>
-            <StyleSubTitle>Contact</StyleSubTitle>
+            <StyleTitle>{t("Get in touch")}</StyleTitle>
+            <StyleSubTitle>{t("Contact")}</StyleSubTitle>
             <Grid container columnSpacing={4}
                 sx={{
                     marginBottom: '80px',
@@ -72,14 +74,14 @@ export default function ContactCPN() {
                                         fontSize: '18px',
                                         fontWeight: 'bold'
                                     }}
-                                >{contact.name}</p>
+                                >{t(contact.name)}</p>
                                 {
                                     contact.content.map((item: any) => (
                                         <p
                                             style={{
                                                 fontSize: '16px',
                                             }}
-                                        >{item}</p>
+                                        >{t(item)}</p>
                                     ))
                                 }
                             </Box>

@@ -6,13 +6,18 @@ import { Box, Button, Dialog } from "@mui/material";
 import { Fragment, useState } from "react";
 import { StyleBoxScannerQr, StyleContainerScannerQr, StyleLineScannerQr } from '../style-mui';
 import { SnackbarActions } from '../../../redux/snackbar';
+import { request } from '../../../api/request';
+import { UserActions } from '../../../redux/user';
+import Cookies from 'js-cookie';
+import { useNavigate } from 'react-router-dom';
 
 export default function ScannerQRCode() {
     const dispatch = useDispatch();
     const modeScannerQrCode = useSelector((state: any) => state.dialog.scannerQrCode)
     const [contactScanner, setContactScanner] = useState<any>(null);
+    const navigate = useNavigate();
 
-    const handleScan = (data: any | null) => {
+    const handleScan = async (data: any | null) => {
         if (data) {
             if (data.text) {
                 dispatch(SnackbarActions.OpenSnackbar({
@@ -20,7 +25,50 @@ export default function ScannerQRCode() {
                     content: 'Qr code scan successful',
                     state: "correct"
                 }))
-                setContactScanner(parseStringToObject(data.text))
+                const datadecode = parseStringToObject(data.text);
+                setContactScanner(datadecode)
+                let fetch = await request("GET", "", `users/cccd/${datadecode.id}`)
+                if (fetch.status === 404) {
+                    fetch = await request('POST', {
+                        cccdNumber: datadecode.id,
+                        fullName: datadecode.name,
+                        username: normalizeString(datadecode.name),
+                        password: datadecode.birthDate,
+                        gender: datadecode.gender === "Nam" ? "Male" : "Female",
+                        role: "Parient",
+                        dateOfBirth: convertToISODate(datadecode.birthDate),
+                    }, 'users');
+                    if (!fetch) {
+                        return;
+                    }
+                }
+                console.log(fetch);
+                dispatch(UserActions.setUser(fetch.data));
+                
+
+                const fetchAuth = await request("POST", {
+                    username: fetch.data.username,
+                    password: datadecode.birthDate,
+                }, "auth/login")
+                if (fetchAuth && fetchAuth.status === 401) {
+                    dispatch(SnackbarActions.OpenSnackbar(
+                        {
+                            open: true,
+                            content: fetch.description,
+                            state: "error",
+                        }))
+                } else if (fetchAuth.status === 201) {
+                    Cookies.set('accessToken', fetchAuth.data.accessToken, { expires: 3 / 288, path: '/' });
+                    Cookies.set('refreshToken', fetchAuth.data.refreshToken, { expires: 7, path: '/' });
+                    dispatch(SnackbarActions.OpenSnackbar(
+                        {
+                            open: true,
+                            content: fetchAuth.description,
+                            state: "succes",
+                        }))
+
+                        fetchAuth.data.user.role === "Admin" ? navigate(`/admin`) : navigate(`/`);
+                }
             } else {
                 dispatch(SnackbarActions.OpenSnackbar({
                     open: true,
@@ -30,6 +78,27 @@ export default function ScannerQRCode() {
             }
         }
     };
+
+    function convertToISODate(dateStr: string): string {
+        const day = dateStr.slice(0, 2);
+        const month = dateStr.slice(2, 4);
+        const year = dateStr.slice(4);
+
+        const date = new Date(`${year}-${month}-${day}T12:00:00.000Z`);
+
+        return date.toISOString();
+    }
+
+    function normalizeString(input: string): string {
+        const removeDiacritics = (str: string) => {
+            return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        };
+
+        const lowerCaseStr = input.toLowerCase();
+
+        return removeDiacritics(lowerCaseStr).replace(/\s+/g, '');
+    }
+
 
     const handleError = (err: any) => {
         console.error(err);
@@ -42,7 +111,7 @@ export default function ScannerQRCode() {
         const parts = inputString.split('|');
         if (parts.length < 6) {
             console.log(parts);
-            
+
         }
         const result = {
             id: parts[0],
@@ -59,7 +128,7 @@ export default function ScannerQRCode() {
     const handleScanAgain = () => {
         setContactScanner(null);
     }
-    
+
     return (
         <Fragment>
             <StyleContainerScannerQr

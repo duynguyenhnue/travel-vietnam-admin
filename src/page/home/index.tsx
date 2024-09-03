@@ -7,12 +7,11 @@ import HomePage from "../../components/home/page/home";
 import About from "../../components/home/page/about";
 import Services from "../../components/home/page/services";
 import Contact from "../../components/home/page/contact";
-import useAuthRedirect from "../../components/auth/auth-redirect";
+import Advise from "../../components/home/page/advise";
 
 export default function Home() {
     const location = useLocation();
     const path = location.pathname.split('/')[1];
-    useAuthRedirect();
     return (
         <StyleContainer>
             <Header />
@@ -21,6 +20,7 @@ export default function Home() {
                 {path == "about" && <About />}
                 {path == "services" && <Services />}
                 {path == "contact" && <Contact />}
+                {path == "advise" && <Advise />}
             </Box>
             <Footer />
         </StyleContainer>

@@ -1,5 +1,6 @@
 import { Box } from "@mui/material";
 import { StyleBoxTitle, StyleSubTitle, StyleTitle } from "../page/home/style-mui";
+import { useTranslation } from "react-i18next";
 
 export default function OurDoctors() {
     const listDoctors = [
@@ -61,10 +62,11 @@ export default function OurDoctors() {
             ]
         }
     ]
+    const { t } = useTranslation();
     return (
         <StyleBoxTitle>
-            <StyleTitle>Trusted Care</StyleTitle>
-            <StyleSubTitle>Our Doctors</StyleSubTitle>
+            <StyleTitle>{t("Trusted Care")}</StyleTitle>
+            <StyleSubTitle>{t("Our Doctors")}</StyleSubTitle>
             <Box
                 sx={{
                     display: 'flex',
@@ -133,7 +135,7 @@ export default function OurDoctors() {
                                     borderRadius: '0 0 5px 5px'
                                 }}
                             >
-                                <p>View Profile</p>
+                                <p>{t("View Profile")}</p>
                             </Box>
                         </Box>
                     ))

@@ -4,6 +4,7 @@ import { useState } from "react";
 import OurDoctors from "../../our-doctors";
 import News from "../../news";
 import ContactCPN from "../../contact";
+import { useTranslation } from "react-i18next";
 
 export default function HomePage() {
     const ourServices = [
@@ -36,6 +37,7 @@ export default function HomePage() {
     const Specialties = [
         "Neurology", "Bones", "Oncology", "Otorhinolaryngology", "Ophthalmology", "Cardiovascular", "Pulmonology", "Renal Medicine", "Gastroenterology", "Urology", "Dermatology", "Gynaecology"
     ]
+    const { t } = useTranslation();
 
     const [age, setAge] = useState('');
 
@@ -84,14 +86,14 @@ export default function HomePage() {
                             fontSize: '18px',
                             fontWeight: 'bold'
                         }}
-                    >Caring for Life</p>
+                    >{t("Caring for Life")}</p>
                     <p
                         style={{
                             color: '#1F2B6C',
                             fontSize: '48px',
                             fontWeight: 'bold',
                         }}
-                    >Leading the Way in Medical Excellence</p>
+                    >{t("Leading the Way in Medical Excellence")}</p>
                     <button
                         style={{
                             color: '#1F2B6C',
@@ -102,7 +104,7 @@ export default function HomePage() {
                             fontSize: '16px',
                             width: 'fit-content'
                         }}
-                    >Our Services</button>
+                    >{t("Our Services")}</button>
                 </Box>
                 <img src="/Images/home/home/trend_doctors.png"
                     style={{
@@ -111,15 +113,15 @@ export default function HomePage() {
                 />
                 <StyleGroupBook>
                     <StyleBoxBook sx={{ backgroundColor: '#1F2B6C', color: 'white' }}>
-                        <p>Book an Appointment</p>
+                        <p>{t("Book an Appointment")}</p>
                         <img src="/Images/home/home/icon_calendar.svg" />
                     </StyleBoxBook>
                     <StyleBoxBook sx={{ backgroundColor: '#BFD2F8', color: '#1F2B6C' }}>
-                        <p>Book an Appointment</p>
+                        <p>{t("Book an Appointment")}</p>
                         <img src="/Images/home/home/icon_team.svg" />
                     </StyleBoxBook>
                     <StyleBoxBook sx={{ backgroundColor: '#159EEC', color: 'white' }}>
-                        <p>Book an Appointment</p>
+                        <p>{t("Book an Appointment")}</p>
                         <img src="/Images/home/home/icon_cash.svg" />
                     </StyleBoxBook>
                 </StyleGroupBook>
@@ -134,8 +136,8 @@ export default function HomePage() {
                 }}
             >
                 <StyleBoxTitle>
-                    <StyleTitle>Welcome to Meddical</StyleTitle>
-                    <StyleSubTitle>A Great Place to Receive Care</StyleSubTitle>
+                    <StyleTitle>{t("Welcome to Meddical")}</StyleTitle>
+                    <StyleSubTitle>{t("A Great Place to Receive Care")}</StyleSubTitle>
                     <p
                         style={{
                             fontSize: '16px',
@@ -143,7 +145,7 @@ export default function HomePage() {
                             wordWrap: "revert-layer",
                             textAlign: 'center'
                         }}
-                    >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.</p>
+                    >{t("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.")}</p>
                     <Box
                         sx={{
                             display: 'flex',
@@ -156,7 +158,7 @@ export default function HomePage() {
                                 color: '#159EEC',
                                 fontSize: '16px'
                             }}
-                        >Learn More</p>
+                        >{t("Learn More")}</p>
                         <img src="/Images/home/home/icon_next.svg" />
                     </Box>
                 </StyleBoxTitle>
@@ -166,8 +168,8 @@ export default function HomePage() {
                     }}
                 />
                 <StyleBoxTitle>
-                    <StyleTitle>Care you can believe in</StyleTitle>
-                    <StyleSubTitle>Our Services</StyleSubTitle>
+                    <StyleTitle>{t("Care you can believe in")}</StyleTitle>
+                    <StyleSubTitle>{t("Our Services")}</StyleSubTitle>
                     <Box
                         sx={{
                             display: 'flex',
@@ -196,7 +198,7 @@ export default function HomePage() {
                                         }}
                                     >
                                         <img src={item.src} style={{ width: "27px" }} />
-                                        <p>{item.name}</p>
+                                        <p>{t(item.name)}</p>
                                     </Box>
                                 ))
                             }
@@ -212,7 +214,7 @@ export default function HomePage() {
                                     borderRadius: '0 0 10px 10px'
                                 }}
                             >
-                                <p>View All</p>
+                                <p>{t("View All")}</p>
                             </Box>
                         </Box>
                         <Box
@@ -230,7 +232,7 @@ export default function HomePage() {
                                     fontSize: '26px',
                                     fontWeight: 'bold'
                                 }}
-                            >A passion for putting patients first.</p>
+                            >{t("A passion for putting patients first.")}</p>
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -241,7 +243,7 @@ export default function HomePage() {
                                     {ourServices.slice(0, 3).map((service, index) => (
                                         <Box sx={{ display: 'flex', gap: '10px' }}>
                                             <img src="/Images/home/home/icon_item.svg" />
-                                            <p key={index} style={{ fontSize: '18px' }}>{service}</p>
+                                            <p key={index} style={{ fontSize: '18px' }}>{t(service)}</p>
                                         </Box>
                                     ))}
                                 </Box>
@@ -249,7 +251,7 @@ export default function HomePage() {
                                     {ourServices.slice(3, 6).map((service, index) => (
                                         <Box sx={{ display: 'flex', gap: '10px' }}>
                                             <img src="/Images/home/home/icon_item.svg" />
-                                            <p key={index} style={{ fontSize: '18px' }}>{service}</p>
+                                            <p key={index} style={{ fontSize: '18px' }}>{t(service)}</p>
                                         </Box>
                                     ))}
                                 </Box>
@@ -258,12 +260,12 @@ export default function HomePage() {
                                 style={{
                                     fontSize: '16px',
                                 }}
-                            >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Quisque placerat scelerisque tortor ornare ornare Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.</p>
+                            >{t("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Quisque placerat scelerisque tortor ornare ornare Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.")}</p>
                             <p
                                 style={{
                                     fontSize: '16px',
                                 }}
-                            >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque. Convallis felis vitae tortor augue. Velit nascetur proin massa in.</p>
+                            >{t("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque. Convallis felis vitae tortor augue. Velit nascetur proin massa in.")}</p>
                         </Box>
                         <Box
                             sx={{
@@ -287,8 +289,8 @@ export default function HomePage() {
                     </Box>
                 </StyleBoxTitle>
                 <StyleBoxTitle>
-                    <StyleTitle>Always Caring</StyleTitle>
-                    <StyleSubTitle>Our Specialties</StyleSubTitle>
+                    <StyleTitle>{t("Always Caring")}</StyleTitle>
+                    <StyleSubTitle>{t("Our Specialties")}</StyleSubTitle>
                     <Grid container spacing={0}
                         sx={{
                             marginTop: '50px'
@@ -312,7 +314,7 @@ export default function HomePage() {
                                         style={{
                                             fontSize: '16px'
                                         }}
-                                    >{item}</p>
+                                    >{t(item)}</p>
                                 </Grid>
                             ))
                         }
@@ -367,12 +369,12 @@ export default function HomePage() {
                                     color: '#159EEC',
                                     fontSize: '32px',
                                 }}
-                            >Book an Appointment</p>
+                            >{t("Book an Appointment")}</p>
                             <p
                                 style={{
                                     fontSize: '16px'
                                 }}
-                            >Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.</p>
+                            >{t("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque placerat scelerisque tortor ornare ornare. Convallis felis vitae tortor augue. Velit nascetur proin massa in. Consequat faucibus porttitor enim et.")}</p>
                         </Box>
                         <Grid container spacing={0}
                             sx={{
@@ -482,7 +484,7 @@ export default function HomePage() {
                                 <StyleBookTextArea placeholder="Message" maxRows={4} />
                             </StyleGirdInput>
                             <StyleGirdInput item xs={12} sx={{ border: '0' }}>
-                                <StyleBtnSubmit>SUBMIT</StyleBtnSubmit>
+                                <StyleBtnSubmit>{t("SUBMIT")}</StyleBtnSubmit>
                             </StyleGirdInput>
                         </Grid>
                     </Box>

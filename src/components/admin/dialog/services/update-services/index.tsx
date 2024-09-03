@@ -12,6 +12,8 @@ import { DemoItem, DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { TimePicker } from "@mui/x-date-pickers";
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -37,7 +39,7 @@ export default function UpdateService() {
         "P.204",
     ]
     const ids = useSelector((state: any) => state.dialog.showId);
-    const id = ids[0];
+    const [numberTab, setNumberTab] = useState(1);
     const [dataService, setDataService] = useState<Service>({
         name: '',
         description: '',
@@ -63,11 +65,11 @@ export default function UpdateService() {
             room: rooms
         })
         console.log(rooms);
-        
+
     };
 
     const handleUpdateService = async () => {
-        const fetch = await request('PUT', dataService, `services/${id}`);
+        const fetch = await request('PUT', dataService, `services/${ids[numberTab-1]}`);
         dispatch(SnackbarActions.OpenSnackbar(
             {
                 open: true,
@@ -90,15 +92,31 @@ export default function UpdateService() {
     }
 
     const fetch = async () => {
-        const data = await request('GET', "", `services/${id}`);
+        const data = await request('GET', "", `services/${ids[numberTab-1]}`);
         setDataService(data);
+    }
+
+    const handleNext = () => {
+        if (numberTab === ids.length) {
+            setNumberTab(1);
+        } else {
+            setNumberTab((pre) => pre + 1);
+        }
+    }
+
+    const handlePervious = () => {
+        if (numberTab === 1) {
+            setNumberTab(ids.length);
+        } else {
+            setNumberTab((pre) => pre - 1);
+        }
     }
 
     useEffect(() => {
         if (ids) {
             fetch();
         }
-    }, [ids])
+    }, [ids, numberTab])
 
     return (
         <Box
@@ -109,7 +127,18 @@ export default function UpdateService() {
                 minWidth: '35vw'
             }}
         >
-            <StyleTitle>Add new Service</StyleTitle>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <StyleTitle>Details Service</StyleTitle>
+                <Box sx={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                    <SkipPreviousIcon
+                        onClick={handlePervious}
+                    />
+                    <p>{numberTab}</p>
+                    <SkipNextIcon
+                        onClick={handleNext}
+                    />
+                </Box>
+            </Box>
             <StyleLineDashed />
             {
                 dataService && <Box
