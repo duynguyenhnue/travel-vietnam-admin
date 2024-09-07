@@ -1,5 +1,5 @@
-import { Avatar, Box, Button, CircularProgress, Drawer, Grid, MenuItem } from "@mui/material";
-import { AvatarSizeMessMui, BoxCountEmoj, BoxImgContentMui, BoxImgReplyMui, BoxInputMessMui, BoxMessageMui, ButtonEmoji, ContentMessageMui, ContentMessageRightMui, DialogMui, EmojiCount, FeatureMessMui, FullNameMui, GridRoundDownMui, GridRoundTopMui, IconEmojiMui, LineHrMui, ListIconCallMessMui, ListIconMessMui, ListIconMessMui2, MainContentMessMui, MainContentReplyMui, MenuDetailMessMui, MenuEmoji, NameMessageMui, OneMessageMui, PopoverMui, StyleBoxCenter, StyleBoxNoDataMess, StyleBoxTitleMess, StyleBtnHidden, StyleTextNoDataMess, StyleTxtTyping, TextareaAutosizeMui, TitleMessageMui, UserActiveMui, VisuallyHiddenInput } from "../style-mui";
+import { Avatar, Box, Button, CircularProgress, MenuItem } from "@mui/material";
+import { AvatarSizeMessMui, BoxCountEmoj, BoxImgContentMui, BoxImgReplyMui, BoxInputMessMui, BoxMessageMui, ButtonEmoji, ContentMessageMui, ContentMessageRightMui, DialogMui, EmojiCount, FeatureMessMui, FullNameMui, IconEmojiMui, LineHrMui, ListIconCallMessMui, ListIconMessMui2, MainContentMessMui, MainContentReplyMui, MenuDetailMessMui, MenuEmoji, NameMessageMui, OneMessageMui, PopoverMui, StyleBoxCenter, StyleBoxNoDataMess, StyleBoxTitleMess, StyleBtnHidden, StyleMuiBtnIcon, StyleTextNoDataMess, StyleTxtTyping, TextareaAutosizeMui, TitleMessageMui, UserActiveMui, VisuallyHiddenInput } from "../style-mui";
 import SendIcon from '@mui/icons-material/Send';
 import { Fragment, useEffect, useRef, useState } from "react";
 import SentimentSatisfiedAltIcon from '@mui/icons-material/SentimentSatisfiedAlt';
@@ -14,7 +14,6 @@ import ReplyIcon from '@mui/icons-material/Reply';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { v4 as uuidv4 } from 'uuid';
-import MenuIcon from '@mui/icons-material/Menu';
 import { useDispatch, useSelector } from "react-redux";
 import SendMessageIcon from '@mui/icons-material/ChatBubbleOutlineOutlined';
 import ProfileIcon from '@mui/icons-material/AccountCircleOutlined';
@@ -33,8 +32,8 @@ import NickName from "../function/nickname";
 import EmotionalMessage from "../function/emotional";
 import Gif from "../function/gif";
 import Icon from "../function/icon";
-import { useNavigate } from "react-router-dom";
 import { request } from "../../../../../api/request";
+import Pusher from 'pusher-js';
 
 interface BoxMessage {
     messages: Message[];
@@ -79,16 +78,11 @@ interface BasicInformation {
 
 export default function ChatBox(props: BoxMessage) {
     const { messages, author, audiences, basicinformation } = props;
+    
     const [listMessages, setListMessages] = useState(messages);
-    const [chat, setChat] = useState([]);
-    const navigate = useNavigate();
     const idBoxChat = useSelector((state: any) => state.message.choose);
     const userInfo = useSelector((state: any) => state.user.user);
-    
-    useEffect(() => {
-        setListMessages(messages);
-    }, [props])
-    const feeling = [{ name: "Like", src: '/Images/chat/emoji/like.png' }, { name: "Love", src: '/Images/chat/emoji/love.png' }, { name: "Haha", src: '/Images/chat/emoji/haha.png' }, { name: "Wow", src: '/Images/chat/emoji/wow.png' }, { name: "Sad", src: '/Images/chat/emoji/sad.png' },];
+    const feeling = [{ name: "Like", src: '/Images/home/advise/emoji/like.png' }, { name: "Love", src: '/Images/home/advise/emoji/love.png' }, { name: "Haha", src: '/Images/home/advise/emoji/haha.png' }, { name: "Wow", src: '/Images/home/advise/emoji/wow.png' }, { name: "Sad", src: '/Images/home/advise/emoji/sad.png' },];
 
     const dispatch = useDispatch();
     const [inpMess, setInpMess] = useState(false);
@@ -103,12 +97,12 @@ export default function ChatBox(props: BoxMessage) {
     const messageListRef = useRef<HTMLTextAreaElement | null>(null);
     const BoxMessageRef = useRef<HTMLTextAreaElement | null>(null);
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+    const open = Boolean(anchorEl);
     const [anchorElBoxGif, setAnchorElBoxGif] = useState<null | HTMLElement>(null);
     const [anchorElBoxDetail, setAnchorElBoxDetail] = useState<null | HTMLElement>(null);
     const [anchorElBoxIcon, setAnchorElBoxIcon] = useState<null | HTMLElement>(null);
     const [colorTheme, setColorTheme] = useState(1);
     const [theme, setTheme] = useState(basicinformation.theme);
-    const open = Boolean(anchorEl);
     const inpicon = useSelector((state: any) => state.message.icon);
     const detail = useSelector((state: any) => state.message.detail);
     const gif = useSelector((state: any) => state.message.gif);
@@ -116,6 +110,7 @@ export default function ChatBox(props: BoxMessage) {
     const [modeSend, setModeSend] = useState(false);
     const [loadingDelete, setLoadingdelete] = useState(false);
     const [idBoxChatAi, setIdBoxChatAi] = useState(null);
+    
 
     const handleBoxClick = () => {
         if (checkBoxClick) {
@@ -247,11 +242,13 @@ export default function ChatBox(props: BoxMessage) {
         moment.tz.setDefault('Asia/Ho_Chi_Minh');
         const currentTimeInVietnam = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         let messPush = {};
+        const id_mess_send = uuidv4();
+        const content_mess_send = convertNewlinesToBreaks(mess)
 
         if (reply && Object.keys(reply).length !== 0) {
             messPush = {
-                id: uuidv4(),
-                content: convertNewlinesToBreaks(mess),
+                id: id_mess_send,
+                content: content_mess_send,
                 createAt: currentTimeInVietnam,
                 reply: {
                     id: reply.id,
@@ -263,14 +260,31 @@ export default function ChatBox(props: BoxMessage) {
             }
         } else {
             messPush = {
-                id: uuidv4(),
-                content: convertNewlinesToBreaks(mess),
+                id: id_mess_send,
+                content: content_mess_send,
                 createAt: currentTimeInVietnam,
                 emoji: [],
                 creator: true,
                 userId: userInfo._id
             }
         };
+        await request("POST", {
+            "channel": `message-${idBoxChat?._id || idBoxChatAi}`,
+            "event": "send-message",
+            "data": {
+                "data": {
+                    id: id_mess_send,
+                    content: content_mess_send,
+                    createAt: currentTimeInVietnam,
+                    emoji: [],
+                    userId: userInfo._id,
+                    reply: {
+                        id: reply?.id,
+                        content: reply?.content,
+                    }
+                }
+            }
+        }, "pusher")
         setListMessages((prevMessages: any) => [...prevMessages, messPush]);
         setModeSend(true);
         const newListMessages = [...listMessages, messPush];
@@ -291,6 +305,19 @@ export default function ChatBox(props: BoxMessage) {
 
         const fetchMess = async () => {
             const response = await request("POST", dataFetch, `message/chatAi`);
+            await request("POST", {
+                "channel": `message-${dataFetch.boxId}`,
+                "event": "send-message",
+                "data": {
+                    "data": {
+                        id: response._id,
+                        content: response.content,
+                        createAt: response.createdAt,
+                        emoji: [],
+                        userId: "66cfd416b79c190c7e9a7f1f",
+                    }
+                }
+            }, "pusher")
 
             setIdBoxChatAi(response.boxId);
             const newMessage = response;
@@ -317,6 +344,7 @@ export default function ChatBox(props: BoxMessage) {
         const currentTimeInVietnam = moment().format('YYYY-MM-DDTHH:mm:ss.SSSZ');
         let messPush = {};
         let dataFetch = {}
+        
         if (reply && Object.keys(reply).length !== 0) {
             messPush = {
                 id: uuidv4(),
@@ -354,11 +382,27 @@ export default function ChatBox(props: BoxMessage) {
                 content: mess
             };
         };
-        
-        setListMessages((prevMessages: any) => [...prevMessages, messPush]);
         setModeSend(true);
         const fetchMess = async () => {
             const response = await request("POST", dataFetch, `message`);
+            
+            await request("POST", {
+                "channel": `message-${response.boxId}`,
+                "event": "send-message",
+                "data": {
+                    "data": {
+                        id: response._id,
+                        content: response.content,
+                        createAt: response.createdAt,
+                        emoji: [],
+                        userId: userInfo._id,
+                        reply: reply && Object.keys(reply).length !== 0 ? {
+                            id: reply?.id,
+                            content: reply?.content,
+                        } : null,
+                    }
+                }
+            }, "pusher")
             setModeSend(false);
         };
         setValueMess('');
@@ -382,7 +426,7 @@ export default function ChatBox(props: BoxMessage) {
             createAt: currentTimeInVietnam,
             emoji: [],
             creator: true,
-            userId: userInfo._id 
+            userId: userInfo._id
         }
         const newListMessages = [...listMessages, newAddMessage];
         const fetchMess = async () => {
@@ -398,7 +442,7 @@ export default function ChatBox(props: BoxMessage) {
         setListMessages(newListMessages);
     }
 
-    const handlefeeling = (i: number, feelpush: any) => {
+    const handlefeeling = async(i: number, feelpush: any, message: any) => {
         const newListMessages = [...listMessages];
 
         const existingEmoji = newListMessages[i].emoji?.find(
@@ -410,7 +454,17 @@ export default function ChatBox(props: BoxMessage) {
         } else {
             newListMessages[i].emoji?.push(feelpush);
         }
-
+        await request("PUT", {
+            ...message,
+            boxId: idBoxChat._id
+        }, `message/${message.id}`)
+        await request("POST", {
+            "channel": `message-${idBoxChat?._id || idBoxChatAi}`,
+            "event": "update-message",
+            "data": {
+                "data": message
+            }
+        }, "pusher");
         setListMessages(newListMessages);
     };
 
@@ -428,6 +482,22 @@ export default function ChatBox(props: BoxMessage) {
             inputRef.current.focus();
         }
     }
+
+    const handleDeleteBoxChat = async () => {
+        if (idBoxChat) {
+            setLoadingdelete(true);
+            await request("DELETE", "", `message/${idBoxChat._id}`);
+            dispatch(MessageActions.SetChoose(""));
+            setLoadingdelete(false);
+        }
+        handleCloseBoxDetail();
+    }
+
+    const handleCloseBox = () => {
+        dispatch(MessageActions.SetChoose(""));
+    }
+
+
     useEffect(() => {
         if (inpicon) {
             const inp = valueMess + inpicon;
@@ -470,20 +540,46 @@ export default function ChatBox(props: BoxMessage) {
         }
     }, [gif])
 
-    const handleDeleteBoxChat = async () => {
-        if (idBoxChat) {
-            setLoadingdelete(true);
-            await request("DELETE", "", `message/${idBoxChat._id}`);
-            dispatch(MessageActions.SetChoose(""));
-            setLoadingdelete(false);
-        }
-        handleCloseBoxDetail();
-    }
+    useEffect(() => {
+        const pusher = new Pusher('ec6db52e2779d8691217', {
+            cluster: 'ap1',
+        });
 
-    const handleCloseBox = () => {
-        dispatch(MessageActions.SetChoose(""));
-    }
+        const channel = pusher.subscribe(`message-${idBoxChat?._id || idBoxChatAi}`);
 
+        channel.bind('send-message', (datafake: any) => {
+            const data = datafake.data;
+            setListMessages((prevMessages: any) => [...prevMessages, {
+                id: data.id,
+                content: data.content,
+                createAt: data.createAt,
+                emoji: data.emoji,
+                creator: data.userId === userInfo._id,
+                userId: data.userId,
+                reply: data.reply
+            }]);
+        });
+
+        channel.bind('update-message', (datafake: any) => {
+            const data = datafake.data;
+            const updatedMessages = listMessages.map((message) => {
+                if (message.id === data.id) {
+                    return { ...message, ...data };
+                }
+                return message;
+            });
+            setListMessages(updatedMessages);
+        });
+
+        return () => {
+            channel.unbind_all();
+            channel.unsubscribe();
+        };
+    }, [listMessages]);
+
+    useEffect(() => {
+        setListMessages(messages);
+    }, [props])
     return (
         <BoxMessageMui onClick={handleBoxClick} ref={BoxMessageRef}>
             <FeatureMessMui>
@@ -651,11 +747,11 @@ export default function ChatBox(props: BoxMessage) {
                                                         <p>{message.emoji?.length}</p>
                                                         {message.emoji && message.emoji.map((typeEmoji: any, i: number) => (
                                                             <Fragment key={i}>
-                                                                {typeEmoji.type === "Love" && <EmojiCount src='/Images/chat/emoji/love.png' alt="Love" />}
-                                                                {typeEmoji.type === "Like" && <EmojiCount src='/Images/chat/emoji/like.png' alt="Like" />}
-                                                                {typeEmoji.type === "Haha" && <EmojiCount src='/Images/chat/emoji/haha.png' alt="Haha" />}
-                                                                {typeEmoji.type === "Sad" && <EmojiCount src='/Images/chat/emoji/sad.png' alt="Sad" />}
-                                                                {typeEmoji.type === "Wow" && <EmojiCount src='/Images/chat/emoji/wow.png' alt="Wow" />}
+                                                                {typeEmoji.type === "Love" && <EmojiCount src='/Images/home/advise/emoji/love.png' alt="Love" />}
+                                                                {typeEmoji.type === "Like" && <EmojiCount src='/Images/home/advise/emoji/like.png' alt="Like" />}
+                                                                {typeEmoji.type === "Haha" && <EmojiCount src='/Images/home/advise/emoji/haha.png' alt="Haha" />}
+                                                                {typeEmoji.type === "Sad" && <EmojiCount src='/Images/home/advise/emoji/sad.png' alt="Sad" />}
+                                                                {typeEmoji.type === "Wow" && <EmojiCount src='/Images/home/advise/emoji/wow.png' alt="Wow" />}
                                                             </Fragment>
                                                         ))}
                                                     </BoxCountEmoj>
@@ -671,7 +767,6 @@ export default function ChatBox(props: BoxMessage) {
                                                 </ButtonEmoji>
                                                 <MenuEmoji
                                                     className="emoji"
-                                                    id="basic-menu"
                                                     anchorEl={anchorEl}
                                                     open={open && index === emoji}
                                                     onClose={handleClose}
@@ -684,12 +779,11 @@ export default function ChatBox(props: BoxMessage) {
                                                             key={i}
                                                             src={feel.src}
                                                             onClick={() => {
-                                                                handlefeeling(index, { creator: true, type: feel.name });
+                                                                handlefeeling(index, { creator: userInfo._id, type: feel.name }, message);
                                                                 handleClose();
                                                             }}
                                                         />
                                                     ))}
-
                                                 </MenuEmoji>
                                                 <Box className="extensionChird">
                                                     <p className="details-extensionChird">Reply</p>
@@ -706,134 +800,95 @@ export default function ChatBox(props: BoxMessage) {
                             </>
                     }
                 </Box>
-
-                {
-                    reply &&
-                    <Box className={Object.keys(reply).length !== 0 ? 'show-reply reply' : 'reply'}>
-                        <Box className="replyTitle">
-                            <p>Answering <b>{reply.creator ? 'self' : audiences.name}</b></p>
-                            <ClearIcon className="iconInactive" onClick={handleDeleteReply} />
-                        </Box>
-                        {
-                            reply.content?.includes('img:') &&
-                            extractImageUrl(reply.content || "") && (
-                                <BoxImgReplyMui sx={{ backgroundImage: `url("${extractImageUrl(reply.content || "") || ""}") !important` }}></BoxImgReplyMui>
-                            )
-                        }
-                        {
-                            !reply.content?.includes('img:') && (
-                                <p className="replyContent" dangerouslySetInnerHTML={{ __html: reply.content || "" }}></p>
-                            )
-                        }
-                    </Box>
-                }
             </ContentMessageMui>
-
+            {
+                reply &&
+                <Box
+                    className={Object.keys(reply).length !== 0 ? 'show-reply reply' : 'reply'}>
+                    <Box className="replyTitle">
+                        <p>Answering <b>{reply.creator ? 'self' : audiences.name}</b></p>
+                        <ClearIcon className="iconInactive" onClick={handleDeleteReply} />
+                    </Box>
+                    {
+                        reply.content?.includes('img:') &&
+                        extractImageUrl(reply.content || "") && (
+                            <BoxImgReplyMui sx={{ backgroundImage: `url("${extractImageUrl(reply.content || "") || ""}") !important` }}></BoxImgReplyMui>
+                        )
+                    }
+                    {
+                        !reply.content?.includes('img:') && (
+                            <p className="replyContent" dangerouslySetInnerHTML={{ __html: reply.content || "" }}></p>
+                        )
+                    }
+                </Box>
+            }
             <FeatureMessMui>
-                <GridRoundDownMui container spacing={2}>
-                    <Grid item sm={valueMess.length == 0 ? 2.5 : 0.5} xs={valueMess.length == 0 ? 4.5 : 1} className="p-10">
-                        <ListIconMessMui2>
-                            <Button
-                                sx={{
-                                    'span': {
-                                        marginLeft: '0',
-                                        marginRight: '0',
-                                    },
-                                    minWidth: 'auto',
-                                    padding: '0'
-                                }}
-                                component="label" startIcon={<AddCircleOutlineIcon className={inpMess ? 'iconActive' : 'iconInactive'} />}>
-                            </Button>
-
-                            {
-                                valueMess.length == 0 && (
-                                    <>
-                                        <Button
-                                            sx={{
-                                                'span': {
-                                                    marginLeft: '0',
-                                                    marginRight: '0',
-                                                },
-                                                minWidth: 'auto',
-                                                padding: '0'
-                                            }}
-                                            component='label' startIcon={<AttachFileIcon className={inpMess ? 'iconActive' : 'iconInactive'} />}>
-                                            <VisuallyHiddenInput type="file" />
-                                        </Button>
-                                        <Button
-                                            sx={{
-                                                'span': {
-                                                    marginLeft: '0',
-                                                    marginRight: '0',
-                                                },
-                                                minWidth: 'auto',
-                                                padding: '0'
-                                            }}
-                                            component="label" startIcon={<ImageIcon className={inpMess ? 'iconActive' : 'iconInactive'} />}>
-                                            <VisuallyHiddenInput type="file" accept="image/*" onChange={(e: any) => {
-                                                console.log(e.target.value);
-                                            }} />
-                                        </Button>
-                                        <Box>
-                                            <Box onClick={handleClickBoxGif}>
-                                                <GifBoxOutlinedIcon className={inpMess ? 'iconActive' : 'iconInactive'} />
-                                            </Box>
-                                            <PopoverMui
-                                                anchorEl={anchorElBoxGif}
-                                                open={openBoxGif}
-                                                onClose={handleCloseBoxGif}
-                                            >
-                                                <Gif />
-                                            </PopoverMui>
-                                        </Box>
-
-                                    </>
-                                )
-                            }
-                        </ListIconMessMui2>
-                    </Grid>
-                    <Grid item sm={valueMess.length == 0 ? 9 : 11} xs={valueMess.length == 0 ? 6.5 : 10}>
-                        <BoxInputMessMui>
-                            <TextareaAutosizeMui
-                                minRows={1}
-                                maxRows={2}
-                                placeholder="Aa"
-                                value={valueMess}
-                                ref={inputRef}
-                                onFocus={() => setInpMess(true)}
-                                onBlur={() => setInpMess(false)}
-                                onChange={(e: any) => setValueMess(e.target.value)}
-                            />
-                            <Box>
-                                <Box onClick={(e: any) => { dispatch(MessageActions.SetFunction('GetIcon')); handleClickBoxIcon(e) }}>
-                                    <SentimentSatisfiedAltIcon className={inpMess ? 'iconActive' : 'iconInactive'} />
+                <ListIconMessMui2>
+                    <StyleMuiBtnIcon startIcon={<AddCircleOutlineIcon className={inpMess ? 'iconActive' : 'iconInactive'} />} />
+                    {
+                        valueMess.length == 0 && (
+                            <>
+                                <StyleMuiBtnIcon startIcon={<AttachFileIcon className={inpMess ? 'iconActive' : 'iconInactive'} />}>
+                                    <VisuallyHiddenInput type="file" />
+                                </StyleMuiBtnIcon>
+                                <StyleMuiBtnIcon startIcon={<ImageIcon className={inpMess ? 'iconActive' : 'iconInactive'} />}>
+                                    <VisuallyHiddenInput type="file" accept="image/*" onChange={(e: any) => {
+                                    }} />
+                                </StyleMuiBtnIcon>
+                                <Box>
+                                    <Box onClick={handleClickBoxGif}>
+                                        <GifBoxOutlinedIcon className={inpMess ? 'iconActive' : 'iconInactive'} />
+                                    </Box>
+                                    <PopoverMui
+                                        anchorEl={anchorElBoxGif}
+                                        open={openBoxGif}
+                                        onClose={handleCloseBoxGif}
+                                    >
+                                        <Gif />
+                                    </PopoverMui>
                                 </Box>
-                                <PopoverMui
-                                    anchorEl={anchorElBoxIcon}
-                                    open={openBoxIcon}
-                                    onClose={handleCloseBoxIcon}
-                                >
-                                    <Icon />
-                                </PopoverMui>
-                            </Box>
-                        </BoxInputMessMui>
-                    </Grid>
-                    <Grid item sm={0.5} xs={1} className="p-10">
-                        {
-                            valueMess.length > 0 ? (
-                                !idBoxChat || idBoxChat.contactUser.some((user: any) => user.userId === '66cfd416b79c190c7e9a7f1f') ? (
-                                    <SendIcon className='iconActive' onClick={() => handleSendAi(valueMess)} />
-                                ) : (
-                                    <SendIcon className='iconActive' onClick={() => handleSend(valueMess)} />
-                                )
-                            ) : (
-                                <p style={{ fontSize: '28px' }} onClick={handleSendIcon}>
-                                    {basicInformation.emoji || basicinformation.emotional}
-                                </p>
-                            )
-                        }
-                    </Grid>
-                </GridRoundDownMui>
+
+                            </>
+                        )
+                    }
+                </ListIconMessMui2>
+                <BoxInputMessMui>
+                    <TextareaAutosizeMui
+                        minRows={1}
+                        maxRows={2}
+                        placeholder="Aa"
+                        value={valueMess}
+                        ref={inputRef}
+                        onFocus={() => setInpMess(true)}
+                        onBlur={() => setInpMess(false)}
+                        onChange={(e: any) => setValueMess(e.target.value)}
+                    />
+                    <Box>
+                        <Box onClick={(e: any) => { dispatch(MessageActions.SetFunction('GetIcon')); handleClickBoxIcon(e) }}>
+                            <SentimentSatisfiedAltIcon className={inpMess ? 'iconActive' : 'iconInactive'} />
+                        </Box>
+                        <PopoverMui
+                            anchorEl={anchorElBoxIcon}
+                            open={openBoxIcon}
+                            onClose={handleCloseBoxIcon}
+                        >
+                            <Icon />
+                        </PopoverMui>
+                    </Box>
+                </BoxInputMessMui>
+                {
+                    valueMess.length > 0 ? (
+                        !idBoxChat || idBoxChat.contactUser.some((user: any) => user.userId === '66cfd416b79c190c7e9a7f1f') ? (
+                            <SendIcon className='iconActive' onClick={() => handleSendAi(valueMess)} />
+                        ) : (
+                            <SendIcon className='iconActive' onClick={() => handleSend(valueMess)} />
+                        )
+                    ) : (
+                        <p style={{ fontSize: '28px' }} onClick={handleSendIcon}>
+                            {basicInformation.emoji || basicinformation.emotional}
+                        </p>
+                    )
+                }
             </FeatureMessMui>
         </BoxMessageMui >
     );

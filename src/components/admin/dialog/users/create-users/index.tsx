@@ -41,7 +41,7 @@ export default function CreateUser() {
     const dispatch = useDispatch();
 
     const handleCreateUser = async () => {
-        const fetch = await request('POST', {
+        let fetch = await request('POST', {
             fullName: fullname,
             username: username,
             password: password,
@@ -51,6 +51,8 @@ export default function CreateUser() {
             role: selectedRoles,
             dateOfBirth: dateOfBirth,
         }, 'users');
+        fetch = fetch.data
+        
 
         dispatch(SnackbarActions.OpenSnackbar(
             {

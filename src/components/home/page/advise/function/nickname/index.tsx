@@ -73,8 +73,6 @@ export default function NickName(props: { nickname: Nickname, author: Contact, a
                                     author: currentNickname.author,
                                     audiences: e.target.value,
                                 });
-                                console.log(currentNickname);
-                                
                             }}
                             type="text"
                             placeholder={`${currentNickname.audiences || props.audiences.name}`}

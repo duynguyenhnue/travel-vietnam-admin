@@ -87,7 +87,7 @@ export default function Permissions() {
 
         // Subscribe vào channel mà bạn muốn lắng nghe
         const channel = pusher.subscribe('permissions-channel');
-
+ 
         // Lắng nghe sự kiện 'permissions-updated'
         channel.bind('permissions-updated', (datafake: any) => {
             const data = datafake.data;

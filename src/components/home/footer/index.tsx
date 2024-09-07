@@ -29,12 +29,12 @@ export default function Footer() {
     return (
         <Box
             sx={{
-                width: '-webkit-fill-available',
+                width: "calc(100vw - 20%)",
                 backgroundColor: '#1F2B6C',
                 display: 'flex',
                 flexDirection: 'column',
                 padding: '50px 10%',
-                gap: '40px'
+                gap: '40px',
             }}
         >
             <Box
