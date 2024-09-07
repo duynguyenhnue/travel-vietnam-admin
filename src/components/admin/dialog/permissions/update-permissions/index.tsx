@@ -112,7 +112,7 @@ export default function UpdatePermissions() {
                 open: true,
                 content: "You have successfully updated permissions",
                 state: "correct",
-            }));
+            })); 
         await request("POST", {
             "channel": "permissions-channel",
             "event": "permissions-updated",

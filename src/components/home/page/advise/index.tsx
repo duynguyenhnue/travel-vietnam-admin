@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, LinearProgress } from "@mui/material";
+import { Grid, LinearProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import ChatBox from "./message";
 import { request } from "../../../../api/request";
@@ -13,9 +13,16 @@ export default function Advise() {
     const [basicinformation, setBasicinformation] = useState<any>();
     const userInfo = useSelector((state: any) => state.user.user);
     const BoxChat = useSelector((state: any) => state.message.choose);
+    
 
     useEffect(() => {
         const fetchData = async () => {
+            let name = "";
+            BoxChat.contactUser.forEach((user: any) => {
+                if (user.userId !== userInfo._id) {
+                    name = user.nickName;
+                }
+            });
             setAuthor({
                 id: userInfo._id,
                 name: userInfo.fullName,
@@ -24,8 +31,8 @@ export default function Advise() {
             if (BoxChat.contactUser.length == 2) {
                 setAudiences({
                     id: BoxChat._id,
-                    name: BoxChat.name,
-                    avt: BoxChat.avatar || '/Images/auth/logo.png',
+                    name: name,
+                    avt: BoxChat.profileImage || '/Images/admin/header/profile.svg',
                 })
             }
             setBasicinformation({
@@ -37,12 +44,13 @@ export default function Advise() {
                 }
             })
             const datafake = await request("GET", "", `message/${BoxChat._id}`);
+            
 
             setMessages([]);
             if (Array.isArray(datafake)) {
                 datafake.forEach((item: any) => {
                     setMessages(prevMessages => [...prevMessages, {
-                        id: item.id,
+                        id: item._id,
                         content: item.content,
                         createAt: item.createdAt,
                         emoji: item.emoji,
@@ -61,7 +69,7 @@ export default function Advise() {
             setAuthor({
                 id: userInfo.id,
                 name: userInfo.fullName,
-                avt: userInfo.avatar,
+                avt: userInfo.profileImage,
             })
             setAudiences({
                 id: 'liorionAi',

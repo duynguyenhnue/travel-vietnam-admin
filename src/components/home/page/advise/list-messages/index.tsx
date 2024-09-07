@@ -6,6 +6,7 @@ import { Box, Button, CircularProgress, Skeleton } from "@mui/material";
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { MessageActions } from "../../../../../redux/advise";
 import { request } from "../../../../../api/request";
+import { userInfo } from "os";
 
 type UserData = {
     id: string;
@@ -25,18 +26,30 @@ export default function ChatAiExtra() {
     useEffect(() => {
         if (!user) return;
         const fetchData = async (id: string) => {
-            const dataInfo = await request("GET", "", `BoxChat/user/${id}`);
-            dataInfo.map((boxChat: any) => {
-                if (boxChat.contactUser.length === 2) {
-                    if (user.id != boxChat.contactUser[0].userId) {
-                        boxChat.name = boxChat.contactUser[1].nickName;
-                    } else {
-                        boxChat.name = boxChat.contactUser[0].nickName;
+            try {
+                const dataInfo = await request("GET", "", `BoxChat/user/${id}`);
+                let dataFake: any[] = [];
+
+                await Promise.all(dataInfo.map(async (item: any) => {
+                    if (item.contactUser && item.contactUser.length === 2) {
+                        await Promise.all(item.contactUser.map(async (user: any) => {
+                            if (user.userId !== id) {
+                                const profileImage = await request("GET", "", `users/profileImage/${user.userId}`);
+                                dataFake.push({
+                                    ...item,
+                                    name: user.nickName,
+                                    profileImage: profileImage
+                                });
+                            }
+                        }));
                     }
-                }
-            })
-            setBoxChat(dataInfo);
-        }
+                }));
+                setBoxChat(dataFake);
+
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
         if (user) {
             fetchData(user._id);
         }
@@ -70,7 +83,8 @@ export default function ChatAiExtra() {
     const handleSearch = (content: string) => {
         const fetch = async () => {
             const data = await request("GET", "", `users/search?page=1&show=10&search=${content}`);
-            setDataSearch(data.data);
+            const filteredUsers = data.data.filter((item: any) => item._id !== user._id);
+            setDataSearch(filteredUsers);
             setLoading(false);
         }
         if (content != "") {
@@ -87,7 +101,6 @@ export default function ChatAiExtra() {
         }
         fetch();
     }
-    
     return (
         <StyleDetailChat>
             <StyleColumnGap20>
@@ -121,7 +134,7 @@ export default function ChatAiExtra() {
                                         dataSearch.map((data: any, index: number) => (
                                             <StyleExtraLi key={index} onClick={() => handleCheckBoxChat(data._id)}>
                                                 <StyleRowGap10>
-                                                    <StyleExtraAvater src="/Images/chat/logo-page/icon_logo.png" />
+                                                    <StyleExtraAvater src={data.profileImage ? data.profileImage : "/Images/admin/header/profile.svg"} />
                                                     <StyleColumnGap5>
                                                         <StyleExtraName>{data.fullName}</StyleExtraName>
                                                     </StyleColumnGap5>
@@ -146,7 +159,7 @@ export default function ChatAiExtra() {
                                 }}
                             >
                                 <StyleRowGap10>
-                                    <StyleExtraAvater src="/Images/home/message/icon_logo.png" />
+                                    <StyleExtraAvater src={box.profileImage ? box.profileImage : "/Images/admin/header/profile.svg"} />
                                     <StyleColumnGap5>
                                         <StyleExtraName>{box.name}</StyleExtraName>
                                         {/* <StyleExtraContent>You: {box.message} {box.time}</StyleExtraContent> */}

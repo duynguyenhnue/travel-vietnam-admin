@@ -9,7 +9,7 @@ export default function Icon() {
     const icons = [
         {
             name: 'Smile face & human figure',
-            src: '/Images/chat/emoji/open_emoji.png',
+            src: '/Images/home/advise/emoji/open_emoji.png',
             icon: [
                 "😂",
                 "😮",

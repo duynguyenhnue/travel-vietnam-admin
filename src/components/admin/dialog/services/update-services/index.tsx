@@ -64,8 +64,6 @@ export default function UpdateService() {
             ...dataService,
             room: rooms
         })
-        console.log(rooms);
-
     };
 
     const handleUpdateService = async () => {

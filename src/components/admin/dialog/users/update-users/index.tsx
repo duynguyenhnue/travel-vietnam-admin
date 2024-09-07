@@ -71,7 +71,7 @@ export default function UpdateUser() {
 
                 const updateUser = await request("PUT", {
                     ...dataUser,
-                    profileImage: fetch.imageUrl
+                    profileImage: `https://firebasestorage.googleapis.com/v0/b/medimanager-liorion.appspot.com/o/${fetch.imageUrl}?alt=media`
                 }, `users/${dataUser._id}`);
                 setDataUser({
                     ...dataUser,

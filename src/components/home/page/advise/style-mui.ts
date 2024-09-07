@@ -38,12 +38,16 @@ export const BoxMessageMui = muiStyled(BoxContainerColMui)(({ theme }) => ({
     height: '-webkit-fill-available',
 }));
 
-export const FeatureMessMui = muiStyled(BoxContainerColMui)(({ theme }) => ({
-    padding: '10px',
+export const FeatureMessMui = muiStyled(Box)(({ theme }) => ({
+    padding: '10px 20px',
     width: '-webkit-fill-available',
     position: 'relative',
     background: "white",
-    height: '90px'
+    height: '90px',
+    display: 'flex',
+    gap: '30px',
+    justifyContent: 'center',
+    alignItems: 'center'
 }));
 
 export const ContentMessageMui = muiStyled(Box)(({ theme }) => ({
@@ -103,10 +107,17 @@ export const ListIconMessMui = muiStyled(Box)(({ theme }) => ({
 
 export const ListIconMessMui2 = muiStyled(Box)(({ theme }) => ({
     display: 'flex',
-    width: '100%',
-    right: '0',
-    float: 'left',
-    justifyContent: 'space-between'
+    gap: '20px',
+    alignItems: 'center'
+}));
+
+export const StyleMuiBtnIcon = muiStyled(Button)(({ theme }) => ({
+    'span': {
+        marginLeft: '0',
+        marginRight: '0',
+    },
+    padding: '0',
+    minWidth: 'auto'
 }));
 
 export const ListIconCallMessMui = muiStyled(ListIconMessMui)(({ theme }) => ({
@@ -118,19 +129,6 @@ export const ListIconCallMessMui = muiStyled(ListIconMessMui)(({ theme }) => ({
     justifyContent: 'space-between'
 }));
 
-export const GridRoundTopMui = muiStyled(Grid)(({ theme }) => ({
-    marginTop: '0',
-    marginLeft: '0',
-    alignItems: 'center',
-    padding: '0 10px',
-    '.MuiGrid-item': {
-        paddingTop: '0',
-        paddingLeft: '0',
-        display: 'flex',
-        alignItems: 'center',
-    }
-}));
-
 export const StyleBoxTitleMess = muiStyled(Box)(({ theme }) => ({
     display: "flex",
     gap: '10px',
@@ -138,21 +136,6 @@ export const StyleBoxTitleMess = muiStyled(Box)(({ theme }) => ({
     justifyContent: 'space-between',
     padding: "0 20px",
     alignItems: 'center',
-}));
-
-export const GridRoundDownMui = muiStyled(Grid)(({ theme }) => ({
-    marginTop: '0',
-    marginLeft: '0',
-    padding: '10px',
-    width: "100%",
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    '.MuiGrid-item': {
-        paddingTop: '0',
-        paddingLeft: '0',
-        display: 'flex',
-        justifyContent: 'center',
-    }
 }));
 
 export const TextareaAutosizeMui = muiStyled(TextareaAutosize)(({ theme }) => ({
@@ -167,7 +150,6 @@ export const TextareaAutosizeMui = muiStyled(TextareaAutosize)(({ theme }) => ({
 }));
 
 export const BoxInputMessMui = muiStyled(Box)(({ theme }) => ({
-    width: 'calc(100% - 20px)',
     fontSize: '18px',
     padding: '10px',
     borderRadius: '30px',
@@ -175,7 +157,8 @@ export const BoxInputMessMui = muiStyled(Box)(({ theme }) => ({
     position: 'relative',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexGrow: '1'
 }));
 
 
@@ -198,6 +181,10 @@ export const ContentMessageRightMui = muiStyled(Box)(({ theme }) => ({
     flexDirection: 'column',
     gap: '3px',
     position: 'relative',
+    ".MuiSvgIcon-root": {
+        width: '25px',
+        height: '25px'
+    }
 }));
 
 export const AvatarSizeMessMui = muiStyled(Avatar)(({ theme }) => ({
@@ -248,9 +235,8 @@ export const BoxEmojiMui = muiStyled(Box)(({ theme }) => ({
 }));
 
 export const MenuEmoji = muiStyled(Menu)(({ theme }) => ({
-    position: 'static',
     '.MuiList-root': {
-        display: 'flex',
+        display: 'flex !important',
         gap: '10px',
         padding: '5px 10px'
     },
@@ -262,7 +248,7 @@ export const MenuEmoji = muiStyled(Menu)(({ theme }) => ({
         ':hover': {
             background: 'transparent',
         }
-    }
+    },
 }));
 export const ButtonEmoji = muiStyled(Button)(({ theme }) => ({
     minWidth: 'auto',
@@ -343,8 +329,8 @@ export const DialogMui = muiStyled(Dialog)(({ theme }) => ({
 }));
 
 export const BoxImgReplyMui = muiStyled(Box)(({ theme }) => ({
-    width: '80px',
-    height: '80px',
+    width: '40px',
+    height: '40px',
     backgroundSize: 'cover',
     borderRadius: '10px',
     opacity: 0.6,
@@ -629,8 +615,8 @@ export const StyleInpSearch = muiStyled('input')(({ theme }) => ({
     border: 'none',
     outline: 'none',
     fontSize: '16px',
-    color: 'rgba(35, 50, 85, 0.8)', 
+    color: 'rgba(35, 50, 85, 0.8)',
     "&::placeholder": {
-        color: "rgba(35, 50, 85, 0.3)", 
+        color: "rgba(35, 50, 85, 0.3)",
     }
 }));

@@ -15,7 +15,7 @@ export default function Home() {
     return (
         <StyleContainer>
             <Header />
-            <Box sx={{ width: '-webkit-fill-available', padding: '0 10%', }}>
+            <Box sx={{ width: '-webkit-fill-available', padding: '0 10%'}}>
                 {path == "" && <HomePage />}
                 {path == "about" && <About />}
                 {path == "services" && <Services />}

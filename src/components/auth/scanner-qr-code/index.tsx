@@ -42,9 +42,7 @@ export default function ScannerQRCode() {
                         return;
                     }
                 }
-                console.log(fetch);
                 dispatch(UserActions.setUser(fetch.data));
-                
 
                 const fetchAuth = await request("POST", {
                     username: fetch.data.username,
@@ -109,10 +107,6 @@ export default function ScannerQRCode() {
 
     const parseStringToObject = (inputString: string) => {
         const parts = inputString.split('|');
-        if (parts.length < 6) {
-            console.log(parts);
-
-        }
         const result = {
             id: parts[0],
             idcmnd: parts[1],

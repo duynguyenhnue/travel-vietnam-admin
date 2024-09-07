@@ -3,8 +3,11 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { BoxThemeMui, DialogContentMui, DialogTitleMui, GridThemeMui } from "../../style-mui";
 import { MessageActions } from "../../../../../../redux/advise";
+import { request } from "../../../../../../api/request";
 
 export default function ThemeMessage(props: { theme: string }) {
+    const idBoxChat = useSelector((state: any) => state.message.choose);
+    
     const basicInformation = useSelector((state: any) => state.message.basicinformation);
     const [currentTheme, setCurrentTheme] = useState(props.theme);
 
@@ -37,7 +40,13 @@ export default function ThemeMessage(props: { theme: string }) {
         dispatch(MessageActions.SetDetail(''));
     }
 
-    const handleSave = () => {
+    console.log(basicInformation);
+    const handleSave = async() => {
+        await request("PUT", {
+            ...idBoxChat,
+            theme: currentTheme,
+        }, `BoxChat/${idBoxChat._id}`)
+        
         dispatch(MessageActions.setBasicInformation({...basicInformation, theme: currentTheme}));
         handleCloseTheme();
     }
