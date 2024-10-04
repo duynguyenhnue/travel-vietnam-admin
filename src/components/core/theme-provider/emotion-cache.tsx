@@ -25,17 +25,17 @@ export default function NextAppDirEmotionCacheProvider(props: NextAppDirEmotionC
     const cache = createCache(options);
     cache.compat = true;
 
-    const prevInsert = cache.insert;
+    // const prevInsert = cache.insert;
     let inserted: { name: string; isGlobal: boolean }[] = [];
-    cache.insert = (...args) => {
-      const [selector, serialized] = args;
+    // cache.insert = (...args) => {
+    //   const [selector, serialized] = args;
 
-      if (cache.inserted[serialized.name] === undefined) {
-        inserted.push({ name: serialized.name, isGlobal: !selector });
-      }
+    //   if (cache.inserted[serialized.name] === undefined) {
+    //     inserted.push({ name: serialized.name, isGlobal: !selector });
+    //   }
 
-      return prevInsert(...args);
-    };
+    //   return prevInsert(...args);
+    // };
     const flush = (): { name: string; isGlobal: boolean }[] => {
       const prevInserted = inserted;
       inserted = [];
