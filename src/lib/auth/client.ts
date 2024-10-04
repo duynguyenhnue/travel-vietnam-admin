@@ -1,27 +1,11 @@
 'use client';
 
+import axios, { type AxiosResponse } from 'axios';
+
 import type { User } from '@/types/user';
+import { envConfig, localStorageConfig } from '@/config';
 
-function generateToken(): string {
-  const arr = new Uint8Array(12);
-  window.crypto.getRandomValues(arr);
-  return Array.from(arr, (v) => v.toString(16).padStart(2, '0')).join('');
-}
-
-const user = {
-  id: 'USR-000',
-  avatar: '/assets/avatar.png',
-  firstName: 'Sofia',
-  lastName: 'Rivers',
-  email: 'sofia@devias.io',
-} satisfies User;
-
-export interface SignUpParams {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+import { setupAxiosInterceptors } from '../axios-instance';
 
 export interface SignInWithOAuthParams {
   provider: 'google' | 'discord';
@@ -36,15 +20,20 @@ export interface ResetPasswordParams {
   email: string;
 }
 
+export interface SuccessResponse<T> {
+  data?: T;
+  message: string;
+  statusCode: string | number;
+}
+
+export interface LoginResponse {
+  access_token?: string;
+  refresh_token?: string;
+}
+
 class AuthClient {
-  async signUp(_: SignUpParams): Promise<{ error?: string }> {
-    // Make API request
-
-    // We do not handle the API, so we'll just generate a token and store it in localStorage.
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
-
-    return {};
+  constructor() {
+    setupAxiosInterceptors((): Promise<void> => Promise.resolve());
   }
 
   async signInWithOAuth(_: SignInWithOAuthParams): Promise<{ error?: string }> {
@@ -52,17 +41,13 @@ class AuthClient {
   }
 
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
-    const { email, password } = params;
+    const res: AxiosResponse<SuccessResponse<LoginResponse>> = await axios.post(
+      `${envConfig.serverURL}/auth/login`,
+      params
+    );
 
-    // Make API request
-
-    // We do not handle the API, so we'll check if the credentials match with the hardcoded ones.
-    if (email !== 'sofia@devias.io' || password !== 'Secret1') {
-      return { error: 'Invalid credentials' };
-    }
-
-    const token = generateToken();
-    localStorage.setItem('custom-auth-token', token);
+    localStorage.setItem(localStorageConfig.accessToken, res.data.data?.access_token || '');
+    localStorage.setItem(localStorageConfig.refreshToken, res.data.data?.refresh_token || '');
 
     return {};
   }
@@ -76,21 +61,41 @@ class AuthClient {
   }
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
-    // Make API request
+    try {
+      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(`${envConfig.serverURL}/users`);
 
-    // We do not handle the API, so just check if we have a token in localStorage.
-    const token = localStorage.getItem('custom-auth-token');
-
-    if (!token) {
-      return { data: null };
+      return { data: res.data.data };
+    } catch (error) {
+      localStorage.removeItem(localStorageConfig.accessToken);
+      localStorage.removeItem(localStorageConfig.refreshToken);
+      return { error: 'User not found' };
     }
+  }
 
-    return { data: user };
+  async refreshToken(): Promise<{ data?: User | null; error?: string }> {
+    try {
+      const res: AxiosResponse<SuccessResponse<LoginResponse>> = await axios.post(
+        `${envConfig.serverURL}/auth/refresh-token`,
+        {
+          access_token: localStorage.getItem(localStorageConfig.accessToken),
+        }
+      );
+      localStorage.setItem(localStorageConfig.accessToken, res.data.data?.access_token || '');
+      return {};
+    } catch (error) {
+      localStorage.removeItem(localStorageConfig.accessToken);
+      localStorage.removeItem(localStorageConfig.refreshToken);
+      return { error: 'Failed to refresh token' };
+    }
   }
 
   async signOut(): Promise<{ error?: string }> {
-    localStorage.removeItem('custom-auth-token');
+    await axios.post(`${envConfig.serverURL}/auth/logout`, {
+      refresh_token: localStorage.getItem(localStorageConfig.refreshToken),
+    });
 
+    localStorage.removeItem(localStorageConfig.accessToken);
+    localStorage.removeItem(localStorageConfig.refreshToken);
     return {};
   }
 }

@@ -7,6 +7,15 @@ export interface Config {
 }
 
 export const config: Config = {
-  site: { name: 'Devias Kit', description: '', themeColor: '#090a0b', url: getSiteURL() },
+  site: { name: 'Travel Vietnam', description: '', themeColor: '#090a0b', url: getSiteURL() },
   logLevel: (process.env.NEXT_PUBLIC_LOG_LEVEL as keyof typeof LogLevel) ?? LogLevel.ALL,
+};
+
+export const envConfig = {
+  serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+};
+
+export const localStorageConfig = {
+  accessToken: 'jwt-access-token',
+  refreshToken: 'jwt-refresh-token',
 };
