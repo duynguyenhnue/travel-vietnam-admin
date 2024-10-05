@@ -121,7 +121,7 @@ export function CustomersTable(): React.ReactElement {
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <Avatar src="/assets/avatar-10.png" />
+                        <Avatar src={row.avatar} />
                         <Typography variant="subtitle2">{row.fullName}</Typography>
                       </Stack>
                     </TableCell>
