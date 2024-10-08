@@ -1,3 +1,5 @@
+import { type Address } from '.';
+
 export interface Tour {
   _id?: string;
   title: string;
@@ -23,15 +25,31 @@ export enum TourStatus {
   CANCELLED = 'CANCELLED',
 }
 
-export interface Address {
-  province: string;
-  district: string;
-  ward: string;
-}
-
 export interface Review {
   tourId: string;
   userId: string;
   reviewText: string;
   rating: number;
+}
+
+export interface SearchTour {
+  page: number;
+  limit: number;
+  title?: string;
+  groupSize?: string;
+  price?: string;
+  status?: string;
+}
+
+export interface CreateTourForm {
+  title: string;
+  files: File[] | string[];
+  desc: string;
+  price: number;
+  maxGroupSize: number;
+  hotelId: string;
+  startDate: string;
+  endDate: string;
+  destination: Address;
+  departurePoint: Address;
 }

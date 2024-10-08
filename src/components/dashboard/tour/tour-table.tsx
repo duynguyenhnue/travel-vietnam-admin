@@ -15,9 +15,10 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 
-import { Tour } from '@/types/tour';
+import { type Tour } from '@/types/tour';
 import { tourApi } from '@/lib/tour/tour';
 import { useSelection } from '@/hooks/use-selection';
+import { ActionCell } from '@/components/common/action-cell';
 
 import { TourFilters } from './tour-filters';
 
@@ -82,7 +83,7 @@ export function TourTable(): React.JSX.Element {
         price: debouncedSearch.price,
         status: debouncedSearch.status,
       });
-      setPaginatedRows(applyPagination(data ?? [], page, limit));
+      setPaginatedRows(data ?? []);
       setLength(total ?? 0);
     };
     const timer = setTimeout(() => {
@@ -94,67 +95,69 @@ export function TourTable(): React.JSX.Element {
   }, [page, limit, debouncedSearch]);
 
   return (
-    <Card>
+    <Stack spacing={3}>
       <TourFilters search={debouncedSearch} handleChange={handleChange} />
-      <Box sx={{ overflowX: 'auto' }}>
-        <Table sx={{ minWidth: '800px' }}>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox checked={selectedAll} indeterminate={selectedSome} onChange={handleSelectAll} />
-              </TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Price</TableCell>
-              <TableCell>Max Group Size</TableCell>
-              <TableCell>StartDate</TableCell>
-              <TableCell>End Date</TableCell>
-              <TableCell>Status</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedRows.map((row) => {
-              const isSelected = selected?.has(row._id);
+      <Card>
+        <Box sx={{ overflowX: 'auto' }}>
+          <Table sx={{ minWidth: '800px' }}>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox checked={selectedAll} indeterminate={selectedSome} onChange={handleSelectAll} />
+                </TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Max Group Size</TableCell>
+                <TableCell>StartDate</TableCell>
+                <TableCell>End Date</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell />
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedRows.map((row) => {
+                const isSelected = selected?.has(row._id);
 
-              return (
-                <TableRow hover key={row._id} selected={isSelected}>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={isSelected}
-                      onChange={(event) => {
-                        handleSelectOne(row._id || '', event);
-                      }}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                      <Typography variant="subtitle2">{row.title}</Typography>
-                    </Stack>
-                  </TableCell>
-                  <TableCell>{row.price}</TableCell>
-                  <TableCell>{row.maxGroupSize}</TableCell>
-                  <TableCell>{dayjs(row.startDate).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{dayjs(row.endDate).format('MMM D, YYYY')}</TableCell>
-                  <TableCell>{row.status}</TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </Box>
-      <Divider />
-      <TablePagination
-        component="div"
-        count={length || 0}
-        onPageChange={handlePageChange}
-        onRowsPerPageChange={handleRowsPerPageChange}
-        page={page}
-        rowsPerPage={limit}
-        rowsPerPageOptions={[5, 10, 25]}
-      />
-    </Card>
+                return (
+                  <TableRow hover key={row._id} selected={isSelected}>
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        checked={isSelected}
+                        onChange={(event) => {
+                          handleSelectOne(row._id || '', event);
+                        }}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
+                        <Typography variant="subtitle2">{row.title}</Typography>
+                      </Stack>
+                    </TableCell>
+                    <TableCell>{row.price}</TableCell>
+                    <TableCell>{row.maxGroupSize}</TableCell>
+                    <TableCell>{dayjs(row.startDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{dayjs(row.endDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{row.status}</TableCell>
+                    <TableCell>
+                      <ActionCell data={row} />
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </Box>
+        <Divider />
+        <TablePagination
+          component="div"
+          count={length || 0}
+          onPageChange={handlePageChange}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          page={page}
+          rowsPerPage={limit}
+          rowsPerPageOptions={[5, 10, 25]}
+        />
+      </Card>
+    </Stack>
   );
-}
-
-function applyPagination(rows: Tour[], page: number, rowsPerPage: number): Tour[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

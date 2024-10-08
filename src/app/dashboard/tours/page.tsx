@@ -7,13 +7,14 @@ import { Download as DownloadIcon } from '@phosphor-icons/react/dist/ssr/Downloa
 import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
 import { config } from '@/config';
+import { CreateTour } from '@/components/dashboard/tour/tour-create';
 import { TourTable } from '@/components/dashboard/tour/tour-table';
 
 export const metadata = { title: `Tour | ${config.site.name}` } satisfies Metadata;
 export default function Page(): React.JSX.Element {
   return (
     <Stack spacing={3}>
-      <Stack direction="row" spacing={3}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
         <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
           <Typography variant="h4">Tour</Typography>
           <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
@@ -24,6 +25,9 @@ export default function Page(): React.JSX.Element {
               Export
             </Button>
           </Stack>
+        </Stack>
+        <Stack>
+          <CreateTour />
         </Stack>
       </Stack>
       <TourTable />

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete'; // Import an icon for the button
+import DeleteIcon from '@mui/icons-material/Delete';
 import {
   Box,
   Button,
@@ -20,7 +20,6 @@ import {
   useMediaQuery,
   useTheme,
 } from '@mui/material';
-import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { useFormik } from 'formik';
 import Slider from 'react-slick';
 
@@ -362,13 +361,19 @@ function HotelSliderDialog(props: HotelSliderDialogProps): React.ReactElement {
   );
 }
 
-export function CreateTour(): React.ReactElement {
-  const [dialogOpen, setDialogOpen] = useState(false);
+interface TourUpdateProps {
+  open: boolean;
+  onClose: () => void;
+  tourId: string;
+}
 
-  const [open, setOpen] = useState(false);
+export function UpdateTour(props: TourUpdateProps): React.ReactElement {
+  const { open, onClose, tourId } = props;
+  const [openHotel, setOpenHotel] = useState(false);
   const [hotels, setHotels] = useState<Hotel[]>([]);
   const [page, setPage] = useState(0);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
+
   const formik = useFormik<CreateTourForm>({
     initialValues: {
       files: [],
@@ -384,43 +389,47 @@ export function CreateTour(): React.ReactElement {
     },
     validationSchema: validationTour,
     onSubmit: async (values) => {
-      await tourApi.createTour(values);
-      handleCloseDialog();
+      await tourApi.updateTour(values, tourId);
+      formik.resetForm();
+      onClose();
     },
   });
 
-  const handleAddClick = (): void => {
-    setDialogOpen(true);
-    setVisible(true);
-  };
-
-  const handleCloseDialog = (): void => {
-    setDialogOpen(false);
-    formik.resetForm();
-  };
-
-  const handleCloseDialogTour = (): void => {
-    setVisible(false);
-  };
+  useEffect(() => {
+    async function fetchData(): Promise<void> {
+      const response = await tourApi.getTour(tourId);
+      if (response.data) {
+        void formik.setValues({
+          files: response.data.photos,
+          title: response.data.title,
+          desc: response.data.desc,
+          price: response.data.price,
+          maxGroupSize: response.data.maxGroupSize,
+          hotelId: response.data.hotelId,
+          startDate: response.data.startDate,
+          endDate: response.data.endDate,
+          destination: response.data.destination,
+          departurePoint: response.data.departurePoint,
+        });
+      }
+    }
+    void fetchData();
+  }, []);
 
   const handleClickOpen = async (): Promise<void> => {
     const response = await hotelApi.searchHotels({ limit: 10, page });
     setHotels(response.data || []);
-    setOpen(true);
-    handleCloseDialogTour();
+    setOpenHotel(true);
+    setVisible(false);
   };
 
   const handleClose = (): void => {
-    setOpen(false);
-    handleAddClick();
+    setOpenHotel(false);
+    setVisible(true);
   };
 
   return (
     <>
-      <Button variant="outlined" startIcon={<PlusIcon />} onClick={handleAddClick}>
-        Create New Tour
-      </Button>
-
       <Dialog
         sx={{
           '& .MuiDialog-container.MuiDialog-scrollPaper.mui-hz1bth-MuiDialog-container > div': {
@@ -428,14 +437,14 @@ export function CreateTour(): React.ReactElement {
             visibility: visible ? 'visible' : 'hidden',
           },
         }}
-        open={dialogOpen}
-        onClose={handleCloseDialog}
+        open={open}
+        onClose={onClose}
         fullWidth
       >
         <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
           <DialogTitle>
             <Typography variant="h3" textAlign="center" sx={{ fontWeight: 'bold' }}>
-              Create Tour
+              Update Tour
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -522,7 +531,7 @@ export function CreateTour(): React.ReactElement {
                     fullWidth
                     name="startDate"
                     InputLabelProps={{ shrink: true }}
-                    value={formik.values.startDate}
+                    value={formik.values.startDate ? new Date(formik.values.startDate).toISOString().split('T')[0] : ''}
                     onChange={formik.handleChange}
                     error={formik.touched.startDate ? Boolean(formik.errors.startDate) : undefined}
                     helperText={formik.touched.startDate ? formik.errors.startDate : null}
@@ -536,7 +545,7 @@ export function CreateTour(): React.ReactElement {
                     fullWidth
                     name="endDate"
                     InputLabelProps={{ shrink: true }}
-                    value={formik.values.endDate}
+                    value={formik.values.endDate ? new Date(formik.values.endDate)?.toISOString().split('T')[0] : ''}
                     onChange={formik.handleChange}
                     error={formik.touched.endDate ? Boolean(formik.errors.endDate) : undefined}
                     helperText={formik.touched.endDate ? formik.errors.endDate : null}
@@ -559,17 +568,10 @@ export function CreateTour(): React.ReactElement {
           </DialogContent>
           <DialogActions>
             <Stack direction="row" width="100%" justifyContent="space-around">
-              <Button
-                type="submit"
-                variant="contained"
-                sx={{ marginTop: 2 }}
-                onSubmit={() => {
-                  formik.handleSubmit();
-                }}
-              >
-                Create Tour
+              <Button type="submit" variant="contained" sx={{ marginTop: 2 }}>
+                Update Tour
               </Button>
-              <Button onClick={handleCloseDialog} variant="contained" sx={{ marginTop: 2 }}>
+              <Button onClick={onClose} variant="contained" sx={{ marginTop: 2 }}>
                 Cancel
               </Button>
             </Stack>
@@ -581,7 +583,7 @@ export function CreateTour(): React.ReactElement {
         sx={{
           '& .MuiDialog-container.MuiDialog-scrollPaper.mui-hz1bth-MuiDialog-container > div': { maxWidth: 800 },
         }}
-        open={open}
+        open={openHotel}
         onClose={handleClose}
         fullWidth
       >

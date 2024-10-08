@@ -4,7 +4,8 @@ import React, { useEffect, useState } from 'react';
 import { Box, Button, Dialog, Grid, Stack, TextField, Typography } from '@mui/material';
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 
-import { type Address, type Phone } from '@/types/user';
+import { type Address } from '@/types';
+import { type Phone } from '@/types/user';
 import { userApi, type SignUpParams } from '@/lib/user/user';
 
 class CreateUserRequest {

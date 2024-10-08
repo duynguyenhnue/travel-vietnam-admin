@@ -1,8 +1,14 @@
 'use client';
 
 import React from 'react';
-import { Card, Grid, InputAdornment, TextField } from '@mui/material';
-import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react';
+import { Card, Grid, MenuItem, TextField } from '@mui/material';
+
+enum Status {
+  PENDING = 'PENDING',
+  INPROGRESS = 'INPROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
 
 interface CustomersFiltersProps {
   search: {
@@ -22,23 +28,44 @@ export function TourFilters(props: CustomersFiltersProps): React.JSX.Element {
   return (
     <Card sx={{ p: 2 }}>
       <Grid container spacing={2}>
-        {['title', 'groupSize', 'price', 'status'].map((field) => (
-          <Grid item xs={12} sm={4} key={field}>
-            <TextField
-              value={search[field]}
-              onChange={handleChange(field as 'title' | 'groupSize' | 'price' | 'status')}
-              fullWidth
-              placeholder={`Search ${field}`}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <MagnifyingGlassIcon fontSize="var(--icon-fontSize-md)" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-          </Grid>
-        ))}
+        <Grid item xs={12} sm={6}>
+          <TextField
+            value={search.title}
+            onChange={handleChange('title')}
+            fullWidth
+            placeholder="Search by title"
+            type="text"
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField
+            value={search.price}
+            onChange={handleChange('price')}
+            fullWidth
+            placeholder="Search by price"
+            type="number"
+          />
+        </Grid>
+        <Grid item xs={12} sm={3}>
+          <TextField select label="Status" value={search.status} onChange={handleChange('status')} fullWidth>
+            <MenuItem value="">None</MenuItem>
+            {Object.values(Status).map((status) => (
+              <MenuItem key={status} value={status}>
+                {status}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        <Grid item xs={12} sm={2}>
+          <TextField
+            value={search.groupSize}
+            onChange={handleChange('groupSize')}
+            fullWidth
+            placeholder="Group size"
+            type="number"
+          />
+        </Grid>
       </Grid>
     </Card>
   );
