@@ -31,6 +31,16 @@ export interface LoginResponse {
   refresh_token?: string;
 }
 
+export const fetchUser = async (): Promise<User | null> => {
+  const { data, error } = await authClient.getUser();
+
+  if (error) {
+    throw new Error(error); // Throwing an error to let useSWR handle it
+  }
+
+  return data ?? null;
+};
+
 class AuthClient {
   constructor() {
     setupAxiosInterceptors((): Promise<void> => Promise.resolve());

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Checkbox from '@mui/material/Checkbox';
@@ -16,26 +15,33 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 
-import { type User } from '@/types/user';
-import { userApi } from '@/lib/user/user';
+import { type Tour } from '@/types/tour';
+import { tourApi } from '@/lib/tour/tour';
 import { useSelection } from '@/hooks/use-selection';
+import { ActionCell } from '@/components/common/action-cell';
 
-import { CustomersFilters } from './customers-filters';
+import { TourFilters } from './tour-filters';
 
-export function CustomersTable(): React.ReactElement {
-  const [paginatedRows, setPaginatedRows] = useState<User[]>([]);
+export function TourTable(): React.JSX.Element {
+  const [paginatedRows, setPaginatedRows] = useState<Tour[]>([]);
   const [length, setLength] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
   const [limit, setLimit] = useState<number>(5);
-  const [debouncedSearch, setDebouncedSearch] = useState({ fullName: '', email: '' });
+  const [debouncedSearch, setDebouncedSearch] = useState({
+    title: '',
+    groupSize: '',
+    price: '',
+    status: '',
+  });
   const rowIds = useMemo(() => paginatedRows.map((user) => user._id), [paginatedRows]);
   const { selectAll, deselectAll, selectOne, deselectOne, selected } = useSelection(rowIds);
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < paginatedRows.length;
   const selectedAll = paginatedRows.length > 0 && selected?.size === paginatedRows.length;
 
-  const handleChange = (field: 'fullName' | 'email') => (event: React.ChangeEvent<HTMLInputElement>) => {
-    setDebouncedSearch((prev) => ({ ...prev, [field]: event.target.value }));
-  };
+  const handleChange =
+    (field: 'title' | 'groupSize' | 'price' | 'status') => (event: React.ChangeEvent<HTMLInputElement>) => {
+      setDebouncedSearch((prev) => ({ ...prev, [field]: event.target.value }));
+    };
 
   const handleSelectAll = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -69,13 +75,15 @@ export function CustomersTable(): React.ReactElement {
 
   useEffect(() => {
     const fetchUsers = async (): Promise<void> => {
-      const { data, total } = await userApi.searchUsers({
+      const { data, total } = await tourApi.searchTours({
         page,
         limit,
-        fullName: debouncedSearch.fullName,
-        email: debouncedSearch.email,
+        title: debouncedSearch.title,
+        groupSize: debouncedSearch.groupSize,
+        price: debouncedSearch.price,
+        status: debouncedSearch.status,
       });
-      setPaginatedRows(applyPagination(data ?? [], page, limit));
+      setPaginatedRows(data ?? []);
       setLength(total ?? 0);
     };
     const timer = setTimeout(() => {
@@ -87,9 +95,8 @@ export function CustomersTable(): React.ReactElement {
   }, [page, limit, debouncedSearch]);
 
   return (
-    <>
-      <CustomersFilters search={debouncedSearch} handleChange={handleChange} />
-
+    <Stack spacing={3}>
+      <TourFilters search={debouncedSearch} handleChange={handleChange} />
       <Card>
         <Box sx={{ overflowX: 'auto' }}>
           <Table sx={{ minWidth: '800px' }}>
@@ -98,11 +105,13 @@ export function CustomersTable(): React.ReactElement {
                 <TableCell padding="checkbox">
                   <Checkbox checked={selectedAll} indeterminate={selectedSome} onChange={handleSelectAll} />
                 </TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Email</TableCell>
-                <TableCell>Location</TableCell>
-                <TableCell>Phone</TableCell>
-                <TableCell>Signed Up</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Price</TableCell>
+                <TableCell>Max Group Size</TableCell>
+                <TableCell>StartDate</TableCell>
+                <TableCell>End Date</TableCell>
+                <TableCell>Status</TableCell>
+                <TableCell />
               </TableRow>
             </TableHead>
             <TableBody>
@@ -121,14 +130,17 @@ export function CustomersTable(): React.ReactElement {
                     </TableCell>
                     <TableCell>
                       <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-                        <Avatar src={row.avatar} />
-                        <Typography variant="subtitle2">{row.fullName}</Typography>
+                        <Typography variant="subtitle2">{row.title}</Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{row.email}</TableCell>
-                    <TableCell>{row.address.province}</TableCell>
-                    <TableCell>{row.phone.number}</TableCell>
-                    <TableCell>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{row.price}</TableCell>
+                    <TableCell>{row.maxGroupSize}</TableCell>
+                    <TableCell>{dayjs(row.startDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{dayjs(row.endDate).format('MMM D, YYYY')}</TableCell>
+                    <TableCell>{row.status}</TableCell>
+                    <TableCell>
+                      <ActionCell data={row} />
+                    </TableCell>
                   </TableRow>
                 );
               })}
@@ -146,10 +158,6 @@ export function CustomersTable(): React.ReactElement {
           rowsPerPageOptions={[5, 10, 25]}
         />
       </Card>
-    </>
+    </Stack>
   );
-}
-
-function applyPagination(rows: User[], page: number, rowsPerPage: number): User[] {
-  return rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 }

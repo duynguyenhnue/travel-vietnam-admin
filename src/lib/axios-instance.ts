@@ -39,18 +39,22 @@ const setupAxiosInterceptors = (onUnauthenticated: () => void): void => {
       if (status === 403 || status === 401) {
         try {
           const refreshToken = localStorage.getItem(REFRESH_TOKEN);
-
-          const newAccessToken: AxiosResponse<SuccessResponse<RefreshTokenResponse>> = await axios.post(
-            `${envConfig.serverURL}/auth/refresh-token`,
-            {
-              refresh_token: refreshToken,
+          if (!refreshToken) {
+            localStorage.removeItem(ACCESS_TOKEN);
+            localStorage.removeItem(REFRESH_TOKEN);
+          } else {
+            const newAccessToken: AxiosResponse<SuccessResponse<RefreshTokenResponse>> = await axios.post(
+              `${envConfig.serverURL}/auth/refresh-token`,
+              {
+                refresh_token: refreshToken,
+              }
+            );
+            if (newAccessToken.data.data) {
+              localStorage.setItem(ACCESS_TOKEN, newAccessToken.data.data?.access_token);
+              const originalRequest = err.config!;
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken.data.data.access_token}`;
+              return axios(originalRequest);
             }
-          );
-          if (newAccessToken.data.data) {
-            localStorage.setItem(ACCESS_TOKEN, newAccessToken.data.data?.access_token);
-            const originalRequest = err.config!;
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken.data.data.access_token}`;
-            return axios(originalRequest);
           }
         } catch (error) {
           localStorage.removeItem(ACCESS_TOKEN);
