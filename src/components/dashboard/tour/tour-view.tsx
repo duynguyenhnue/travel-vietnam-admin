@@ -32,7 +32,7 @@ interface TourUpdateProps {
   tourId: string;
 }
 
-export function UpdateTour(props: TourUpdateProps): React.ReactElement {
+export function TourView(props: TourUpdateProps): React.ReactElement {
   const { open, onClose, tourId } = props;
   const [openHotel, setOpenHotel] = useState(false);
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -111,7 +111,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
         <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
           <DialogTitle>
             <Typography variant="h3" textAlign="center" sx={{ fontWeight: 'bold' }}>
-              Update Tour
+              View Tour
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -135,6 +135,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                       onChange={formik.handleChange}
                       error={formik.touched.title ? Boolean(formik.errors.title) : undefined}
                       helperText={formik.touched.title ? formik.errors.title : null}
+                      disabled
                     />
                   </Box>
                 </Grid>
@@ -151,6 +152,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                       onChange={formik.handleChange}
                       error={formik.touched.desc ? Boolean(formik.errors.desc) : undefined}
                       helperText={formik.touched.desc ? formik.errors.desc : null}
+                      disabled
                     />
                   </Box>
                 </Grid>
@@ -167,6 +169,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                       onChange={formik.handleChange}
                       error={formik.touched.price ? Boolean(formik.errors.price) : undefined}
                       helperText={formik.touched.price ? formik.errors.price : null}
+                      disabled
                     />
                   </Box>
                 </Grid>
@@ -182,12 +185,13 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                       onChange={formik.handleChange}
                       error={formik.touched.maxGroupSize ? Boolean(formik.errors.maxGroupSize) : undefined}
                       helperText={formik.touched.maxGroupSize ? formik.errors.maxGroupSize : null}
+                      disabled
                     />
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Button fullWidth sx={{ height: '100%' }} variant="contained" onClick={handleClickOpen}>
-                    Select Hotel
+                    View Hotel
                   </Button>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -202,6 +206,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                     onChange={formik.handleChange}
                     error={formik.touched.startDate ? Boolean(formik.errors.startDate) : undefined}
                     helperText={formik.touched.startDate ? formik.errors.startDate : null}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -216,6 +221,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                     onChange={formik.handleChange}
                     error={formik.touched.endDate ? Boolean(formik.errors.endDate) : undefined}
                     helperText={formik.touched.endDate ? formik.errors.endDate : null}
+                    disabled
                   />
                 </Grid>
                 <AddressForm
@@ -223,12 +229,14 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
                   address={formik.values.destination}
                   setAddress={(newAddress) => formik.setFieldValue('destination', newAddress)}
                   formik={formik}
+                  disabled
                 />
                 <AddressForm
                   addressType="departurePoint"
                   address={formik.values.departurePoint}
                   setAddress={(newAddress) => formik.setFieldValue('departurePoint', newAddress)}
                   formik={formik}
+                  disabled
                 />
               </Grid>
             </Stack>
@@ -257,7 +265,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
         <DialogTitle>Hotels</DialogTitle>
         <DialogContent>
           <HotelSliderDialog
-            hotels={hotels}
+            hotels={[hotels.find((item) => item._id === formik.values.hotelId) || { photos: [] }]}
             handleClose={handleClose}
             setHotelId={(hotelIds) => formik.setFieldValue('hotelId', hotelIds)}
           />

@@ -1,4 +1,5 @@
 import axios, { type AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 
 import { type CreateTourForm, type SearchTour, type Tour } from '@/types/tour';
 import { envConfig } from '@/config';
@@ -57,9 +58,10 @@ class TourApi {
           'Content-Type': 'multipart/form-data',
         },
       });
-
+      toast.success('Create tour successfully');
       return { data: res.data.data };
     } catch (error) {
+      toast.success('Create tour failed');
       return { error: 'Failed to create tour' };
     }
   }
@@ -94,9 +96,10 @@ class TourApi {
           },
         }
       );
-
+      toast.success('Update tour successfully');
       return { data: res.data.data };
     } catch (error) {
+      toast.error('Update tour failed');
       return { error: 'Failed to create tour' };
     }
   }
