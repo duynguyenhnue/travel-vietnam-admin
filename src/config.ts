@@ -13,6 +13,7 @@ export const config: Config = {
 
 export const envConfig = {
   serverURL: process.env.NEXT_PUBLIC_SERVER_URL,
+  socketURL: process.env.NEXT_PUBLIC_WEBSOCKET_URL,
 };
 
 export const localStorageConfig = {

@@ -1,5 +1,5 @@
-// lib/axiosInstance.ts
 import axios, { type AxiosError, type AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { toast } from 'react-toastify';
 
 import { envConfig, localStorageConfig } from '@/config';
 
@@ -9,17 +9,16 @@ interface RefreshTokenResponse {
   access_token: string;
 }
 
-// Constants for local storage keys
 const ACCESS_TOKEN = localStorageConfig.accessToken;
 const REFRESH_TOKEN = localStorageConfig.refreshToken;
-const TIMEOUT = 1 * 60 * 1000; // 1 minute timeout
+const TIMEOUT = 1 * 60 * 1000;
 axios.defaults.timeout = TIMEOUT;
+axios.defaults.baseURL = envConfig.serverURL;
 
-const setupAxiosInterceptors = (onUnauthenticated: () => void): void => {
+const setupAxiosInterceptors = (_onUnauthenticated: () => void): void => {
   const onRequestSuccess = (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
-      // Ensure headers exist and set Authorization token
       if (!config.headers) {
         config.headers = {} as AxiosHeaders;
       }
@@ -28,14 +27,12 @@ const setupAxiosInterceptors = (onUnauthenticated: () => void): void => {
     return config;
   };
 
-  // Response interceptor
   const onResponseSuccess = (response: AxiosResponse): AxiosResponse => response;
 
   const onResponseError = async (err: AxiosError): Promise<never> => {
     if (err) {
       const status = err.response?.status;
 
-      // Handle unauthorized errors (401, 403)
       if (status === 403 || status === 401) {
         try {
           const refreshToken = localStorage.getItem(REFRESH_TOKEN);
@@ -59,14 +56,14 @@ const setupAxiosInterceptors = (onUnauthenticated: () => void): void => {
         } catch (error) {
           localStorage.removeItem(ACCESS_TOKEN);
           localStorage.removeItem(REFRESH_TOKEN);
-          onUnauthenticated();
+          toast.error('Your session has expired. Please log in again.');
+          return Promise.reject(err);
         }
       }
     }
     return Promise.reject(err);
   };
 
-  // Apply the interceptors to Axios
   axios.interceptors.request.use(onRequestSuccess);
   axios.interceptors.response.use(onResponseSuccess, onResponseError);
 };

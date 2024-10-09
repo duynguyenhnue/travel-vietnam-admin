@@ -10,10 +10,11 @@ import Tooltip from '@mui/material/Tooltip';
 import { Bell as BellIcon } from '@phosphor-icons/react/dist/ssr/Bell';
 import { List as ListIcon } from '@phosphor-icons/react/dist/ssr/List';
 import { MagnifyingGlass as MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass';
-import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 
 import { usePopover } from '@/hooks/use-popover';
+import { useSocket } from '@/hooks/use-socket';
 import { useUser } from '@/hooks/use-user';
+import { NotificationList } from '@/components/common/notification-list';
 
 import { MobileNav } from './mobile-nav';
 import { UserPopover } from './user-popover';
@@ -22,6 +23,17 @@ export function MainNav(): React.JSX.Element {
   const [openNav, setOpenNav] = React.useState<boolean>(false);
   const { user } = useUser();
   const userPopover = usePopover<HTMLDivElement>();
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
+  const { notifications } = useSocket();
+
+  const handleClick = (event: React.MouseEvent<HTMLElement>): void => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = (): void => {
+    setAnchorEl(null);
+  };
 
   return (
     <React.Fragment>
@@ -56,13 +68,8 @@ export function MainNav(): React.JSX.Element {
             </Tooltip>
           </Stack>
           <Stack sx={{ alignItems: 'center' }} direction="row" spacing={2}>
-            <Tooltip title="Contacts">
-              <IconButton>
-                <UsersIcon />
-              </IconButton>
-            </Tooltip>
             <Tooltip title="Notifications">
-              <Badge badgeContent={4} color="success" variant="dot">
+              <Badge badgeContent={notifications.length} onClick={handleClick} color="success" variant="dot">
                 <IconButton>
                   <BellIcon />
                 </IconButton>
@@ -77,6 +84,7 @@ export function MainNav(): React.JSX.Element {
           </Stack>
         </Stack>
       </Box>
+      <NotificationList anchorEl={anchorEl} onClose={handleClose} notifications={notifications} />
       <UserPopover anchorEl={userPopover.anchorRef.current} onClose={userPopover.handleClose} open={userPopover.open} />
       <MobileNav
         onClose={() => {

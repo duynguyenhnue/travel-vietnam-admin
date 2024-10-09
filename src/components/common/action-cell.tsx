@@ -7,6 +7,7 @@ import { tourApi } from '@/lib/tour/tour';
 
 import { TourDelete } from '../dashboard/tour/tour-delete';
 import { UpdateTour } from '../dashboard/tour/tour-update';
+import { TourView } from '../dashboard/tour/tour-view';
 
 interface ActionCellProps {
   data: Tour;
@@ -35,6 +36,7 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
 
   const handleView = (): void => {
     setAction('view');
+    handleOpenDiaLog();
     handleClose();
   };
 
@@ -69,6 +71,8 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
         <TourDelete open={openDialog} onClose={handleCloseDiaLog} onDelete={handleDelete} title={data.title} />
       )}
       {action === 'update' && <UpdateTour open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
+
+      {action === 'view' && <TourView open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
     </Stack>
   );
 }
