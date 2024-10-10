@@ -91,6 +91,7 @@ jobs:
             -p 4000:4000 \
             -e NEXT_PUBLIC_SERVER_URL="https://api.travel-vietnamese.me" \
             -e NEXT_PUBLIC_WEBSOCKET_URL="http://139.59.107.77:8888" \
+
             --name admin_container ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           EOF
 
