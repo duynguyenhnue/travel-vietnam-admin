@@ -1,6 +1,7 @@
 'use client';
 
 import axios, { type AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 
 import type { User } from '@/types/user';
 import { envConfig, localStorageConfig } from '@/config';
@@ -51,15 +52,20 @@ class AuthClient {
   }
 
   async signInWithPassword(params: SignInWithPasswordParams): Promise<{ error?: string }> {
-    const res: AxiosResponse<SuccessResponse<LoginResponse>> = await axios.post(
-      `${envConfig.serverURL}/auth/login`,
-      params
-    );
+    try {
+      const res: AxiosResponse<SuccessResponse<LoginResponse>> = await axios.post(
+        `${envConfig.serverURL}/auth/login`,
+        params
+      );
 
-    localStorage.setItem(localStorageConfig.accessToken, res.data.data?.access_token || '');
-    localStorage.setItem(localStorageConfig.refreshToken, res.data.data?.refresh_token || '');
+      localStorage.setItem(localStorageConfig.accessToken, res.data.data?.access_token || '');
+      localStorage.setItem(localStorageConfig.refreshToken, res.data.data?.refresh_token || '');
 
-    return {};
+      return {};
+    } catch (error) {
+      toast.error('Failed to sign in');
+      return {};
+    }
   }
 
   async resetPassword(_: ResetPasswordParams): Promise<{ error?: string }> {
