@@ -6,10 +6,11 @@ interface ImageUploadProps {
   images: string[];
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   error?: string | string[] | undefined;
+  disabled?: boolean;
 }
 
 export function ImageUpload(props: ImageUploadProps): React.ReactElement {
-  const { images, setImages, error } = props;
+  const { images, setImages, error, disabled = false } = props;
 
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const files = event.target.files;
@@ -40,24 +41,25 @@ export function ImageUpload(props: ImageUploadProps): React.ReactElement {
     <Box sx={{ overflow: 'hidden' }}>
       <Stack>
         <Typography variant="h6" gutterBottom sx={{ fontWeight: 'bold' }}>
-          Upload Photos
+          {disabled ? 'View Photos' : 'Upload Photos'}
         </Typography>
-
-        <Button
-          variant="outlined"
-          component="label"
-          sx={{
-            margin: '10px 0',
-            color: '#1976d2',
-            borderColor: '#1976d2',
-            '&:hover': {
-              backgroundColor: '#e3f2fd',
-            },
-          }}
-        >
-          Choose images
-          <input type="file" multiple accept="image/jpeg,image/png" onChange={handleImageChange} hidden />
-        </Button>
+        {!disabled ? (
+          <Button
+            variant="outlined"
+            component="label"
+            sx={{
+              margin: '10px 0',
+              color: '#1976d2',
+              borderColor: '#1976d2',
+              '&:hover': {
+                backgroundColor: '#e3f2fd',
+              },
+            }}
+          >
+            Choose images
+            <input type="file" multiple accept="image/jpeg,image/png" onChange={handleImageChange} hidden />
+          </Button>
+        ) : null}
 
         {error ? (
           <Typography variant="body2" color="error">
@@ -75,24 +77,26 @@ export function ImageUpload(props: ImageUploadProps): React.ReactElement {
                 alt={`Uploaded Image ${index + 1}`}
                 sx={{ height: 140, objectFit: 'cover' }}
               />
-              <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  size="small"
-                  variant="contained"
-                  color="error"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => {
-                    handleRemoveImage(index);
-                  }}
-                  sx={{
-                    '&:hover': {
-                      backgroundColor: '#d32f2f',
-                    },
-                  }}
-                >
-                  Remove
-                </Button>
-              </CardActions>
+              {!disabled ? (
+                <CardActions sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    size="small"
+                    variant="contained"
+                    color="error"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => {
+                      handleRemoveImage(index);
+                    }}
+                    sx={{
+                      '&:hover': {
+                        backgroundColor: '#d32f2f',
+                      },
+                    }}
+                  >
+                    Remove
+                  </Button>
+                </CardActions>
+              ) : null}
             </Card>
           </Grid>
         ))}
