@@ -20,7 +20,7 @@ import { type Hotel } from '@/types/hotel';
 import { type CreateTourForm } from '@/types/tour';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { tourApi } from '@/lib/tour/tour';
-import { validationTour } from '@/lib/yub/tour';
+import { validationTour } from '@/lib/yub/index';
 
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
@@ -81,6 +81,7 @@ export function UpdateTour(props: TourUpdateProps): React.ReactElement {
     if (open) {
       void fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- This is a false positive
   }, [open]);
 
   const handleClickOpen = async (): Promise<void> => {

@@ -1,6 +1,7 @@
 export interface NavItemConfig {
   key: string;
   title?: string;
+  permission: string;
   disabled?: boolean;
   external?: boolean;
   label?: string;

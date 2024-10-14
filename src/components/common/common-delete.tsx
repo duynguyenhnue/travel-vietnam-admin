@@ -10,7 +10,7 @@ interface TourDeleteProps {
   title?: string;
 }
 
-export function TourDelete(props: TourDeleteProps): React.ReactElement {
+export function CommonDelete(props: TourDeleteProps): React.ReactElement {
   const { open, onClose, onDelete, title } = props;
 
   return (

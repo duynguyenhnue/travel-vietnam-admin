@@ -8,17 +8,17 @@ import { Upload as UploadIcon } from '@phosphor-icons/react/dist/ssr/Upload';
 
 import { config } from '@/config';
 import { AuthPermissionGuard } from '@/components/auth/auth-guard-permission';
-import { CreateTour } from '@/components/dashboard/tour/tour-create';
-import { TourTable } from '@/components/dashboard/tour/tour-table';
+import { RolesTable } from '@/components/dashboard/roles/roles';
+import { CreateRoles } from '@/components/dashboard/roles/roles-create';
 
-export const metadata = { title: `Tour | ${config.site.name}` } satisfies Metadata;
+export const metadata = { title: `Customers | ${config.site.name}` } satisfies Metadata;
 export default function Page(): React.JSX.Element {
   return (
-    <AuthPermissionGuard permissionRole="TOUR_VIEW">
+    <AuthPermissionGuard permissionRole="ROLE_VIEW">
       <Stack spacing={3}>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={3}>
+        <Stack direction="row" spacing={3}>
           <Stack spacing={1} sx={{ flex: '1 1 auto' }}>
-            <Typography variant="h4">Tour</Typography>
+            <Typography variant="h4">Roles</Typography>
             <Stack direction="row" spacing={1} sx={{ alignItems: 'center' }}>
               <Button color="inherit" startIcon={<UploadIcon fontSize="var(--icon-fontSize-md)" />}>
                 Import
@@ -28,11 +28,11 @@ export default function Page(): React.JSX.Element {
               </Button>
             </Stack>
           </Stack>
-          <Stack>
-            <CreateTour />
-          </Stack>
+          <div>
+            <CreateRoles />
+          </div>
         </Stack>
-        <TourTable />
+        <RolesTable />
       </Stack>
     </AuthPermissionGuard>
   );

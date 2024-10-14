@@ -14,4 +14,5 @@ export interface User {
   phone: Phone;
   createdAt: string;
   avatar: string;
+  role: string;
 }

@@ -82,6 +82,20 @@ class AuthClient {
     }
   }
 
+  async getPermissions(role: string | undefined): Promise<{ data?: string[]; error?: string }> {
+    try {
+      const res: AxiosResponse<SuccessResponse<string[]>> = await axios.post(
+        `${envConfig.serverURL}/roles/permissions`,
+        {
+          role,
+        }
+      );
+      return { data: res.data?.data };
+    } catch (error) {
+      return { error: 'Tour not found' };
+    }
+  }
+
   async refreshToken(): Promise<{ data?: User | null; error?: string }> {
     try {
       const res: AxiosResponse<SuccessResponse<LoginResponse>> = await axios.post(

@@ -22,6 +22,11 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
       return;
     }
 
+    if (user?.role === 'USER') {
+      router.replace(paths.auth.signIn);
+      localStorage.clear();
+    }
+
     if (error) {
       setIsChecking(false);
       return;

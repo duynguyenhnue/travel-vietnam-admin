@@ -2,15 +2,19 @@ import React, { useState } from 'react';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { IconButton, Menu, MenuItem, Stack } from '@mui/material';
 
+import type { Roles } from '@/types/roles';
 import { type Tour } from '@/types/tour';
+import { rolesApi } from '@/lib/roles/roles';
 import { tourApi } from '@/lib/tour/tour';
 
-import { TourDelete } from '../dashboard/tour/tour-delete';
+import { UpdateRoles } from '../dashboard/roles/roles-update';
+import { ViewRoles } from '../dashboard/roles/roles-view';
 import { UpdateTour } from '../dashboard/tour/tour-update';
 import { TourView } from '../dashboard/tour/tour-view';
+import { CommonDelete } from './common-delete';
 
 interface ActionCellProps {
-  data: Tour;
+  data: Tour | Roles;
 }
 
 export function ActionCell(props: ActionCellProps): React.ReactElement {
@@ -53,10 +57,13 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
   };
 
   const handleDelete = async (): Promise<void> => {
-    await tourApi.deleteTour(data?._id || '');
+    if ('hotelId' in data) {
+      await tourApi.deleteTour(data?._id || '');
+    } else if ('name' in data) {
+      await rolesApi.deleteRole('id' in data ? data?.id : '');
+    }
     handleCloseDiaLog();
   };
-
   return (
     <Stack>
       <IconButton aria-controls={open ? 'simple-menu' : undefined} aria-haspopup="true" onClick={handleClick}>
@@ -67,12 +74,41 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
         <MenuItem onClick={handleUpdate}>Update</MenuItem>
         <MenuItem onClick={handleOpenDelete}>Delete</MenuItem>
       </Menu>
-      {action === 'delete' && (
-        <TourDelete open={openDialog} onClose={handleCloseDiaLog} onDelete={handleDelete} title={data.title} />
-      )}
-      {action === 'update' && <UpdateTour open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
+      {data && 'hotelId' in data ? (
+        <>
+          {action === 'delete' && (
+            <CommonDelete
+              open={openDialog}
+              onClose={handleCloseDiaLog}
+              onDelete={handleDelete}
+              title={('title' in data && data?.title) || ''}
+            />
+          )}
+          {action === 'update' && <UpdateTour open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
 
-      {action === 'view' && <TourView open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
+          {action === 'view' && <TourView open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
+        </>
+      ) : null}
+
+      {data && 'name' in data ? (
+        <>
+          {action === 'delete' && (
+            <CommonDelete
+              open={openDialog}
+              onClose={handleCloseDiaLog}
+              onDelete={handleDelete}
+              title={('name' in data && data?.name) || ''}
+            />
+          )}
+          {action === 'update' && (
+            <UpdateRoles open={openDialog} onClose={handleCloseDiaLog} roleId={'id' in data ? data?.id : ''} />
+          )}
+
+          {action === 'view' && (
+            <ViewRoles open={openDialog} onClose={handleCloseDiaLog} roleId={'id' in data ? data?.id : ''} />
+          )}
+        </>
+      ) : null}
     </Stack>
   );
 }

@@ -20,7 +20,7 @@ import { type Hotel } from '@/types/hotel';
 import { type CreateTourForm } from '@/types/tour';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { tourApi } from '@/lib/tour/tour';
-import { validationTour } from '@/lib/yub/tour';
+import { validationTour } from '@/lib/yub/index';
 
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
@@ -81,6 +81,7 @@ export function TourView(props: TourUpdateProps): React.ReactElement {
     if (open) {
       void fetchData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- This is a false positive
   }, [open]);
 
   const handleClickOpen = async (): Promise<void> => {
@@ -122,6 +123,7 @@ export function TourView(props: TourUpdateProps): React.ReactElement {
                     images={formik.values.files as string[]}
                     setImages={(newImages) => formik.setFieldValue('files', newImages)}
                     error={formik.touched.files && formik.errors.files ? formik.errors.files[0] : undefined}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -242,12 +244,9 @@ export function TourView(props: TourUpdateProps): React.ReactElement {
             </Stack>
           </DialogContent>
           <DialogActions>
-            <Stack direction="row" width="100%" justifyContent="space-around">
-              <Button type="submit" variant="contained" sx={{ marginTop: 2 }}>
-                Update Tour
-              </Button>
+            <Stack direction="row" width="100%" justifyContent="flex-end" px={3}>
               <Button onClick={onClose} variant="contained" sx={{ marginTop: 2 }}>
-                Cancel
+                Close
               </Button>
             </Stack>
           </DialogActions>

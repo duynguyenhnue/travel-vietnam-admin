@@ -4,21 +4,26 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 
-import { localStorageConfig } from '@/config';
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
 
-export interface GuestGuardProps {
+export interface AuthGuardProps {
   children: React.ReactNode;
+  permissionRole: string;
 }
 
-export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | null {
+export function AuthPermissionGuard({ children, permissionRole }: AuthGuardProps): React.JSX.Element | null {
   const router = useRouter();
-  const { user, error, isLoading } = useUser();
+  const { permissions, isLoading, user, error } = useUser();
   const [isChecking, setIsChecking] = React.useState<boolean>(true);
 
   const checkPermissions = async (): Promise<void> => {
+    if (!permissions?.includes(permissionRole)) {
+      localStorage.clear();
+      router.replace(paths.auth.signIn);
+      return;
+    }
     if (isLoading) {
       return;
     }
@@ -27,15 +32,10 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
       setIsChecking(false);
       return;
     }
-    if (user && !localStorage.getItem(localStorageConfig.accessToken)) {
-      localStorage.clear();
-      router.replace(paths.auth.signIn);
-      return;
-    }
 
-    if (user) {
-      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
-      router.replace(paths.dashboard.overview);
+    if (!user) {
+      logger.debug('[AuthGuard]: User is not logged in, redirecting to sign in');
+      router.replace(paths.auth.signIn);
       return;
     }
 

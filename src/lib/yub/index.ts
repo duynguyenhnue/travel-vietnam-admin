@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 
+import { Status } from '@/types/roles';
+
 export const validationTour = Yup.object().shape({
   files: Yup.array().required('At least one image is required.').min(1, 'At least one image is required.'),
   title: Yup.string()
@@ -44,4 +46,20 @@ export const validationTour = Yup.object().shape({
     district: Yup.string().required('District is required.'),
     ward: Yup.string().required('Ward is required.'),
   }),
+});
+
+export const validationRoles = Yup.object().shape({
+  name: Yup.string()
+    .required('Name is required.')
+    .min(3, 'Name must be at least 3 characters long.')
+    .max(100, 'Name cannot exceed 100 characters.'),
+
+  description: Yup.string()
+    .optional() // Because description is marked as optional in the class.
+    .min(10, 'Description must be at least 10 characters long.')
+    .max(1000, 'Description cannot exceed 1000 characters.'),
+
+  permissions: Yup.array().of(Yup.string().required('Permission is required.')).required('Permissions are required.'),
+
+  status: Yup.mixed().oneOf(Object.values(Status), 'Invalid status.').required('Status is required.'),
 });

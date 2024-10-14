@@ -11,6 +11,7 @@ import { logger } from '@/lib/default-logger';
 
 export interface UserContextValue {
   user: User | null;
+  permissions: string[] | null;
   error: string | null;
   isLoading: boolean;
   checkSession?: () => Promise<void>;
@@ -23,9 +24,15 @@ export interface UserProviderProps {
 }
 
 export function UserProvider({ children }: UserProviderProps): React.JSX.Element {
-  const [state, setState] = React.useState<{ user: User | null; error: string | null; isLoading: boolean }>({
+  const [state, setState] = React.useState<{
+    user: User | null;
+    permissions: string[] | null;
+    error: string | null;
+    isLoading: boolean;
+  }>({
     user: null,
     error: null,
+    permissions: null,
     isLoading: true,
   });
 
@@ -37,7 +44,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
       if (!accessToken) {
         router.push(paths.auth.signIn);
-        setState((prev) => ({ ...prev, user: null, error: null, isLoading: false }));
+        setState((prev) => ({ ...prev, user: null, permissions: null, error: null, isLoading: false }));
         return;
       }
 
@@ -45,15 +52,47 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
       if (error) {
         logger.error(error);
-        setState((prev) => ({ ...prev, user: null, error: 'Something went wrong1', isLoading: false }));
+        setState((prev) => ({
+          ...prev,
+          user: null,
+          permissions: null,
+          error: 'Something went wrong1',
+          isLoading: false,
+        }));
         return;
       }
 
-      setState((prev) => ({ ...prev, user: data ?? null, error: null, isLoading: false }));
+      const response = await authClient.getPermissions(data?.role);
+
+      if (response.error) {
+        logger.error(error);
+        setState((prev) => ({
+          ...prev,
+          user: null,
+          permissions: null,
+          error: 'Something went wrong1',
+          isLoading: false,
+        }));
+        return;
+      }
+
+      setState((prev) => ({
+        ...prev,
+        user: data ?? null,
+        permissions: response.data ?? null,
+        error: null,
+        isLoading: false,
+      }));
     } catch (err) {
       router.push(paths.auth.signIn);
       logger.error(err);
-      setState((prev) => ({ ...prev, user: null, error: 'Something went wrong2', isLoading: false }));
+      setState((prev) => ({
+        ...prev,
+        user: null,
+        permissions: null,
+        error: 'Something went wrong2',
+        isLoading: false,
+      }));
     }
   }, [router]);
 
