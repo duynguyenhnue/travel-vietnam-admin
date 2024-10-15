@@ -1,8 +1,4 @@
-export class Address {
-  province: string | undefined;
-  district: string | undefined;
-  ward: string | undefined;
-}
+import { type Address } from '.';
 
 export class Phone {
   country: string | undefined;
@@ -18,4 +14,5 @@ export interface User {
   phone: Phone;
   createdAt: string;
   avatar: string;
+  role: string;
 }

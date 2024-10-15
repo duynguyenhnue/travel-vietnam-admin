@@ -42,7 +42,6 @@ export function SignInForm(): React.JSX.Element {
   const {
     control,
     handleSubmit,
-    setError,
     formState: { errors },
   } = useForm<Values>({ defaultValues, resolver: zodResolver(schema) });
 
@@ -50,19 +49,15 @@ export function SignInForm(): React.JSX.Element {
     async (values: Values): Promise<void> => {
       setIsPending(true);
 
-      const { error } = await authClient.signInWithPassword(values);
+      await authClient.signInWithPassword(values);
 
-      if (error) {
-        setError('root', { type: 'server', message: error });
-        setIsPending(false);
-        return;
-      }
+      setIsPending(false);
 
       await checkSession?.();
 
       router.refresh();
     },
-    [checkSession, router, setError]
+    [checkSession, router]
   );
 
   return (

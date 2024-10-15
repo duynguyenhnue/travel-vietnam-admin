@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import type { NavItemConfig } from '@/types/nav';
 import { paths } from '@/paths';
 import { isNavItemActive } from '@/lib/is-nav-item-active';
+import { useUser } from '@/hooks/use-user';
 import { Logo } from '@/components/core/logo';
 
 import { navItems } from './config';
@@ -25,6 +26,22 @@ export interface MobileNavProps {
 
 export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element {
   const pathname = usePathname();
+  const { permissions } = useUser();
+  const [navItemsFilter, setNavItemsFilter] = React.useState<NavItemConfig[]>([]);
+
+  React.useEffect(() => {
+    // eslint-disable-next-line array-callback-return -- This is a false positive
+    const data = navItems.filter((item: NavItemConfig) => {
+      if (item.permission) {
+        if (permissions?.includes(item.permission)) {
+          return item;
+        }
+      } else {
+        return item;
+      }
+    });
+    setNavItemsFilter(data);
+  }, [permissions]);
 
   return (
     <Drawer
@@ -61,7 +78,7 @@ export function MobileNav({ open, onClose }: MobileNavProps): React.JSX.Element 
       </Stack>
       <Divider sx={{ borderColor: 'var(--mui-palette-neutral-700)' }} />
       <Box component="nav" sx={{ flex: '1 1 auto', p: '12px' }}>
-        {renderNavItems({ pathname, items: navItems, onClose })}
+        {renderNavItems({ pathname, items: navItemsFilter, onClose })}
       </Box>
     </Drawer>
   );

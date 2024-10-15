@@ -4,6 +4,7 @@ import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
 
+import { localStorageConfig } from '@/config';
 import { paths } from '@/paths';
 import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
@@ -24,6 +25,11 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
 
     if (error) {
       setIsChecking(false);
+      return;
+    }
+    if (user && !localStorage.getItem(localStorageConfig.accessToken)) {
+      localStorage.clear();
+      router.replace(paths.auth.signIn);
       return;
     }
 
