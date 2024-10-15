@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -15,32 +15,77 @@ import Grid from '@mui/material/Unstable_Grid2';
 
 import { type User } from '@/types/user';
 import { useUser } from '@/hooks/use-user';
-
+import { Box, MenuItem, TextField } from '@mui/material';
+import { MuiTelInput } from 'mui-tel-input';
+interface Location {
+  id: string;
+  name: string;
+}
 export function AccountDetailsForm(): React.JSX.Element {
   const { user } = useUser();
   const [userDetail, setUserDetail] = useState<User | null>(user);
+  const [provinces, setProvinces] = useState<Location[]>([]);
+  const [districts, setDistricts] = useState<Location[]>([]);
+  const [wards, setWards] = useState<Location[]>([]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } }): void => {
     const { name, value } = event.target;
-
     setUserDetail((prev) => {
       if (!prev) return null;
-      return {
+      if (name.includes('phone.')) {
+        return {
+          ...prev,
+          phone: {
+            ...(prev.phone || {}),
+            number: name === 'phone.number' ? value : prev.phone?.number,
+            country: name === 'phone.country' ? value : prev.phone?.country,
+          },
+        };
+      }
+      else if (name.includes('address.')) {
+        return {
+          ...prev,
+          address: {
+            ...(prev.address || {}),
+            province: name === 'address.province' ? value : prev.address?.province,
+            district: name === 'address.district' ? value : prev.address?.district,
+            ward: name === 'address.ward' ? value : prev.address?.ward,
+          },
+        };
+      }
+      else return {
         ...prev,
         [name]: value,
-        phone: {
-          ...(prev.phone || {}),
-          number: name === 'phoneNumber' ? value : prev.phone?.number,
-        },
       };
-    });
+      });
   };
+
+  useEffect(() => {
+    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+      .then((response) => response.json())
+      .then((data) => setProvinces(data.data));
+  }, []);
+
+  useEffect(() => {
+    if (userDetail?.address?.province) {
+      fetch(`https://esgoo.net/api-tinhthanh/2/${userDetail.address.province}.htm`)
+        .then((response) => response.json())
+        .then((data) => setDistricts(data.data));
+    }
+  }, [userDetail?.address?.province]);
+
+  useEffect(() => {
+    if (userDetail?.address?.district) {
+      fetch(`https://esgoo.net/api-tinhthanh/3/${userDetail.address.district}.htm`)
+        .then((response) => response.json())
+        .then((data) => setWards(data.data));
+    }
+  }, [userDetail?.address?.district]);
 
   return (
     <form
       onSubmit={(event) => {
         event.preventDefault();
-        // Here you can add logic to save the updated user details
       }}
     >
       <Card>
@@ -55,7 +100,7 @@ export function AccountDetailsForm(): React.JSX.Element {
                   defaultValue={userDetail?.fullName}
                   label="Full name"
                   name="fullName"
-                  onChange={handleChange} // Attach the onChange handler
+                  onChange={handleChange}
                 />
               </FormControl>
             </Grid>
@@ -67,47 +112,107 @@ export function AccountDetailsForm(): React.JSX.Element {
                   defaultValue={userDetail?.email}
                   label="Email address"
                   name="email"
-                  onChange={handleChange} // Attach the onChange handler
+                  onChange={handleChange}
                 />
               </FormControl>
             </Grid>
-
             <Grid md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel>Phone number</InputLabel>
-                <OutlinedInput
-                  defaultValue={userDetail?.phone.number}
-                  label="Phone number"
-                  name="phoneNumber" // Ensure this matches your user detail structure
-                  type="tel"
-                  onChange={handleChange} // Attach the onChange handler
-                />
-              </FormControl>
-            </Grid>
-
-            <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel htmlFor="date-of-birth">Date Of Birth</InputLabel>
+                <InputLabel htmlFor="date-of-birth" shrink>Date Of Birth</InputLabel>
                 <OutlinedInput
                   id="date-of-birth"
                   type="date"
                   name="dateOfBirth"
                   defaultValue={userDetail?.dateOfBirth ? userDetail.dateOfBirth.split('T')[0] : ''}
-                  onChange={handleChange} // Attach the onChange handler
+                  onChange={handleChange}
                   fullWidth
                 />
               </FormControl>
             </Grid>
-
             <Grid md={6} xs={12}>
-              <FormControl fullWidth>
-                <InputLabel>City</InputLabel>
-                <OutlinedInput
-                  label="City"
-                  name="city" // Ensure this matches your user detail structure
-                  onChange={handleChange} // Attach the onChange handler
+              <Box sx={{ display: 'flex', height: '100%', gap: '10px', ".MuiInputAdornment-root": { marginTop: '0px !important' }, ".MuiInputBase-input": { paddingTop: '10px !important', paddingBottom: '10px !important' } }}>
+                <MuiTelInput
+                  sx={{ width: '170px', height: '100%', ".MuiInputBase-root": { height: '100%' } }}
+                  value={userDetail?.phone?.country}
+                  name="phone.country"
+                  onChange={(value, info) => {
+                    handleChange({ target: { name: 'phone.country', value: value } });
+                  }}
+                  defaultCountry="VN"
                 />
-              </FormControl>
+                <FormControl
+                  fullWidth
+                >
+                  <OutlinedInput
+                    sx={{ flex: 1 }}
+                    value={userDetail?.phone?.number}
+                    name="phone.number"
+                    placeholder="000 000 000"
+                    onChange={handleChange}
+                  />
+                </FormControl>
+              </Box>
+            </Grid>
+
+            <Grid md={4} xs={12}>
+              <TextField
+                select
+                label="Province"
+                name="address.province"
+                value={userDetail?.address?.province}
+                onChange={handleChange}
+                fullWidth
+              >
+                {provinces.map((province) => (
+                  <MenuItem
+                    key={province.id}
+                    value={province.id}
+                  >
+                    {province.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+            <Grid md={4} xs={12}>
+              <TextField
+                select
+                label="District"
+                name="address.district"
+                value={userDetail?.address?.district}
+                onChange={handleChange}
+                fullWidth
+                disabled={!userDetail?.address?.province}
+              >
+                {districts.map((district) => (
+                  <MenuItem
+                    key={district.id}
+                    value={district.id}
+                  >
+                    {district.name}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
+
+            <Grid md={4} xs={12}>
+              <TextField
+                select
+                label="Ward"
+                name="address.ward"
+                value={userDetail?.address?.ward}
+                onChange={handleChange}
+                fullWidth
+                disabled={!userDetail?.address?.district}
+              >
+                {wards.map((ward) => (
+                  <MenuItem
+                    key={ward.id}
+                    value={ward.id}
+                  >
+                    {ward.name}
+                  </MenuItem>
+                ))}
+              </TextField>
             </Grid>
           </Grid>
         </CardContent>
