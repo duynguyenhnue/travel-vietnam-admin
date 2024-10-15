@@ -51,6 +51,8 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       const { data, error } = await authClient.getUser();
 
       if (error) {
+        router.push(paths.auth.signIn);
+
         logger.error(error);
         setState((prev) => ({
           ...prev,
@@ -65,6 +67,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       const response = await authClient.getPermissions(data?.role);
 
       if (response.error) {
+        router.push(paths.auth.signIn);
         logger.error(error);
         setState((prev) => ({
           ...prev,
@@ -73,6 +76,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
           error: 'Something went wrong1',
           isLoading: false,
         }));
+        router.push(paths.auth.signIn);
         return;
       }
 
