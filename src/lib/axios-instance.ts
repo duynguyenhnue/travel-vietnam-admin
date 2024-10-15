@@ -46,6 +46,7 @@ const setupAxiosInterceptors = (_onUnauthenticated: () => void): void => {
                 refresh_token: refreshToken,
               }
             );
+
             if (newAccessToken.data.data) {
               localStorage.setItem(ACCESS_TOKEN, newAccessToken.data.data?.access_token);
               const originalRequest = err.config!;
@@ -56,6 +57,7 @@ const setupAxiosInterceptors = (_onUnauthenticated: () => void): void => {
         } catch (error) {
           localStorage.removeItem(ACCESS_TOKEN);
           localStorage.removeItem(REFRESH_TOKEN);
+          window.location.reload();
           toast.error('Your session has expired. Please log in again.');
           return Promise.reject(err);
         }
