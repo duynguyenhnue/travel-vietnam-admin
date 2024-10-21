@@ -226,7 +226,7 @@ export function CustomersDetails(): React.ReactElement {
         return () => {
             clearTimeout(timer);
         };
-    }, [showCustomer]);    
+    }, [showCustomer, formik]); // Added formik to the dependency array
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
