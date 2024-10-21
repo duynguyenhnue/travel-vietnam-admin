@@ -23,7 +23,6 @@ interface Location {
   id: string;
   name: string;
 }
-
 export function AccountDetailsForm(): React.JSX.Element {
   const { user } = useUser();
   const [userDetail, setUserDetail] = useState<User | null>(user);
