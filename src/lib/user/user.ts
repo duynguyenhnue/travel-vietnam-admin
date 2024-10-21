@@ -26,11 +26,24 @@ export interface SignUpParams {
   phone: Phone;
 }
 
+export interface UpdateUserParams {
+  email: string;
+  fullName: string;
+  dateOfBirth: string;
+  address: Address;
+  phone: Phone;
+}
+
 export interface SearchUsers {
   page: number;
   limit: number;
   fullName: string;
   email: string;
+}
+
+interface UserResponse {
+  data: User[]; // Assuming User is already defined
+  total: number;
 }
 
 class UserApi {
@@ -41,6 +54,15 @@ class UserApi {
   async createUser(data: SignUpParams): Promise<{ error?: string }> {
     try {
       await axios.post(`${envConfig.serverURL}/auth/register`, data);
+      return { error: '' };
+    } catch (error) {
+      return { error: 'Failed to sign up' };
+    }
+  }
+
+  async updateUser(data: UpdateUserParams, id: string): Promise<{ error?: string }> {
+    try {
+      await axios.put(`${envConfig.serverURL}/users/update/${id}`, data);
       return { error: '' };
     } catch (error) {
       return { error: 'Failed to sign up' };
@@ -61,9 +83,9 @@ class UserApi {
     }
   }
 
-  async getUsers(params: string): Promise<any> {
+  async getUsers(params: string): Promise<{ data?: User[]; total?: number; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
+      const res: AxiosResponse<SuccessResponse<UserResponse>> = await axios.get(
         `${envConfig.serverURL}/users/search`,
         {
           params,
@@ -75,12 +97,12 @@ class UserApi {
     }
   }
 
-  async getUserById(params: string): Promise<any> {
+  async getUserById(params: string): Promise<{ data?: User | undefined; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
+      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(
         `${envConfig.serverURL}/users/find/${params}`,
       );
-      return res.data.data;
+      return { data: res.data.data };
     } catch (error) {
       return { error: 'User not found' };
     }
