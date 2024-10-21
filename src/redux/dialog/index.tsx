@@ -2,16 +2,28 @@
 
 import { createSlice } from "@reduxjs/toolkit";
 
+interface CustomerData {
+    id: string;
+    name: string;
+}
+
+export interface CustomerState {
+    showDetails: string[];
+    datas: CustomerData[];
+}
+
+const initialState: { customer: CustomerState } = {
+    customer: {
+        showDetails: [],
+        datas: []
+    }
+};
+
 const DialogSlice = createSlice({
     name: 'dialog',
-    initialState: {
-        customer: {
-            showDetails: [],
-            datas: []
-        }
-    },
+    initialState,
     reducers: {
-       setDatasCustomer(state, action) {
+        setDatasCustomer(state, action: { payload: CustomerData[] }) {
             return {
                 ...state,
                 customer: {
@@ -19,8 +31,8 @@ const DialogSlice = createSlice({
                     datas: action.payload
                 }
             }
-       },
-       setShowCustomerDetails(state, action) {
+        },
+        setShowCustomerDetails(state, action: { payload: string[] }) { 
             return {
                 ...state,
                 customer: {
@@ -28,9 +40,9 @@ const DialogSlice = createSlice({
                     showDetails: action.payload
                 }
             }
-       }
+        }
     },
-})
+});
 
 export const DialogActions = DialogSlice.actions;
 export default DialogSlice.reducer;

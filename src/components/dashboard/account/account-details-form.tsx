@@ -17,10 +17,13 @@ import { type User } from '@/types/user';
 import { useUser } from '@/hooks/use-user';
 import { Box, MenuItem, TextField } from '@mui/material';
 import { MuiTelInput } from 'mui-tel-input';
+import { toast } from 'react-toastify';
+
 interface Location {
   id: string;
   name: string;
 }
+
 export function AccountDetailsForm(): React.JSX.Element {
   const { user } = useUser();
   const [userDetail, setUserDetail] = useState<User | null>(user);
@@ -53,7 +56,7 @@ export function AccountDetailsForm(): React.JSX.Element {
           },
         };
       }
-      else return {
+      return {
         ...prev,
         [name]: value,
       };
@@ -61,16 +64,31 @@ export function AccountDetailsForm(): React.JSX.Element {
   };
 
   useEffect(() => {
-    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-      .then((response) => response.json())
-      .then((data) => setProvinces(data.data));
+    const fetchProvinces = async (): Promise<void> => {
+      try {
+        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+        const data: { data: Location[] } = await response.json() as { data: Location[] };
+        setProvinces(data.data);
+      } catch (error: unknown) {
+        toast.error(`Error fetching provinces: ${String(error)}`); 
+      }
+    };
+
+    fetchProvinces().catch((error: unknown) => {
+      toast.error(`Error fetching provinces: ${String(error)}`); 
+    });
   }, []);
 
   useEffect(() => {
     if (userDetail?.address?.province) {
       fetch(`https://esgoo.net/api-tinhthanh/2/${userDetail.address.province}.htm`)
         .then((response) => response.json())
-        .then((data) => setDistricts(data.data));
+        .then((data: { data: Location[] }) => {
+          setDistricts(data.data);
+        })
+        .catch((error: unknown) => {
+          toast.error(`Error fetching districts: ${String(error)}`); 
+        });
     }
   }, [userDetail?.address?.province]);
 
@@ -78,7 +96,12 @@ export function AccountDetailsForm(): React.JSX.Element {
     if (userDetail?.address?.district) {
       fetch(`https://esgoo.net/api-tinhthanh/3/${userDetail.address.district}.htm`)
         .then((response) => response.json())
-        .then((data) => setWards(data.data));
+        .then((data: { data: Location[] }) => {
+          setWards(data.data);
+        })
+        .catch((error: unknown) => {
+          toast.error(`Error fetching wards: ${String(error)}`); 
+        });
     }
   }, [userDetail?.address?.district]);
 
@@ -135,8 +158,8 @@ export function AccountDetailsForm(): React.JSX.Element {
                   sx={{ width: '170px', height: '100%', ".MuiInputBase-root": { height: '100%' } }}
                   value={userDetail?.phone?.country}
                   name="phone.country"
-                  onChange={(value, info) => {
-                    handleChange({ target: { name: 'phone.country', value: value } });
+                  onChange={(value: string) => {
+                    handleChange({ target: { name: 'phone.country', value } }); 
                   }}
                   defaultCountry="VN"
                 />

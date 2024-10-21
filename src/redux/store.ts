@@ -1,11 +1,12 @@
 'use client';
 import { configureStore } from "@reduxjs/toolkit";
-import dialog from "./dialog";
+import dialogReducer from "./dialog";
 
 const store = configureStore({
     reducer: {
-        dialog: dialog
-    }
-})
+        dialog: dialogReducer,
+    },
+});
 
+export type RootState = ReturnType<typeof store.getState>;
 export default store;

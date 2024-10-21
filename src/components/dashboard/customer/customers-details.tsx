@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Avatar, Box, Button, Dialog, FormControl, FormHelperText, Grid, MenuItem, OutlinedInput, Stack, TextField, Typography } from '@mui/material';
+import { Avatar, Box, Button, Dialog, Grid, MenuItem, Stack, TextField, Typography } from '@mui/material';
 import PreviewIcon from '@mui/icons-material/Preview';
 import { userApi } from '@/lib/user/user';
-import { useDispatch, useSelector } from 'react-redux';
-import { DialogActions } from '@/redux/dialog';
+import { useSelector } from 'react-redux';
 import { MuiTelInput } from 'mui-tel-input';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import type { Dayjs } from 'dayjs';
+import type { RootState } from '@/redux/store';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
@@ -15,6 +16,7 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import CameraEnhanceIcon from '@mui/icons-material/CameraEnhance';
 import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { toast } from 'react-toastify';
 
 interface Location {
     id: string;
@@ -98,18 +100,18 @@ const validationSchema = Yup.object({
 
 export function CustomersDetails(): React.ReactElement {
     const [dialogOpen, setDialogOpen] = useState(false);
-    const customers = useSelector((state: any) => state.dialog.customer);
+    const customers = useSelector((state: RootState) => state.dialog.customer);
     const [showCustomer, setShowCustomer] = useState<string | null>(null);
 
     const formik = useFormik({
         initialValues,
         validationSchema,
-        onSubmit: async (values, helpers): Promise<void> => {
+        onSubmit: async (values): Promise<void> => {
             try {
                 const registerData = {
                     email: values.email.toLowerCase(),
                     fullName: values.fullName,
-                    dateOfBirth: values.dateOfBirth,
+                    dateOfBirth: values.dateOfBirth?.toISOString() || '',
                     address: {
                         province: values.address.province,
                         district: values.address.district,
@@ -120,13 +122,9 @@ export function CustomersDetails(): React.ReactElement {
                         number: values.phone.number,
                     },
                 };
-                console.log(registerData);
-                // void (await userApi.createUser(registerData));
+                void (await userApi.updateUser(registerData, showCustomer || ''));
             } catch (err) {
-                // if (isMounted()) {
-                //     helpers.setStatus({ success: false });
-                //     helpers.setSubmitting(false);
-                // }
+                toast.error(`Error updating user: ${String(err)}`);
             }
         },
     });
@@ -143,77 +141,105 @@ export function CustomersDetails(): React.ReactElement {
     const [provinces, setProvinces] = useState<Location[]>([]);
     const [districts, setDistricts] = useState<Location[]>([]);
     const [wards, setWards] = useState<Location[]>([]);
-    const [status, setStatus] = useState<string[]>(['ACTIVE', 'INACTIVATED', "REMOVED", "NOT ACTIVATED"]);
+    const status = ['ACTIVE', 'INACTIVATED', "REMOVED", "NOT ACTIVATED"];
 
     useEffect(() => {
-        fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-            .then((response) => response.json())
-            .then((data) => setProvinces(data.data));
+        const fetchProvinces = async (): Promise<void> => {
+            try {
+                const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+                const data: { data: Location[] } =  await response.json() as { data: Location[] };
+                setProvinces(data.data);
+            } catch (error: unknown) { 
+                toast.error(`Error fetching provinces: ${String(error)}`);
+            }
+        };
+        void fetchProvinces(); 
     }, []);
-
+    
     useEffect(() => {
-        if (formik.values.address.province) {
-            fetch(`https://esgoo.net/api-tinhthanh/2/${formik.values.address.province}.htm`)
-                .then((response) => response.json())
-                .then((data) => setDistricts(data.data));
-        }
+        const fetchDistricts = async (): Promise<void> => {
+            if (formik.values.address.province) {
+                try {
+                    const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${formik.values.address.province}.htm`);
+                    const data: { data: Location[] } = await response.json() as { data: Location[] };
+                    setDistricts(data.data);
+                } catch (error: unknown) { // Explicitly type error as unknown
+                    toast.error(`Error fetching districts: ${String(error)}`);
+                }
+            }
+        };
+        void fetchDistricts(); // Use void to ignore promise warning
     }, [formik.values.address.province]);
-
+    
     useEffect(() => {
-        if (formik.values.address.district) {
-            fetch(`https://esgoo.net/api-tinhthanh/3/${formik.values.address.district}.htm`)
-                .then((response) => response.json())
-                .then((data) => setWards(data.data));
-        }
+        const fetchWards = async (): Promise<void> => {
+            if (formik.values.address.district) {
+                try {
+                    const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${formik.values.address.district}.htm`);
+                    const data: { data: Location[] } = await response.json() as { data: Location[] };
+                    setWards(data.data);
+                } catch (error: unknown) { // Explicitly type error as unknown
+                    toast.error(`Error fetching wards: ${String(error)}`);
+                }
+            }
+        };
+        void fetchWards();
     }, [formik.values.address.district]);
-
+    
     useEffect(() => {
         const fetchUser = async (): Promise<void> => {
-            const data = await userApi.getUserById(showCustomer || '');
-            console.log(data);
-            formik.setValues({
-                ...formik.values,
-                fullName: data.fullName,
-                email: data.email,
-                dateOfBirth: dayjs(data.dateOfBirth),
-                status: data.status,
-                address: {
-                    province: data.address ? data.address.province : '',
-                    district: data.address ? data.address.district : '',
-                    ward: data.address ? data.address.ward : '',
-                },
-                phone: {
-                    country: data.phone ? data.phone.country : '',
-                    number: data.phone ? data.phone.number : '',
-                },
-                // policy: data.policy,
-                // role: data.role,
-                // status: data.status,
-            });
+            if (showCustomer) {
+                try {
+                    const { data } = await userApi.getUserById(showCustomer); 
+                    if (data) {
+                        void formik.setValues({
+                            ...formik.values,
+                            fullName: data.fullName,
+                            email: data.email,
+                            dateOfBirth: dayjs(data.dateOfBirth),
+                            status: data.status,
+                            address: {
+                                province: data.address?.province || '',
+                                district: data.address?.district || '',
+                                ward: data.address?.ward || '',
+                            },
+                            phone: {
+                                country: data.phone?.country || '+84',
+                                number: data.phone?.number || '',
+                            },
+                        });
+                    }
+                } catch (error: unknown) { 
+                    toast.error(`Error fetching user: ${String(error)}`);
+                }
+            }
         };
+    
         const timer = setTimeout(() => {
             if (showCustomer) {
-                void fetchUser();
+                fetchUser().catch((error: unknown) => {
+                    toast.error(`Error in fetchUser: ${String(error)}`);
+                });
             }
         }, 1000);
+    
         return () => {
             clearTimeout(timer);
         };
-    }, [showCustomer]);
+    }, [showCustomer]);    
 
     const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-    const handleIconClick = () => {
+    const handleIconClick = (): void => {
         fileInputRef?.current?.click();
     };
 
-    const handleFileChange = async (event: any) => {
-        const file = event.target.files[0];
-        if (!file) return;
+    const handleFileChange = async (): Promise<void> => {  
+        // const file = fileList[0]; 
         // setImgProfile(file);
     };
 
-    const handleNext = () => {
+    const handleNext = (): void => {
         // if (numberTab === ids.length) {
         //     setNumberTab(1);
         // } else {
@@ -221,7 +247,7 @@ export function CustomersDetails(): React.ReactElement {
         // }
     }
 
-    const handlePervious = () => {
+    const handlePervious = (): void => {
         // if (numberTab === 1) {
         //     setNumberTab(ids.length);
         // } else {
@@ -284,9 +310,9 @@ export function CustomersDetails(): React.ReactElement {
 
                         <Grid item xs={12} md={6}>
                             <TextField
-                                error={!!(formik.touched.fullName && formik.errors.fullName)}
+                                error={Boolean(formik.touched.fullName && formik.errors.fullName)} // Updated to use Boolean
                                 fullWidth
-                                helperText={formik.touched.fullName && formik.errors.fullName}
+                                helperText={formik.touched.fullName ? formik.errors.fullName : undefined}
                                 label="Full Name"
                                 name="fullName"
                                 onBlur={formik.handleBlur}
@@ -296,9 +322,9 @@ export function CustomersDetails(): React.ReactElement {
                         </Grid>
                         <Grid item xs={12} md={6}>
                             <TextField
-                                error={!!(formik.touched.email && formik.errors.email)}
+                                error={Boolean(formik.touched.email && formik.errors.email)} // Updated to use Boolean
                                 fullWidth
-                                helperText={formik.touched.email && formik.errors.email}
+                                helperText={formik.touched.email ? formik.errors.email : undefined}
                                 label="Email address"
                                 name="email"
                                 onBlur={formik.handleBlur}
@@ -324,8 +350,8 @@ export function CustomersDetails(): React.ReactElement {
                                 value={formik.values.address?.province}
                                 onChange={(value) => formik.setFieldValue('address.province', value.target.value)}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.address?.province && !!formik.errors.address?.province}
-                                helperText={formik.touched.address?.province && formik.errors.address?.province}
+                                error={Boolean(formik.touched.address?.province) && Boolean(formik.errors.address?.province)} // Updated to use Boolean
+                                helperText={formik.touched.address?.province ? formik.errors.address?.province : undefined}
                                 fullWidth
                             >
                                 {provinces.map((province) => (
@@ -346,8 +372,8 @@ export function CustomersDetails(): React.ReactElement {
                                 value={formik.values.address?.district}
                                 onChange={(value) => formik.setFieldValue('address.district', value.target.value)}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.address?.district && !!formik.errors.address?.district}
-                                helperText={formik.touched.address?.district && formik.errors.address?.district}
+                                error={Boolean(formik.touched.address?.district) && Boolean(formik.errors.address?.district)} // Updated to use Boolean
+                                helperText={formik.touched.address?.district ? formik.errors.address?.district : undefined}
                                 fullWidth
                                 disabled={!formik.values.address?.province}
                             >
@@ -369,8 +395,8 @@ export function CustomersDetails(): React.ReactElement {
                                 value={formik.values.address?.ward}
                                 onChange={(value) => formik.setFieldValue('address.ward', value.target.value)}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.address?.ward && !!formik.errors.address?.ward}
-                                helperText={formik.touched.address?.ward && formik.errors.address?.ward}
+                                error={Boolean(formik.touched.address?.ward) && Boolean(formik.errors.address?.ward)} // Updated to use Boolean
+                                helperText={formik.touched.address?.ward ? formik.errors.address?.ward : undefined}
                                 fullWidth
                                 disabled={!formik.values.address?.district}
                             >
@@ -391,23 +417,23 @@ export function CustomersDetails(): React.ReactElement {
                                 name="phone.country"
                                 onChange={(value) => formik.setFieldValue('phone.country', value)}
                                 onBlur={formik.handleBlur}
-                                error={formik.touched.phone?.country && !!formik.errors.phone?.country}
-                                helperText={formik.touched.phone?.country && formik.errors.phone?.country}
+                                error={Boolean(formik.touched.phone?.country) && Boolean(formik.errors.phone?.country)} // Updated to use Boolean
+                                helperText={formik.touched.phone?.country ? formik.errors.phone?.country : undefined}
                                 defaultCountry="VN"
                             />
                         </Grid>
                         <Grid item xs={12} md={8}>
                             <TextField
-                                error={!!(formik.touched.phone?.number && formik.errors.phone?.number)}
+                                error={Boolean(formik.touched.phone?.number && formik.errors.phone?.number)} // Updated to use Boolean
                                 fullWidth
-                                helperText={formik.touched.phone?.number && formik.errors.phone?.number}
+                                helperText={formik.touched.phone?.number ? formik.errors.phone?.number : undefined}
                                 label="Phone Number"
                                 name="phone.number"
                                 onBlur={formik.handleBlur}
                                 onChange={(e) => {
                                     const value = e.target.value;
                                     if (/^\d*$/.test(value)) {
-                                        formik.setFieldValue('phone.number', value);
+                                        void formik.setFieldValue('phone.number', value); 
                                     }
                                 }}
                                 value={formik.values.phone.number}
@@ -421,16 +447,16 @@ export function CustomersDetails(): React.ReactElement {
                         value={formik.values.status}
                         onChange={(value) => formik.setFieldValue('status', value.target.value)}
                         onBlur={formik.handleBlur}
-                        error={formik.touched.status && !!formik.errors.status}
-                        helperText={formik.touched.status && formik.errors.status}
+                        error={Boolean(formik.touched.status) && Boolean(formik.errors.status)} 
+                        helperText={formik.touched.status ? formik.errors.status : undefined}
                         fullWidth
                     >
-                        {status.map((status) => (
+                        {status.map((item: string) => (
                             <MenuItem
-                                key={status}
-                                value={status}
+                                key={item}
+                                value={item}
                             >
-                                {status}
+                                {item}
                             </MenuItem>
                         ))}
                     </TextField>

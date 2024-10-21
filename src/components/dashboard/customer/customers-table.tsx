@@ -23,6 +23,7 @@ import { useSelection } from '@/hooks/use-selection';
 import { CustomersFilters } from './customers-filters';
 import { useDispatch } from 'react-redux';
 import { DialogActions } from '@/redux/dialog';
+import { toast } from 'react-toastify';
 
 interface Location {
   id: string;
@@ -97,19 +98,30 @@ export function CustomersTable(): React.ReactElement {
   }, [page, limit, debouncedSearch]);
 
   useEffect(() => {
-    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-      .then((response) => response.json())
-      .then((data) => setProvinces(data.data));
-  }, []);
+    const fetchProvinces = async (): Promise<void> => { // Added return type
+        try {
+            const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+            const data = await response.json() as { data: Location[] }; 
+            setProvinces(data.data); // No need for additional assertion
+        } catch (error) {
+            toast.error(`Error fetching provinces: ${String(error)}`);
+        }
+    };
+    void fetchProvinces(); // Marked as ignored with void operator
+}, []);
 
-  const handleFindProvince = (id: any) => {
+  const handleFindProvince = (id: string): string | undefined => {
     const province = provinces.find((province) => province.id === id);
     return province?.name;
   }
 
   useEffect(() => {
-    dispatch(DialogActions.setShowCustomerDetails(Array.from(selected)));
-  }, [selected]);
+    dispatch(DialogActions.setShowCustomerDetails(Array.from(selected) as string[]));
+  }, [selected, dispatch]);
+
+  const handleSelectOneCheckbox = (userId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    handleSelectOne(userId, event);
+  };
 
   return (
     <>
@@ -139,9 +151,7 @@ export function CustomersTable(): React.ReactElement {
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={isSelected}
-                        onChange={(event) => {
-                          handleSelectOne(row._id || '', event);
-                        }}
+                        onChange={handleSelectOneCheckbox(row._id || '')}
                       />
                     </TableCell>
                     <TableCell>
@@ -152,7 +162,7 @@ export function CustomersTable(): React.ReactElement {
                     </TableCell>
                     <TableCell>{row.email}</TableCell>
                     <TableCell>{handleFindProvince(row?.address?.province)}</TableCell>
-                    <TableCell>{row.phone && `${row.phone.country} ${row.phone.number}`}</TableCell>
+                    <TableCell>{row.phone ? `${row.phone.country} ${row.phone.number}` : 'N/A'}</TableCell>
                     <TableCell>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   </TableRow>
                 );
