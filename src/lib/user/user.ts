@@ -60,6 +60,31 @@ class UserApi {
       return { error: 'User not found' };
     }
   }
+
+  async getUsers(params: string): Promise<any> {
+    try {
+      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
+        `${envConfig.serverURL}/users/search`,
+        {
+          params,
+        }
+      );
+      return { data: res.data.data?.data, total: res.data.data?.total };
+    } catch (error) {
+      return { error: 'User not found' };
+    }
+  }
+
+  async getUserById(params: string): Promise<any> {
+    try {
+      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
+        `${envConfig.serverURL}/users/find/${params}`,
+      );
+      return res.data.data;
+    } catch (error) {
+      return { error: 'User not found' };
+    }
+  }
 }
 
 export const userApi = new UserApi();

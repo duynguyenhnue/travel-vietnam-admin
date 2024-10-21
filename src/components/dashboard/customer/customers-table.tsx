@@ -21,6 +21,8 @@ import { userApi } from '@/lib/user/user';
 import { useSelection } from '@/hooks/use-selection';
 
 import { CustomersFilters } from './customers-filters';
+import { useDispatch } from 'react-redux';
+import { DialogActions } from '@/redux/dialog';
 
 interface Location {
   id: string;
@@ -38,6 +40,8 @@ export function CustomersTable(): React.ReactElement {
   const selectedSome = (selected?.size ?? 0) > 0 && (selected?.size ?? 0) < paginatedRows.length;
   const selectedAll = paginatedRows.length > 0 && selected?.size === paginatedRows.length;
   const [provinces, setProvinces] = useState<Location[]>([]);
+
+  const dispatch = useDispatch();
 
   const handleChange = (field: 'fullName' | 'email') => (event: React.ChangeEvent<HTMLInputElement>) => {
     setDebouncedSearch((prev) => ({ ...prev, [field]: event.target.value }));
@@ -102,7 +106,11 @@ export function CustomersTable(): React.ReactElement {
     const province = provinces.find((province) => province.id === id);
     return province?.name;
   }
-  
+
+  useEffect(() => {
+    dispatch(DialogActions.setShowCustomerDetails(Array.from(selected)));
+  }, [selected]);
+
   return (
     <>
       <CustomersFilters search={debouncedSearch} handleChange={handleChange} />
