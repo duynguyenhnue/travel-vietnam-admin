@@ -10,6 +10,7 @@ import { config } from '@/config';
 import { AuthPermissionGuard } from '@/components/auth/auth-guard-permission';
 import { RegisterForm } from '@/components/dashboard/customer/customers-create';
 import { CustomersTable } from '@/components/dashboard/customer/customers-table';
+import { CustomersDetails } from '@/components/dashboard/customer/customers-details';
 
 export const metadata = { title: `Customers | ${config.site.name}` } satisfies Metadata;
 export default function Page(): React.JSX.Element {
@@ -28,7 +29,8 @@ export default function Page(): React.JSX.Element {
               </Button>
             </Stack>
           </Stack>
-          <div>
+          <div style={{ display: 'flex', gap: '10px', height: 'min-content' }}>
+            <CustomersDetails />
             <RegisterForm />
           </div>
         </Stack>

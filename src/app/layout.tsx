@@ -1,3 +1,5 @@
+'use client'
+
 import React from 'react';
 import type { Viewport } from 'next';
 
@@ -10,6 +12,8 @@ import { LocalizationProvider } from '@/components/core/localization-provider';
 import { ThemeProvider } from '@/components/core/theme-provider/theme-provider';
 
 import 'react-toastify/dist/ReactToastify.css';
+import store from '@/redux/store';
+import { Provider } from 'react-redux';
 
 export const viewport = { width: 'device-width', initialScale: 1 } satisfies Viewport;
 
@@ -24,7 +28,9 @@ export default function Layout({ children }: LayoutProps): React.JSX.Element {
         <LocalizationProvider>
           <ToastContainer />
           <UserProvider>
-            <ThemeProvider>{children}</ThemeProvider>
+            <Provider store={store}>
+              <ThemeProvider>{children}</ThemeProvider>
+            </Provider>
           </UserProvider>
         </LocalizationProvider>
       </body>
