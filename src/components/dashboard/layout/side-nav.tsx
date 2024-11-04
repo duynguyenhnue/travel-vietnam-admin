@@ -23,7 +23,6 @@ export function SideNav(): React.JSX.Element {
   const [navItemsFilter, setNavItemsFilter] = React.useState<NavItemConfig[]>([]);
 
   React.useEffect(() => {
-    // eslint-disable-next-line array-callback-return -- This is a false positive
     const data = navItems.filter((item: NavItemConfig) => {
       if (item.permission) {
         if (permissions?.includes(item.permission)) {

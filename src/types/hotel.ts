@@ -2,9 +2,24 @@ import { type Address } from '.';
 import { type Review } from './tour';
 
 export interface SearchHotel {
-  search?: string;
-  limit: number;
-  page: number;
+  page?: number;
+  limit?: number;
+  title?: string;
+  price?: string;
+  groupSize?: string;
+  status?: string;
+}
+
+export interface CreateHotelForm {
+  name: string;
+  files: File[] | string[];
+  description: string;
+  price: number;
+  amenities: string[];
+  address: Address;
+  maxGroupSize: number;
+  startDate: string;
+  endDate: string;
 }
 
 export interface Hotel {
@@ -22,4 +37,10 @@ export interface Hotel {
   amenities?: string[];
 
   photos: string[];
+
+  maxGroupSize?: number;
+
+  startDate?: string;
+
+  endDate?: string;
 }
