@@ -61,9 +61,9 @@ class UserApi {
     }
   }
 
-  async getUsers(params: string): Promise<any> {
+  async getUsers(params: string): Promise<{ data?: User[]; total?: number; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
+      const res: AxiosResponse<SuccessResponse<{ data: User[]; total: number }>> = await axios.get(
         `${envConfig.serverURL}/users/search`,
         {
           params,
@@ -75,12 +75,13 @@ class UserApi {
     }
   }
 
-  async getUserById(params: string): Promise<any> {
+  async getUserById(params: string): Promise<{
+    data?: User;
+    error?: string;
+  }> {
     try {
-      const res: AxiosResponse<SuccessResponse<any>> = await axios.get(
-        `${envConfig.serverURL}/users/find/${params}`,
-      );
-      return res.data.data;
+      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(`${envConfig.serverURL}/users/find/${params}`);
+      return { data: res.data.data };
     } catch (error) {
       return { error: 'User not found' };
     }

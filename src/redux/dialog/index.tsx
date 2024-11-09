@@ -1,36 +1,34 @@
-'use client'
+'use client';
 
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 const DialogSlice = createSlice({
-    name: 'dialog',
-    initialState: {
+  name: 'dialog',
+  initialState: {
+    customer: {
+      showDetails: [],
+      datas: [],
+    },
+  },
+  reducers: {
+    setDatasCustomer(state) {
+      return {
+        ...state,
         customer: {
-            showDetails: [],
-            datas: []
-        }
+          ...state.customer,
+        },
+      };
     },
-    reducers: {
-       setDatasCustomer(state, action) {
-            return {
-                ...state,
-                customer: {
-                    ...state.customer,
-                    datas: action.payload
-                }
-            }
-       },
-       setShowCustomerDetails(state, action) {
-            return {
-                ...state,
-                customer: {
-                    ...state.customer,
-                    showDetails: action.payload
-                }
-            }
-       }
+    setShowCustomerDetails(state) {
+      return {
+        ...state,
+        customer: {
+          ...state.customer,
+        },
+      };
     },
-})
+  },
+});
 
 export const DialogActions = DialogSlice.actions;
 export default DialogSlice.reducer;

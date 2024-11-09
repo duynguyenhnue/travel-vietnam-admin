@@ -1,7 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Box, MenuItem, TextField } from '@mui/material';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -12,11 +13,11 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Unstable_Grid2';
+import { MuiTelInput } from 'mui-tel-input';
 
 import { type User } from '@/types/user';
 import { useUser } from '@/hooks/use-user';
-import { Box, MenuItem, TextField } from '@mui/material';
-import { MuiTelInput } from 'mui-tel-input';
+
 interface Location {
   id: string;
   name: string;
@@ -28,7 +29,9 @@ export function AccountDetailsForm(): React.JSX.Element {
   const [districts, setDistricts] = useState<Location[]>([]);
   const [wards, setWards] = useState<Location[]>([]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } }): void => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement> | { target: { name: string; value: string } }
+  ): void => {
     const { name, value } = event.target;
     setUserDetail((prev) => {
       if (!prev) return null;
@@ -41,8 +44,7 @@ export function AccountDetailsForm(): React.JSX.Element {
             country: name === 'phone.country' ? value : prev.phone?.country,
           },
         };
-      }
-      else if (name.includes('address.')) {
+      } else if (name.includes('address.')) {
         return {
           ...prev,
           address: {
@@ -53,32 +55,38 @@ export function AccountDetailsForm(): React.JSX.Element {
           },
         };
       }
-      else return {
+      return {
         ...prev,
         [name]: value,
       };
-      });
+    });
   };
 
   useEffect(() => {
-    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
+    void fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
       .then((response) => response.json())
-      .then((data) => setProvinces(data.data));
+      .then((data: { data: Location[] } | undefined | null) => {
+        setProvinces(data?.data || []);
+      });
   }, []);
 
   useEffect(() => {
     if (userDetail?.address?.province) {
-      fetch(`https://esgoo.net/api-tinhthanh/2/${userDetail.address.province}.htm`)
+      void fetch(`https://esgoo.net/api-tinhthanh/2/${userDetail.address.province}.htm`)
         .then((response) => response.json())
-        .then((data) => setDistricts(data.data));
+        .then((data: { data: Location[] } | undefined | null) => {
+          setDistricts(data?.data || []);
+        });
     }
   }, [userDetail?.address?.province]);
 
   useEffect(() => {
     if (userDetail?.address?.district) {
-      fetch(`https://esgoo.net/api-tinhthanh/3/${userDetail.address.district}.htm`)
+      void fetch(`https://esgoo.net/api-tinhthanh/3/${userDetail.address.district}.htm`)
         .then((response) => response.json())
-        .then((data) => setWards(data.data));
+        .then((data: { data: Location[] } | undefined | null) => {
+          setWards(data?.data || []);
+        });
     }
   }, [userDetail?.address?.district]);
 
@@ -118,7 +126,9 @@ export function AccountDetailsForm(): React.JSX.Element {
             </Grid>
             <Grid md={6} xs={12}>
               <FormControl fullWidth>
-                <InputLabel htmlFor="date-of-birth" shrink>Date Of Birth</InputLabel>
+                <InputLabel htmlFor="date-of-birth" shrink>
+                  Date Of Birth
+                </InputLabel>
                 <OutlinedInput
                   id="date-of-birth"
                   type="date"
@@ -130,19 +140,25 @@ export function AccountDetailsForm(): React.JSX.Element {
               </FormControl>
             </Grid>
             <Grid md={6} xs={12}>
-              <Box sx={{ display: 'flex', height: '100%', gap: '10px', ".MuiInputAdornment-root": { marginTop: '0px !important' }, ".MuiInputBase-input": { paddingTop: '10px !important', paddingBottom: '10px !important' } }}>
+              <Box
+                sx={{
+                  display: 'flex',
+                  height: '100%',
+                  gap: '10px',
+                  '.MuiInputAdornment-root': { marginTop: '0px !important' },
+                  '.MuiInputBase-input': { paddingTop: '10px !important', paddingBottom: '10px !important' },
+                }}
+              >
                 <MuiTelInput
-                  sx={{ width: '170px', height: '100%', ".MuiInputBase-root": { height: '100%' } }}
+                  sx={{ width: '170px', height: '100%', '.MuiInputBase-root': { height: '100%' } }}
                   value={userDetail?.phone?.country}
                   name="phone.country"
-                  onChange={(value, info) => {
-                    handleChange({ target: { name: 'phone.country', value: value } });
+                  onChange={(value) => {
+                    handleChange({ target: { name: 'phone.country', value } });
                   }}
                   defaultCountry="VN"
                 />
-                <FormControl
-                  fullWidth
-                >
+                <FormControl fullWidth>
                   <OutlinedInput
                     sx={{ flex: 1 }}
                     value={userDetail?.phone?.number}
@@ -164,10 +180,7 @@ export function AccountDetailsForm(): React.JSX.Element {
                 fullWidth
               >
                 {provinces.map((province) => (
-                  <MenuItem
-                    key={province.id}
-                    value={province.id}
-                  >
+                  <MenuItem key={province.id} value={province.id}>
                     {province.name}
                   </MenuItem>
                 ))}
@@ -184,10 +197,7 @@ export function AccountDetailsForm(): React.JSX.Element {
                 disabled={!userDetail?.address?.province}
               >
                 {districts.map((district) => (
-                  <MenuItem
-                    key={district.id}
-                    value={district.id}
-                  >
+                  <MenuItem key={district.id} value={district.id}>
                     {district.name}
                   </MenuItem>
                 ))}
@@ -205,10 +215,7 @@ export function AccountDetailsForm(): React.JSX.Element {
                 disabled={!userDetail?.address?.district}
               >
                 {wards.map((ward) => (
-                  <MenuItem
-                    key={ward.id}
-                    value={ward.id}
-                  >
+                  <MenuItem key={ward.id} value={ward.id}>
                     {ward.name}
                   </MenuItem>
                 ))}
