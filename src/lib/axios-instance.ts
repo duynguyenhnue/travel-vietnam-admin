@@ -1,4 +1,5 @@
 import axios, { type AxiosError, type AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 
 import { envConfig, localStorageConfig } from '@/config';
@@ -35,10 +36,10 @@ const setupAxiosInterceptors = (_onUnauthenticated: () => void): void => {
 
       if (status === 403 || status === 401) {
         try {
-          const refreshToken = localStorage.getItem(REFRESH_TOKEN);
+          const refreshToken = Cookies.get(REFRESH_TOKEN);
+
           if (!refreshToken) {
             localStorage.removeItem(ACCESS_TOKEN);
-            localStorage.removeItem(REFRESH_TOKEN);
           } else {
             const newAccessToken: AxiosResponse<SuccessResponse<RefreshTokenResponse>> = await axios.post(
               `${envConfig.serverURL}/auth/refresh-token`,
@@ -56,7 +57,6 @@ const setupAxiosInterceptors = (_onUnauthenticated: () => void): void => {
           }
         } catch (error) {
           localStorage.removeItem(ACCESS_TOKEN);
-          localStorage.removeItem(REFRESH_TOKEN);
           window.location.reload();
           toast.error('Your session has expired. Please log in again.');
           return Promise.reject(err);

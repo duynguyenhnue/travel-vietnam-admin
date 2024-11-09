@@ -3,9 +3,9 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
+import { toast } from 'react-toastify';
 
 import { paths } from '@/paths';
-import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
 
 export interface AuthGuardProps {
@@ -33,7 +33,7 @@ export function AuthGuard({ children }: AuthGuardProps): React.JSX.Element | nul
     }
 
     if (!user) {
-      logger.debug('[AuthGuard]: User is not logged in, redirecting to sign in');
+      toast.error('You need to sign in to access this page');
       router.replace(paths.auth.signIn);
       return;
     }
