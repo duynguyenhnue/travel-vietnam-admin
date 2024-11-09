@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-toastify';
 
 import type { User } from '@/types/user';
 import { localStorageConfig } from '@/config';
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
-import { logger } from '@/lib/default-logger';
 
 export interface UserContextValue {
   user: User | null;
@@ -52,8 +52,8 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
       if (error) {
         router.push(paths.auth.signIn);
-
-        logger.error(error);
+        toast.error('Something went wrong');
+        window.location.reload();
         setState((prev) => ({
           ...prev,
           user: null,
@@ -68,7 +68,8 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
 
       if (response.error) {
         router.push(paths.auth.signIn);
-        logger.error(error);
+        toast.error('Something went wrong');
+        window.location.reload();
         setState((prev) => ({
           ...prev,
           user: null,
@@ -76,6 +77,7 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
           error: 'Something went wrong1',
           isLoading: false,
         }));
+
         router.push(paths.auth.signIn);
         return;
       }
@@ -89,7 +91,8 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
       }));
     } catch (err) {
       router.push(paths.auth.signIn);
-      logger.error(err);
+      toast.error('Something went wrong');
+      window.location.reload();
       setState((prev) => ({
         ...prev,
         user: null,
@@ -101,9 +104,10 @@ export function UserProvider({ children }: UserProviderProps): React.JSX.Element
   }, [router]);
 
   React.useEffect(() => {
-    checkSession().catch((err: unknown) => {
+    checkSession().catch(() => {
       router.push(paths.auth.signIn);
-      logger.error(err);
+      toast.error('Your session has expired. Please log in again.');
+      window.location.reload();
     });
   }, [checkSession, router]);
 

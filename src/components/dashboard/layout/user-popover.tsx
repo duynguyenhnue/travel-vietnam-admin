@@ -11,10 +11,10 @@ import Typography from '@mui/material/Typography';
 import { GearSix as GearSixIcon } from '@phosphor-icons/react/dist/ssr/GearSix';
 import { SignOut as SignOutIcon } from '@phosphor-icons/react/dist/ssr/SignOut';
 import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
+import { toast } from 'react-toastify';
 
 import { paths } from '@/paths';
 import { authClient } from '@/lib/auth/client';
-import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
 
 export interface UserPopoverProps {
@@ -33,7 +33,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       const { error } = await authClient.signOut();
 
       if (error) {
-        logger.error('Sign out error', error);
+        toast.error('Something went wrong');
         return;
       }
 
@@ -44,7 +44,7 @@ export function UserPopover({ anchorEl, onClose, open }: UserPopoverProps): Reac
       router.refresh();
       // After refresh, AuthGuard will handle the redirect
     } catch (err) {
-      logger.error('Sign out error', err);
+      toast.error('Something went wrong');
     }
   }, [checkSession, router]);
 

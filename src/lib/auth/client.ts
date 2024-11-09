@@ -1,6 +1,7 @@
 'use client';
 
 import axios, { type AxiosResponse } from 'axios';
+import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 
 import type { User } from '@/types/user';
@@ -59,8 +60,12 @@ class AuthClient {
       );
 
       localStorage.setItem(localStorageConfig.accessToken, res.data.data?.access_token || '');
-      localStorage.setItem(localStorageConfig.refreshToken, res.data.data?.refresh_token || '');
-
+      Cookies.set(localStorageConfig.refreshToken, res.data.data?.refresh_token || '', {
+        path: '/',
+        secure: true,
+        sameSite: 'Strict',
+        expires: 1 / 1440,
+      });
       return {};
     } catch (error) {
       toast.error('Failed to sign in');
@@ -78,7 +83,11 @@ class AuthClient {
 
   async getUser(): Promise<{ data?: User | null; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(`${envConfig.serverURL}/users`);
+      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(`${envConfig.serverURL}/users`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem(localStorageConfig.accessToken)}`,
+        },
+      });
 
       return { data: res.data.data };
     } catch (error) {
@@ -94,6 +103,11 @@ class AuthClient {
         `${envConfig.serverURL}/roles/permissions`,
         {
           role,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem(localStorageConfig.accessToken)}`,
+          },
         }
       );
       return { data: res.data?.data };

@@ -3,10 +3,10 @@
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
 import Alert from '@mui/material/Alert';
+import { toast } from 'react-toastify';
 
 import { localStorageConfig } from '@/config';
 import { paths } from '@/paths';
-import { logger } from '@/lib/default-logger';
 import { useUser } from '@/hooks/use-user';
 
 export interface GuestGuardProps {
@@ -34,7 +34,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     }
 
     if (user) {
-      logger.debug('[GuestGuard]: User is logged in, redirecting to dashboard');
+      toast.error('You are already signed in');
       router.replace(paths.dashboard.overview);
       return;
     }
