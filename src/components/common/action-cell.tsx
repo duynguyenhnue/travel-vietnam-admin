@@ -12,9 +12,10 @@ import { ViewRoles } from '../dashboard/roles/roles-view';
 import { UpdateTour } from '../dashboard/tour/tour-update';
 import { TourView } from '../dashboard/tour/tour-view';
 import { CommonDelete } from './common-delete';
+import { Hotel } from '@/types/hotel';
 
 interface ActionCellProps {
-  data: Tour | Roles;
+  data: Tour | Roles | Hotel;
 }
 
 export function ActionCell(props: ActionCellProps): React.ReactElement {
