@@ -26,6 +26,14 @@ export interface SignUpParams {
   phone: Phone;
 }
 
+export interface UpdateUserParams {
+  email: string;
+  fullName: string;
+  dateOfBirth: string;
+  address: Address;
+  phone: Phone;
+}
+
 export interface SearchUsers {
   page: number;
   limit: number;

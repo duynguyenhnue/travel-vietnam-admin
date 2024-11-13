@@ -2,6 +2,16 @@
 
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+interface CustomerData {
+    id: string;
+    name: string;
+}
+
+export interface CustomerState {
+    showDetails: string[];
+    datas: CustomerData[];
+}
+
 const DialogSlice = createSlice({
   name: 'dialog',
   initialState: {

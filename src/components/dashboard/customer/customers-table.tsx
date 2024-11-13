@@ -160,7 +160,7 @@ export function CustomersTable(): React.ReactElement {
                     </TableCell>
                     <TableCell>{row.email}</TableCell>
                     <TableCell>{handleFindProvince(row?.address?.province)}</TableCell>
-                    <TableCell>{row.phone && `${row.phone.country} ${row.phone.number}`}</TableCell>
+                    <TableCell>{row.phone ? `${row.phone.country} ${row.phone.number}` : 'N/A'}</TableCell>
                     <TableCell>{dayjs(row.createdAt).format('MMM D, YYYY')}</TableCell>
                   </TableRow>
                 );
