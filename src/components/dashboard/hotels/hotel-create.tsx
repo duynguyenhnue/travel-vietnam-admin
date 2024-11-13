@@ -19,8 +19,7 @@ import {
 import { Plus as PlusIcon } from '@phosphor-icons/react/dist/ssr/Plus';
 import { useFormik } from 'formik';
 
-import { type Hotel } from '@/types/hotel';
-import { type CreateHotelForm } from '@/types/hotel';
+import type { Hotel, CreateHotelForm } from '@/types/hotel';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { validationHotel } from '@/lib/yub/index';
 import { ImageUpload } from './common/image-upload';
@@ -46,7 +45,6 @@ export function CreateHotel(): React.ReactElement {
       name: '',
       description: '',
       price: 0,
-      maxGroupSize: 1,
       startDate: '',
       endDate: '',
       address: { province: '', district: '', ward: '' },
@@ -160,7 +158,7 @@ export function CreateHotel(): React.ReactElement {
                       id="checkboxes-tags-demo"
                       options={amenities}
                       disableCloseOnSelect
-                      getOptionLabel={(option) => option.title}
+                      getOptionLabel={(option) => option}
                       onChange={(event, value) => {
                         void formik.setFieldValue('amenities', value); 
                       }}
@@ -173,7 +171,7 @@ export function CreateHotel(): React.ReactElement {
                               style={{ marginRight: 8 }}
                               checked={selected}
                             />
-                            {option.title}
+                            {option}
                           </li>
                         );
                       }}
@@ -226,9 +224,6 @@ export function CreateHotel(): React.ReactElement {
                 type="submit"
                 variant="contained"
                 sx={{ marginTop: 2 }}
-                // onClick={() => {
-                //   formik.submitForm();
-                // }}
               >
                 Create Hotel
               </Button>

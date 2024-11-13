@@ -24,10 +24,7 @@ export function AccountInfo(): React.JSX.Element {
           <Stack spacing={1} sx={{ textAlign: 'center' }}>
             <Typography variant="h5">{user?.fullName || 'Unknown User'}</Typography>
             <Typography color="text.secondary" variant="body2">
-              {user?.address ? `${user.address.province}, ${user.address.district}, ${user.address.ward}` : 'Address not available'}
-            </Typography>
-            <Typography color="text.secondary" variant="body2">
-              {user?.phone ? `${user.phone.country} ${user.phone.number}` : 'Phone not available'}
+              {user?.phone ? `${user.phone.country}. ${user.phone.number?.replace(/(?:\d{3})(?=\d)/g, '$&. ')}` : 'Phone not available'}
             </Typography>
           </Stack>
         </Stack>

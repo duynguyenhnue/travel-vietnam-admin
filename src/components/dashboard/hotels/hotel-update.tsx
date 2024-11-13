@@ -13,16 +13,23 @@ import {
   Stack,
   TextField,
   Typography,
+  Autocomplete,
+  Checkbox,
 } from '@mui/material';
 import { useFormik } from 'formik';
 
-import { type Hotel } from '@/types/hotel';
-import { type CreateHotelForm } from '@/types/hotel';
+import type { CreateHotelForm, Hotel } from '@/types/hotel';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { validationHotel } from '@/lib/yub/index';
 import { ImageUpload } from './common/image-upload';
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
+import { amenities } from '@/data/amenities';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 interface HotelUpdateProps {
   open: boolean;
@@ -45,7 +52,6 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
       price: 0,
       amenities: [],
       address: { province: '', district: '', ward: '' },
-      maxGroupSize: 1,
       startDate: '',
       endDate: '',
     },
@@ -68,7 +74,6 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
           price: response.data.price ?? 0,
           amenities: response.data.amenities ?? [],
           address: response.data.address ?? { province: '', district: '', ward: '' },
-          maxGroupSize: response.data.maxGroupSize ?? 0,
           startDate: response.data.startDate ?? '',
           endDate: response.data.endDate ?? '',
         });
@@ -77,7 +82,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
     if (open) {
       void fetchData();
     }
-  }, [open]);
+  }, [open, hotelId, formik]);
 
   const handleClose = (): void => {
     setOpenHotel(false);
@@ -100,7 +105,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
         <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
           <DialogTitle>
             <Typography variant="h3" textAlign="center" sx={{ fontWeight: 'bold' }}>
-              Update Tour
+              Update Hotel
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -116,7 +121,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
                 <Grid item xs={12}>
                   <Box>
                     <TextField
-                      label="Tour Title"
+                      label="Hotel Name"
                       variant="outlined"
                       fullWidth
                       name="name"
@@ -161,16 +166,32 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <Box>
-                    <TextField
-                      label="Max Group Size"
-                      type="number"
-                      variant="outlined"
-                      fullWidth
-                      name="maxGroupSize"
-                      value={formik.values.maxGroupSize}
-                      onChange={formik.handleChange}
-                      error={formik.touched.maxGroupSize ? Boolean(formik.errors.maxGroupSize) : undefined}
-                      helperText={formik.touched.maxGroupSize ? formik.errors.maxGroupSize : null}
+                    <Autocomplete
+                      multiple
+                      id="checkboxes-tags-demo"
+                      options={amenities}
+                      disableCloseOnSelect
+                      getOptionLabel={(option) => option}
+                      onChange={(event, value) => {
+                        void formik.setFieldValue('amenities', value);
+                      }}
+                      renderOption={(propsTest, option, { selected }) => {
+                        return (
+                          <li {...propsTest}>
+                            <Checkbox
+                              icon={icon}
+                              checkedIcon={checkedIcon}
+                              style={{ marginRight: 8 }}
+                              checked={selected}
+                            />
+                            {option}
+                          </li>
+                        );
+                      }}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Checkboxes" placeholder="Favorites" />
+                      )}
+                      value={formik.values.amenities || []}
                     />
                   </Box>
                 </Grid>
@@ -214,7 +235,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
           <DialogActions>
             <Stack direction="row" width="100%" justifyContent="space-around">
               <Button type="submit" variant="contained" sx={{ marginTop: 2 }}>
-                Update Tour
+                Update Hotel
               </Button>
               <Button onClick={onClose} variant="contained" sx={{ marginTop: 2 }}>
                 Cancel

@@ -1,7 +1,8 @@
 'use client';
 
 import { configureStore } from '@reduxjs/toolkit';
-import { useSelector, TypedUseSelectorHook } from 'react-redux';
+import { useSelector } from 'react-redux';
+import type { TypedUseSelectorHook } from 'react-redux';
 import dialog from './dialog';
 
 const store = configureStore({

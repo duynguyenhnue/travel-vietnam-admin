@@ -34,7 +34,7 @@ export function GuestGuard({ children }: GuestGuardProps): React.JSX.Element | n
     }
 
     if (user) {
-      toast.error('You are already signed in');
+      toast.success('You are already signed in');
       router.replace(paths.dashboard.overview);
       return;
     }

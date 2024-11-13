@@ -17,7 +17,6 @@ export interface CreateHotelForm {
   price: number;
   amenities: string[];
   address: Address;
-  maxGroupSize: number;
   startDate: string;
   endDate: string;
 }

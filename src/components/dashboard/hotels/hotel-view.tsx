@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from 'react';
 import {
+  Autocomplete,
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -16,12 +18,18 @@ import {
 } from '@mui/material';
 import { useFormik } from 'formik';
 
-import { CreateHotelForm, type Hotel } from '@/types/hotel';
+import type { CreateHotelForm, Hotel } from '@/types/hotel';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { validationHotel } from '@/lib/yub/index';
 import { ImageUpload } from './common/image-upload';
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
+import { amenities } from '@/data/amenities';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+
+const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
 interface HotelViewProps {
   open: boolean;
@@ -32,7 +40,7 @@ interface HotelViewProps {
 export function HotelView(props: HotelViewProps): React.ReactElement {
   const { open, onClose, hotelId } = props;
   const [openHotel, setOpenHotel] = useState(false);
-  const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [hotels] = useState<Hotel[]>([]);
   // const [page, setPage] = useState(0);
   const [visible, setVisible] = useState(true);
 
@@ -44,7 +52,6 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
       price: 0,
       amenities: [],
       address: { province: '', district: '', ward: '' },
-      maxGroupSize: 1,
       startDate: '',
       endDate: '',
     },
@@ -67,7 +74,6 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
           price: response.data.price ?? 0,
           amenities: response.data.amenities ?? [],
           address: response.data.address ?? { province: '', district: '', ward: '' },
-          maxGroupSize: response.data.maxGroupSize ?? 0,
           startDate: response.data.startDate ?? '',
           endDate: response.data.endDate ?? '',
         });
@@ -76,18 +82,17 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
     if (open) {
       void fetchData();
     }
-  }, [open]);
+  }, [open, hotelId, formik]);
 
-  const handleClickOpen = async (): Promise<void> => {
-    const response = await hotelApi.searchHotels({
-      name: formik.values.name,
-      maxGroupSize: formik.values.maxGroupSize.toString(),
-      price: formik.values.price.toString(),
-    });
-    setHotels(response.data || []);
-    setOpenHotel(true);
-    setVisible(false);
-  };
+  // const handleClickOpen = async (): Promise<void> => {
+  //   const response = await hotelApi.searchHotels({
+  //     name: formik.values.name,
+  //     price: formik.values.price.toString(),
+  //   });
+  //   setHotels(response.data || []);
+  //   setOpenHotel(true);
+  //   setVisible(false);
+  // };
 
   const handleClose = (): void => {
     setOpenHotel(false);
@@ -110,7 +115,7 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
         <form onSubmit={formik.handleSubmit} style={{ width: '100%' }}>
           <DialogTitle>
             <Typography variant="h3" textAlign="center" sx={{ fontWeight: 'bold' }}>
-              View Tour
+              View Hotel
             </Typography>
           </DialogTitle>
           <DialogContent>
@@ -127,7 +132,7 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
                 <Grid item xs={12}>
                   <Box>
                     <TextField
-                      label="Tour Title"
+                      label="Hotel Name"
                       variant="outlined"
                       fullWidth
                       name="name"
@@ -175,24 +180,33 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
                 </Grid>
                 <Grid item xs={12} sm={4}>
                   <Box>
-                    <TextField
-                      label="Max Group Size"
-                      type="number"
-                      variant="outlined"
-                      fullWidth
-                      name="maxGroupSize"
-                      value={formik.values.maxGroupSize}
-                      onChange={formik.handleChange}
-                      error={formik.touched.maxGroupSize ? Boolean(formik.errors.maxGroupSize) : undefined}
-                      helperText={formik.touched.maxGroupSize ? formik.errors.maxGroupSize : null}
+                    <Autocomplete
+                      multiple
+                      id="checkboxes-tags-demo"
+                      options={amenities}
+                      disableCloseOnSelect
+                      getOptionLabel={(option) => option}
+                      renderOption={(propsTest, option, { selected }) => (
+                        <li {...propsTest}>
+                          <Checkbox
+                            icon={icon}
+                            checkedIcon={checkedIcon}
+                            style={{ marginRight: 8 }}
+                            checked={selected}
+                            disabled
+                          />
+                          {option}
+                        </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Amenities" placeholder="Select Amenities" />
+                      )}
+                      value={formik.values.amenities || []}
+                      onChange={(event, newValue) => formik.setFieldValue("amenities", newValue)}
                       disabled
                     />
+
                   </Box>
-                </Grid>
-                <Grid item xs={12} sm={4}>
-                  <Button fullWidth sx={{ height: '100%' }} variant="contained" onClick={handleClickOpen}>
-                    View Hotel
-                  </Button>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -268,9 +282,9 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
                   count={Math.ceil(hotels.length / 10)}
                   sx={{ display: 'flex', justifyContent: 'center' }}
                   color="primary"
-                  // onChange={(_, newPage) => {
-                  //   setPage(newPage);
-                  // }}
+                // onChange={(_, newPage) => {
+                //   setPage(newPage);
+                // }}
                 />
               ) : null}
             </Stack>

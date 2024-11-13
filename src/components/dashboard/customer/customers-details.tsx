@@ -14,7 +14,8 @@ import { MuiTelInput } from 'mui-tel-input';
 import * as Yup from 'yup';
 
 import { type User } from '@/types/user';
-import { SignUpParams, userApi } from '@/lib/user/user';
+import { userApi } from '@/lib/user/user';
+import type { SignUpParams } from '@/lib/user/user';
 import { useSelectorRedux } from '@/redux/store';
 import { toast } from 'react-toastify';
 
@@ -99,7 +100,7 @@ export function CustomersDetails(): React.ReactElement {
   const [dialogOpen, setDialogOpen] = useState(false);
   const customers = useSelectorRedux((state) => state.dialog.customer);
   const [showCustomer, setShowCustomer] = useState<string | null>(null);
-
+  const [imgProfile, setImgProfile] = useState<File | null>(null);
   const formik = useFormik({
     initialValues,
     validationSchema,
@@ -201,16 +202,15 @@ export function CustomersDetails(): React.ReactElement {
     return () => {
       clearTimeout(timer);
     };
-  }, [showCustomer]);
+  }, [showCustomer, formik]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
     const file = event.target?.files?.[0];
-    if (!file) {
-      return;
+    if (file) {
+      setImgProfile(file);
     }
-    // setImgProfile(file);
   };
 
   const handlePervious = () => {
@@ -259,7 +259,7 @@ export function CustomersDetails(): React.ReactElement {
               >
                 <Avatar
                   alt="Remy Sharp"
-                  src={formik.values.avatar}
+                  src={imgProfile ? URL.createObjectURL(imgProfile) : formik.values.avatar}
                   sx={{
                     width: '100%',
                     height: '100%',
