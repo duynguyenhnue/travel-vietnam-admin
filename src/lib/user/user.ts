@@ -20,7 +20,7 @@ export interface Phone {
 export interface SignUpParams {
   email: string;
   fullName: string;
-  password: string;
+  password?: string;
   dateOfBirth: string;
   address: Address;
   phone: Phone;
@@ -41,11 +41,6 @@ export interface SearchUsers {
   email: string;
 }
 
-interface UserResponse {
-  data: User[]; // Assuming User is already defined
-  total: number;
-}
-
 class UserApi {
   constructor() {
     setupAxiosInterceptors((): Promise<void> => Promise.resolve());
@@ -54,15 +49,6 @@ class UserApi {
   async createUser(data: SignUpParams): Promise<{ error?: string }> {
     try {
       await axios.post(`${envConfig.serverURL}/auth/register`, data);
-      return { error: '' };
-    } catch (error) {
-      return { error: 'Failed to sign up' };
-    }
-  }
-
-  async updateUser(data: UpdateUserParams, id: string): Promise<{ error?: string }> {
-    try {
-      await axios.put(`${envConfig.serverURL}/users/update/${id}`, data);
       return { error: '' };
     } catch (error) {
       return { error: 'Failed to sign up' };
@@ -85,7 +71,7 @@ class UserApi {
 
   async getUsers(params: string): Promise<{ data?: User[]; total?: number; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<UserResponse>> = await axios.get(
+      const res: AxiosResponse<SuccessResponse<{ data: User[]; total: number }>> = await axios.get(
         `${envConfig.serverURL}/users/search`,
         {
           params,
@@ -97,16 +83,26 @@ class UserApi {
     }
   }
 
-  async getUserById(params: string): Promise<{ data?: User | undefined; error?: string }> {
+  async getUserById(params: string): Promise<{
+    data?: User;
+    error?: string;
+  }> {
     try {
-      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(
-        `${envConfig.serverURL}/users/find/${params}`,
-      );
+      const res: AxiosResponse<SuccessResponse<User>> = await axios.get(`${envConfig.serverURL}/users/find/${params}`);
       return { data: res.data.data };
     } catch (error) {
       return { error: 'User not found' };
     }
   }
+
+  async updateUser(id: string, data: SignUpParams): Promise<{ error?: string }> {
+    try {
+      await axios.put(`${envConfig.serverURL}/users/${id}`, data);
+      return { error: '' };
+    } catch (error) {
+      return { error: 'Failed to update user' };
+    }
+  } 
 }
 
 export const userApi = new UserApi();

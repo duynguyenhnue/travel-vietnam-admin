@@ -6,6 +6,7 @@ export class Phone {
 }
 
 export interface User {
+  status: Status;
   _id?: string;
   fullName: string;
   email: string;
@@ -15,5 +16,11 @@ export interface User {
   createdAt: string;
   avatar: string;
   role: string;
-  status: string;
+}
+
+export enum Status {
+  ACTIVE = 'ACTIVE',
+  INACTIVATED = 'INACTIVATED',
+  REMOVED = 'REMOVED',
+  NOTACTIVATED = 'NOT ACTIVATED',
 }

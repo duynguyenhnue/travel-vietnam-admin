@@ -23,7 +23,6 @@ import { useSelection } from '@/hooks/use-selection';
 import { CustomersFilters } from './customers-filters';
 import { useDispatch } from 'react-redux';
 import { DialogActions } from '@/redux/dialog';
-import { toast } from 'react-toastify';
 
 interface Location {
   id: string;
@@ -98,30 +97,27 @@ export function CustomersTable(): React.ReactElement {
   }, [page, limit, debouncedSearch]);
 
   useEffect(() => {
-    const fetchProvinces = async (): Promise<void> => { // Added return type
-        try {
-            const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
-            const data = await response.json() as { data: Location[] }; 
-            setProvinces(data.data); // No need for additional assertion
-        } catch (error) {
-            toast.error(`Error fetching provinces: ${String(error)}`);
-        }
+    const fetchProvinces = async () => {
+      const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = (await response.json()) as { data: Location[] };
+      setProvinces(data.data);
     };
-    void fetchProvinces(); // Marked as ignored with void operator
-}, []);
 
-  const handleFindProvince = (id: string): string | undefined => {
+    void fetchProvinces();
+  }, []);
+
+  const handleFindProvince = (id: string) => {
     const province = provinces.find((province) => province.id === id);
     return province?.name;
   }
 
   useEffect(() => {
-    dispatch(DialogActions.setShowCustomerDetails(Array.from(selected) as string[]));
-  }, [selected, dispatch]);
-
-  const handleSelectOneCheckbox = (userId: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-    handleSelectOne(userId, event);
-  };
+    const selectedArray = Array.from(selected).filter((id) => id !== undefined);
+    dispatch(DialogActions.setShowCustomer(selectedArray));
+  }, [selected]);
 
   return (
     <>
@@ -151,7 +147,9 @@ export function CustomersTable(): React.ReactElement {
                     <TableCell padding="checkbox">
                       <Checkbox
                         checked={isSelected}
-                        onChange={handleSelectOneCheckbox(row._id || '')}
+                        onChange={(event) => {
+                          handleSelectOne(row._id || '', event);
+                        }}
                       />
                     </TableCell>
                     <TableCell>
