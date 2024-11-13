@@ -11,11 +11,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import dayjs, { type Dayjs } from 'dayjs';
 import { useFormik } from 'formik';
 import { MuiTelInput } from 'mui-tel-input';
-import { useSelector } from 'react-redux';
 import * as Yup from 'yup';
 
 import { type User } from '@/types/user';
-import { userApi, type SignUpParams } from '@/lib/user/user';
+import { SignUpParams, userApi } from '@/lib/user/user';
+import { useSelectorRedux } from '@/redux/store';
 
 interface Location {
   id: string;
@@ -96,28 +96,28 @@ const validationSchema = Yup.object({
 
 export function CustomersDetails(): React.ReactElement {
   const [dialogOpen, setDialogOpen] = useState(false);
-  const customers = useSelector((state: RootState) => state.dialog.customer);
+  const customers = useSelectorRedux((state) => state.dialog.customer);
   const [showCustomer, setShowCustomer] = useState<string | null>(null);
 
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: async (values): Promise<void> => {
+    onSubmit: async (values: RegisterValues): Promise<void> => {
       try {
-        // const registerData: SignUpParams = {
-        //   email: values.email.toLowerCase(),
-        //   fullName: values.fullName,
-        //   dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : '',
-        //   address: {
-        //     province: values.address.province,
-        //     district: values.address.district,
-        //     ward: values.address.ward,
-        //   },
-        //   phone: {
-        //     country: values.phone.country,
-        //     number: values.phone.number,
-        //   },
-        // };
+        const registerData: SignUpParams = {
+          email: values.email.toLowerCase(),
+          fullName: values.fullName,
+          dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : '',
+          address: {
+            province: values.address.province,
+            district: values.address.district,
+            ward: values.address.ward,
+          },
+          phone: {
+            country: values.phone.country,
+            number: values.phone.number,
+          },
+        };
         // void (await userApi.createUser(registerData));
       } catch (err) {
         // if (isMounted()) {
@@ -129,7 +129,7 @@ export function CustomersDetails(): React.ReactElement {
   });
 
   const handleDetailsClick = (): void => {
-    setShowCustomer(customers.showDetails[0] || null);
+    setShowCustomer(customers[0] || null);
     setDialogOpen(true);
   };
 
@@ -162,7 +162,7 @@ export function CustomersDetails(): React.ReactElement {
 
   useEffect(() => {
     if (formik.values.address.district) {
-      void fetch(`https://esgoo.net/api-tinhthanh/3/${userDetail.address.district}.htm`)
+      void fetch(`https://esgoo.net/api-tinhthanh/3/${formik.values.address.district}.htm`)
         .then((response) => response.json())
         .then((data: { data: Location[] } | undefined | null) => {
           setWards(data?.data || []);

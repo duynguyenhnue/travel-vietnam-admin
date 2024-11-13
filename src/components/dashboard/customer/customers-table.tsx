@@ -97,18 +97,29 @@ export function CustomersTable(): React.ReactElement {
   }, [page, limit, debouncedSearch]);
 
   useEffect(() => {
-    fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
-      .then((response) => response.json())
-      .then((data) => setProvinces(data.data));
+    const fetchProvinces = async () => {
+      try {
+        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+        const data: { data: Location[] } = await response.json();
+        setProvinces(data.data);
+      } catch (error) {
+        console.error('Error fetching provinces:', error);
+      }
+    };
+
+    void fetchProvinces();
   }, []);
 
-  const handleFindProvince = (id: any) => {
+  const handleFindProvince = (id: string) => {
     const province = provinces.find((province) => province.id === id);
     return province?.name;
   }
 
   useEffect(() => {
-    dispatch(DialogActions.setShowCustomerDetails(Array.from(selected)));
+    const selectedArray = Array.from(selected).filter((id) => id !== undefined) as string[];
+    console.log(selectedArray);
+    
+    dispatch(DialogActions.setShowCustomer(selectedArray));
   }, [selected]);
 
   return (

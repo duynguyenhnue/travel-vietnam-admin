@@ -20,7 +20,7 @@ export interface Phone {
 export interface SignUpParams {
   email: string;
   fullName: string;
-  password: string;
+  password?: string;
   dateOfBirth: string;
   address: Address;
   phone: Phone;
