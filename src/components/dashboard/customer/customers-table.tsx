@@ -98,13 +98,12 @@ export function CustomersTable(): React.ReactElement {
 
   useEffect(() => {
     const fetchProvinces = async () => {
-      try {
-        const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
-        const data: { data: Location[] } = await response.json();
-        setProvinces(data.data);
-      } catch (error) {
-        console.error('Error fetching provinces:', error);
+      const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
       }
+      const data = (await response.json()) as { data: Location[] };
+      setProvinces(data.data);
     };
 
     void fetchProvinces();
@@ -116,9 +115,7 @@ export function CustomersTable(): React.ReactElement {
   }
 
   useEffect(() => {
-    const selectedArray = Array.from(selected).filter((id) => id !== undefined) as string[];
-    console.log(selectedArray);
-    
+    const selectedArray = Array.from(selected).filter((id) => id !== undefined);
     dispatch(DialogActions.setShowCustomer(selectedArray));
   }, [selected]);
 

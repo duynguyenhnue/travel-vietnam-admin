@@ -86,6 +86,15 @@ class UserApi {
       return { error: 'User not found' };
     }
   }
+
+  async updateUser(id: string, data: SignUpParams): Promise<{ error?: string }> {
+    try {
+      await axios.put(`${envConfig.serverURL}/users/${id}`, data);
+      return { error: '' };
+    } catch (error) {
+      return { error: 'Failed to update user' };
+    }
+  } 
 }
 
 export const userApi = new UserApi();

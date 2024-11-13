@@ -16,6 +16,7 @@ import * as Yup from 'yup';
 import { type User } from '@/types/user';
 import { SignUpParams, userApi } from '@/lib/user/user';
 import { useSelectorRedux } from '@/redux/store';
+import { toast } from 'react-toastify';
 
 interface Location {
   id: string;
@@ -118,12 +119,9 @@ export function CustomersDetails(): React.ReactElement {
             number: values.phone.number,
           },
         };
-        // void (await userApi.createUser(registerData));
+        void (await userApi.updateUser(customers[0], registerData));
       } catch (err) {
-        // if (isMounted()) {
-        //     helpers.setStatus({ success: false });
-        //     helpers.setSubmitting(false);
-        // }
+        toast.error(err as string);
       }
     },
   });
