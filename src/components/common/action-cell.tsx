@@ -12,7 +12,9 @@ import { ViewRoles } from '../dashboard/roles/roles-view';
 import { UpdateTour } from '../dashboard/tour/tour-update';
 import { TourView } from '../dashboard/tour/tour-view';
 import { CommonDelete } from './common-delete';
-import { Hotel } from '@/types/hotel';
+import type { Hotel } from '@/types/hotel';
+import { UpdateHotel } from '../dashboard/hotels/hotel-update';
+import { HotelView } from '../dashboard/hotels/hotel-view';
 
 interface ActionCellProps {
   data: Tour | Roles | Hotel;
@@ -91,7 +93,23 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
         </>
       ) : null}
 
-      {data && 'name' in data ? (
+      {data && 'amenities' in data ? (
+        <>
+          {action === 'delete' && (
+            <CommonDelete
+              open={openDialog}
+              onClose={handleCloseDiaLog}
+              onDelete={handleDelete}
+              title={('name' in data && data?.name) || ''}
+            />
+          )}
+          {action === 'update' && <UpdateHotel open={openDialog} onClose={handleCloseDiaLog} hotelId={data._id || ''} />}
+
+          {action === 'view' && <HotelView open={openDialog} onClose={handleCloseDiaLog} hotelId={data._id || ''} />}
+        </>
+      ) : null}
+
+      {data && 'permissions' in data ? (
         <>
           {action === 'delete' && (
             <CommonDelete

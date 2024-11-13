@@ -97,7 +97,7 @@ export function CustomersTable(): React.ReactElement {
   }, [page, limit, debouncedSearch]);
 
   useEffect(() => {
-    const fetchProvinces = async () => {
+    const fetchProvinces = async (): Promise<void> => {
       const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -117,7 +117,7 @@ export function CustomersTable(): React.ReactElement {
   useEffect(() => {
     const selectedArray = Array.from(selected).filter((id) => id !== undefined);
     dispatch(DialogActions.setShowCustomer(selectedArray));
-  }, [selected]);
+  }, [selected, dispatch]);
 
   return (
     <>

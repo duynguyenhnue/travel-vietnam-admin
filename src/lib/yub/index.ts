@@ -19,11 +19,6 @@ export const validationHotel = Yup.object().shape({
     .typeError('Price must be a numeric value.')
     .positive('Price must be a positive number.'),
 
-  maxGroupSize: Yup.number()
-    .required('Max Group Size is required.')
-    .min(1, 'Max Group Size must be at least 1.')
-    .max(50, 'Max Group Size cannot exceed 50.'),
-
   startDate: Yup.date().required('Start Date is required.').typeError('Start Date must be a valid date.'),
 
   endDate: Yup.date()
@@ -36,8 +31,6 @@ export const validationHotel = Yup.object().shape({
     district: Yup.string().required('District is required.'),
     ward: Yup.string().required('Ward is required.'),
   }),
-
-  amenities: Yup.array().of(Yup.string()).required('At least one amenity is required.'),
 });
 
 

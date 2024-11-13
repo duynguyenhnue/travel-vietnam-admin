@@ -17,6 +17,9 @@ import { MuiTelInput } from 'mui-tel-input';
 
 import { type User } from '@/types/user';
 import { useUser } from '@/hooks/use-user';
+import { userApi } from '@/lib/user/user';
+import type { UpdateUserParams } from '@/lib/user/user';
+import { toast } from 'react-toastify';
 
 interface Location {
   id: string;
@@ -90,6 +93,14 @@ export function AccountDetailsForm(): React.JSX.Element {
     }
   }, [userDetail?.address?.district]);
 
+  const handleSave = async (): Promise<void> => {
+    if (userDetail?._id) {
+      await userApi.updateUser(userDetail?._id, userDetail as UpdateUserParams);
+      toast.success('Update user successfully');
+    }
+  };
+
+
   return (
     <form
       onSubmit={(event) => {
@@ -156,7 +167,6 @@ export function AccountDetailsForm(): React.JSX.Element {
                   onChange={(value) => {
                     handleChange({ target: { name: 'phone.country', value } });
                   }}
-                  defaultCountry="VN"
                 />
                 <FormControl fullWidth>
                   <OutlinedInput
@@ -225,7 +235,7 @@ export function AccountDetailsForm(): React.JSX.Element {
         </CardContent>
         <Divider />
         <CardActions sx={{ justifyContent: 'flex-end' }}>
-          <Button variant="contained">Save details</Button>
+          <Button variant="contained" onClick={handleSave}>Save details</Button>
         </CardActions>
       </Card>
     </form>

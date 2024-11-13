@@ -48,7 +48,7 @@ class TourApi {
 
       await Promise.all(
         formData.files.map(async (file, index) => {
-          const fileObj = await blobToFile(file as string, `image${index}`);
+          const fileObj = await blobToFile(file as string, `image${index}`)
           form.append('files', fileObj);
         })
       );

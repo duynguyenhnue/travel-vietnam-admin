@@ -15,7 +15,7 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
 
-import { SearchHotel, type Hotel } from '@/types/hotel';
+import type { SearchHotel, Hotel } from '@/types/hotel';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { useSelection } from '@/hooks/use-selection';
 import { ActionCell } from '@/components/common/action-cell';
@@ -70,7 +70,7 @@ export function HotelTable(): React.JSX.Element {
     );
 
     useEffect(() => {
-        const fetchProvinces = async () => {
+        const fetchProvinces = async (): Promise<void> => {
             const response = await fetch('https://esgoo.net/api-tinhthanh/1/0.htm');
             if (!response.ok) {
                 throw new Error('Network response was not ok');

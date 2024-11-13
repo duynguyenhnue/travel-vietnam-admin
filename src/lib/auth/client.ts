@@ -135,7 +135,7 @@ class AuthClient {
 
   async signOut(): Promise<{ error?: string }> {
     await axios.post(`${envConfig.serverURL}/auth/logout`, {
-      refresh_token: localStorage.getItem(localStorageConfig.refreshToken),
+      refresh_token: Cookies.get(localStorageConfig.refreshToken),
     });
 
     localStorage.removeItem(localStorageConfig.accessToken);

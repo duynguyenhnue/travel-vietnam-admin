@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from 'axios';
 
-import { CreateHotelForm, type Hotel, type SearchHotel } from '@/types/hotel';
+import type { CreateHotelForm, Hotel, SearchHotel } from '@/types/hotel';
 import { envConfig } from '@/config';
 
 import { type SuccessResponse } from '../auth/client';
@@ -70,7 +70,6 @@ class HotelApi {
       form.append('name', formData.name);
       form.append('description', formData.description);
       form.append('price', formData.price.toString());
-      form.append('maxGroupSize', formData.maxGroupSize.toString());
       form.append('startDate', formData.startDate);
       form.append('endDate', formData.endDate);
 
@@ -99,7 +98,7 @@ class HotelApi {
 
   async getHotel(hotelId: string): Promise<{ data?: Hotel; error?: string }> {
     try {
-      const res: AxiosResponse<SuccessResponse<Hotel>> = await axios.get(`${envConfig.serverURL}/hotels/get/${hotelId}`);
+      const res: AxiosResponse<SuccessResponse<Hotel>> = await axios.get(`${envConfig.serverURL}/hotels/${hotelId}`);
       return { data: res.data?.data };
     } catch (error) {
       return { error: 'Hotel not found' };

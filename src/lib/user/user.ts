@@ -26,12 +26,23 @@ export interface SignUpParams {
   phone: Phone;
 }
 
+export enum Status {
+  ACTIVE = 'ACTIVE',
+  INACTIVATED = 'INACTIVATED',
+  REMOVED = 'REMOVED',
+  NOTACTIVATED = 'NOT ACTIVATED',
+}
+
 export interface UpdateUserParams {
   email: string;
   fullName: string;
   dateOfBirth: string;
   address: Address;
   phone: Phone;
+  status?: Status;
+  createdAt?: string;
+  avatar?: string;
+  role?: string;
 }
 
 export interface SearchUsers {
@@ -95,7 +106,7 @@ class UserApi {
     }
   }
 
-  async updateUser(id: string, data: SignUpParams): Promise<{ error?: string }> {
+  async updateUser(id: string, data: UpdateUserParams): Promise<{ error?: string }> {
     try {
       await axios.put(`${envConfig.serverURL}/users/${id}`, data);
       return { error: '' };
