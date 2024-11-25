@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Box,
   Button,
@@ -10,7 +10,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Pagination,
   Stack,
   TextField,
   Typography,
@@ -41,7 +40,7 @@ export function BookingView(props: BookingViewProps): React.ReactElement {
       guestSize: 0,
     },
     validationSchema: validationBooking,
-    onSubmit: async (values) => {
+    onSubmit: async () => {
       onClose();
     },
   });
@@ -65,7 +64,7 @@ export function BookingView(props: BookingViewProps): React.ReactElement {
       void fetchData();
     }
   }, [open]);
-  const getStatusChip = (status: string) => {
+  const getStatusChip = (status: BookingStatus): React.ReactNode => {
     switch (status) {
       case BookingStatus.CONFIRMED:
         return <Chip label={BookingStatus.CONFIRMED} color="success" sx={{ width: '100%', height: '40px' }} />;

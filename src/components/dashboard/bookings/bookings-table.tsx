@@ -92,7 +92,7 @@ export function BookingTable(): React.JSX.Element {
     };
   }, [page, limit, debouncedSearch]);
 
-  const getStatusChip = (status: string) => {
+  const getStatusChip = (status: BookingStatus): React.ReactNode => {
     switch (status) {
       case BookingStatus.CONFIRMED:
         return <Chip label={BookingStatus.CONFIRMED} color="success" />;
