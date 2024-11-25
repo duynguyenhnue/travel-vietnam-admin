@@ -82,7 +82,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
     if (open) {
       void fetchData();
     }
-  }, [open, hotelId, formik]);
+  }, [open, hotelId]);
 
   const handleClose = (): void => {
     setOpenHotel(false);

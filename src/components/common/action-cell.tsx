@@ -15,9 +15,12 @@ import { CommonDelete } from './common-delete';
 import type { Hotel } from '@/types/hotel';
 import { UpdateHotel } from '../dashboard/hotels/hotel-update';
 import { HotelView } from '../dashboard/hotels/hotel-view';
+import { Booking } from '@/types/booking';
+import { BookingView } from '../dashboard/bookings/bookings-view';
+import { bookingApi } from '@/lib/booking/booking';
 
 interface ActionCellProps {
-  data: Tour | Roles | Hotel;
+  data: Tour | Roles | Hotel | Booking;
 }
 
 export function ActionCell(props: ActionCellProps): React.ReactElement {
@@ -47,14 +50,14 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
     handleClose();
   };
 
-  const handleUpdate = (): void => {
-    setAction('update');
+  const handleOpenDelete = (): void => {
+    setAction('delete');
     handleOpenDiaLog();
     handleClose();
   };
 
-  const handleOpenDelete = (): void => {
-    setAction('delete');
+  const handleUpdate = (): void => {
+    setAction('update');
     handleOpenDiaLog();
     handleClose();
   };
@@ -64,6 +67,8 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
       await tourApi.deleteTour(data?._id || '');
     } else if ('name' in data) {
       await rolesApi.deleteRole('id' in data ? data?.id : '');
+    } else if ('orderId' in data) {
+      await bookingApi.deleteBooking(data?._id || '');
     }
     handleCloseDiaLog();
   };
@@ -74,9 +79,12 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
       </IconButton>
       <Menu id="simple-menu" anchorEl={anchorEl} open={open} onClose={handleClose}>
         <MenuItem onClick={handleView}>View</MenuItem>
-        <MenuItem onClick={handleUpdate}>Update</MenuItem>
-        <MenuItem onClick={handleOpenDelete}>Delete</MenuItem>
+        {data && !('amount' in data) && <MenuItem onClick={handleUpdate}>Update</MenuItem>}
+        {data && !('amount' in data) && <MenuItem onClick={handleOpenDelete}>Delete</MenuItem>}
       </Menu>
+      {data && 'amount' in data ? (
+        action === 'view' && <BookingView open={openDialog} onClose={handleCloseDiaLog} bookingId={data._id || ''} /> 
+      ) : null}
       {data && 'hotelId' in data ? (
         <>
           {action === 'delete' && (
@@ -88,7 +96,6 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
             />
           )}
           {action === 'update' && <UpdateTour open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
-
           {action === 'view' && <TourView open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
         </>
       ) : null}
@@ -104,7 +111,6 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
             />
           )}
           {action === 'update' && <UpdateHotel open={openDialog} onClose={handleCloseDiaLog} hotelId={data._id || ''} />}
-
           {action === 'view' && <HotelView open={openDialog} onClose={handleCloseDiaLog} hotelId={data._id || ''} />}
         </>
       ) : null}

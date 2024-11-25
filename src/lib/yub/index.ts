@@ -2,6 +2,28 @@ import * as Yup from 'yup';
 
 import { Status } from '@/types/roles';
 
+export const validationBooking = Yup.object().shape({
+  userId: Yup.string()
+    .required('User ID is required.')
+    .matches(/^[0-9a-fA-F]{24}$/, 'User ID must be a valid MongoDB ObjectId.'),
+
+  orderId: Yup.string()
+    .required('Order ID is required.')
+    .min(3, 'Order ID must be at least 3 characters long.')
+    .max(100, 'Order ID cannot exceed 100 characters.'),
+
+  amount: Yup.number()
+    .required('Amount is required.')
+    .min(1, 'Amount must be at least 1.')
+    .max(1000000000, 'Amount cannot exceed 1000000000.'),
+
+  vnpayCode: Yup.string()
+    .required('Vnpay Code is required.')
+    .typeError('Vnpay Code must be a numeric value.'),
+
+  status: Yup.mixed().oneOf(Object.values(Status), 'Invalid status.').required('Status is required.'),
+});
+
 export const validationHotel = Yup.object().shape({
   files: Yup.array().required('At least one image is required.').min(1, 'At least one image is required.'),
   name: Yup.string()
