@@ -7,6 +7,7 @@ export const navItems = [
   { key: 'hotels', title: 'Hotels', href: paths.dashboard.hotels, icon: 'users', permission: 'HOTEL_VIEW' },
   { key: 'tours', title: 'Tours', href: paths.dashboard.tours, icon: 'users', permission: 'TOUR_VIEW' },
   { key: 'bookings', title: 'Bookings', href: paths.dashboard.bookings, icon: 'users', permission: 'BOOKING_VIEW' },
+  { key: 'discounts', title: 'Discounts', href: paths.dashboard.discounts, icon: 'users', permission: 'DISCOUNT_VIEW' },
   { key: 'roles', title: 'Roles', href: paths.dashboard.roles, icon: 'users', permission: 'ROLE_VIEW' },
   { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six', permission: 'USER_VIEW' },
   { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user', permission: 'USER_VIEW' },

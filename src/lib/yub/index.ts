@@ -24,6 +24,42 @@ export const validationBooking = Yup.object().shape({
   status: Yup.mixed().oneOf(Object.values(Status), 'Invalid status.').required('Status is required.'),
 });
 
+export const validationDiscount = Yup.object().shape({
+  code: Yup.string()
+    .required('Code is required.')
+    .min(3, 'Code must be at least 3 characters long.')
+    .max(100, 'Code cannot exceed 100 characters.'),
+
+  description: Yup.string()
+    .required('Description is required.')
+    .min(10, 'Description must be at least 10 characters long.')
+    .max(1000, 'Description cannot exceed 1000 characters.'),
+
+  value: Yup.number()
+    .required('Value is required.')
+    .typeError('Value must be a numeric value.')
+    .positive('Value must be a positive number.'),
+
+  min_order_value: Yup.number()
+    .optional()
+    .typeError('Min order value must be a numeric value.')
+    .positive('Min order value must be a positive number.'),
+
+  max_discount_value: Yup.number()
+    .optional()
+    .typeError('Max discount value must be a numeric value.')
+    .positive('Max discount value must be a positive number.'),
+
+  startDate: Yup.date()
+    .required('Start Date is required.')
+    .typeError('Start Date must be a valid date.'),
+
+  endDate: Yup.date()
+    .required('End Date is required.')
+    .typeError('End Date must be a valid date.')
+    .min(Yup.ref('startDate'), 'End Date must be after Start Date.'),
+});
+
 export const validationHotel = Yup.object().shape({
   files: Yup.array().required('At least one image is required.').min(1, 'At least one image is required.'),
   name: Yup.string()
