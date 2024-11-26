@@ -18,9 +18,13 @@ import { HotelView } from '../dashboard/hotels/hotel-view';
 import { Booking } from '@/types/booking';
 import { BookingView } from '../dashboard/bookings/bookings-view';
 import { bookingApi } from '@/lib/booking/booking';
+import { UpdateDiscount } from '../dashboard/discounts/discounts-update';
+import { DiscountView } from '../dashboard/discounts/discounts-view';
+import { Discount } from '@/types/discounts';
+import { discountApi } from '@/lib/discount/discount';
 
 interface ActionCellProps {
-  data: Tour | Roles | Hotel | Booking;
+  data: Tour | Roles | Hotel | Booking | Discount;
 }
 
 export function ActionCell(props: ActionCellProps): React.ReactElement {
@@ -69,6 +73,8 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
       await rolesApi.deleteRole('id' in data ? data?.id : '');
     } else if ('orderId' in data) {
       await bookingApi.deleteBooking(data?._id || '');
+    } else if ('code' in data) {
+      await discountApi.deleteDiscount(data?._id || '');
     }
     handleCloseDiaLog();
   };
@@ -84,6 +90,20 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
       </Menu>
       {data && 'amount' in data ? (
         action === 'view' && <BookingView open={openDialog} onClose={handleCloseDiaLog} bookingId={data._id || ''} /> 
+      ) : null}
+      {data && 'min_order_value' in data ? (
+        <>
+          {action === 'delete' && (
+            <CommonDelete
+              open={openDialog}
+              onClose={handleCloseDiaLog}
+              onDelete={handleDelete}
+              title={('description' in data && data?.description) || ''}
+            />
+          )}
+          {action === 'update' && <UpdateDiscount open={openDialog} onClose={handleCloseDiaLog} discountId={data._id || ''} />}
+          {action === 'view' && <DiscountView open={openDialog} onClose={handleCloseDiaLog} discountId={data._id || ''} />}
+        </>
       ) : null}
       {data && 'hotelId' in data ? (
         <>

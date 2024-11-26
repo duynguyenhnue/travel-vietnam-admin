@@ -92,7 +92,7 @@ class AuthClient {
       return { data: res.data.data };
     } catch (error) {
       localStorage.removeItem(localStorageConfig.accessToken);
-      localStorage.removeItem(localStorageConfig.refreshToken);
+      Cookies.remove(localStorageConfig.refreshToken);
       return { error: 'User not found' };
     }
   }
@@ -128,7 +128,7 @@ class AuthClient {
       return {};
     } catch (error) {
       localStorage.removeItem(localStorageConfig.accessToken);
-      localStorage.removeItem(localStorageConfig.refreshToken);
+      Cookies.remove(localStorageConfig.refreshToken);
       return { error: 'Failed to refresh token' };
     }
   }
@@ -139,7 +139,7 @@ class AuthClient {
     });
 
     localStorage.removeItem(localStorageConfig.accessToken);
-    localStorage.removeItem(localStorageConfig.refreshToken);
+    Cookies.remove(localStorageConfig.refreshToken);
     return {};
   }
 }
