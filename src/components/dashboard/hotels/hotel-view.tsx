@@ -41,7 +41,6 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
   const { open, onClose, hotelId } = props;
   const [openHotel, setOpenHotel] = useState(false);
   const [hotels] = useState<Hotel[]>([]);
-  // const [page, setPage] = useState(0);
   const [visible, setVisible] = useState(true);
 
   const formik = useFormik<CreateHotelForm>({
@@ -83,16 +82,6 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
       void fetchData();
     }
   }, [open, hotelId, formik]);
-
-  // const handleClickOpen = async (): Promise<void> => {
-  //   const response = await hotelApi.searchHotels({
-  //     name: formik.values.name,
-  //     price: formik.values.price.toString(),
-  //   });
-  //   setHotels(response.data || []);
-  //   setOpenHotel(true);
-  //   setVisible(false);
-  // };
 
   const handleClose = (): void => {
     setOpenHotel(false);
