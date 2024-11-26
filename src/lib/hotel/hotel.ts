@@ -88,11 +88,11 @@ class HotelApi {
           },
         }
       );
-      toast.success('Update tour successfully');
+      toast.success('Update hotel successfully');
       return { data: res.data.data };
     } catch (error) {
-      toast.error('Update tour failed');
-      return { error: 'Failed to create tour' };
+      toast.error('Update hotel failed');
+      return { error: 'Failed to update hotel' };
     }
   }
 
