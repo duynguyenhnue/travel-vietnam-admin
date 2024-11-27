@@ -1,9 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import {
+  Autocomplete,
   Box,
   Button,
+  Checkbox,
   Dialog,
   DialogActions,
   DialogContent,
@@ -13,20 +17,17 @@ import {
   Stack,
   TextField,
   Typography,
-  Autocomplete,
-  Checkbox,
 } from '@mui/material';
 import { useFormik } from 'formik';
 
 import type { CreateHotelForm, Hotel } from '@/types/hotel';
+import { amenities } from '@/data/amenities';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { validationHotel } from '@/lib/yub/index';
-import { ImageUpload } from './common/image-upload';
+
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
-import { amenities } from '@/data/amenities';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { ImageUpload } from './common/image-upload';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -65,17 +66,17 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
-      const response = await hotelApi.getHotel(hotelId);
-      if (response.data) {
+      const response = (await hotelApi.getHotel(hotelId)).data?.hotel;
+      if (response) {
         void formik.setValues({
-          files: response.data.photos,
-          name: response.data.name ?? '',
-          description: response.data.description ?? '',
-          price: response.data.price ?? 0,
-          amenities: response.data.amenities ?? [],
-          address: response.data.address ?? { province: '', district: '', ward: '' },
-          startDate: response.data.startDate ?? '',
-          endDate: response.data.endDate ?? '',
+          files: response.photos,
+          name: response.name ?? '',
+          description: response.description ?? '',
+          price: response.price ?? 0,
+          amenities: response.amenities ?? [],
+          address: response.address ?? { province: '', district: '', ward: '' },
+          startDate: response.startDate ?? '',
+          endDate: response.endDate ?? '',
         });
       }
     }
@@ -188,9 +189,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
                           </li>
                         );
                       }}
-                      renderInput={(params) => (
-                        <TextField {...params} label="Checkboxes" placeholder="Favorites" />
-                      )}
+                      renderInput={(params) => <TextField {...params} label="Checkboxes" placeholder="Favorites" />}
                       value={formik.values.amenities || []}
                     />
                   </Box>
