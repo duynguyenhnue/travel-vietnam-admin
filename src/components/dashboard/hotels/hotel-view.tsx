@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import {
   Autocomplete,
   Box,
@@ -19,14 +21,13 @@ import {
 import { useFormik } from 'formik';
 
 import type { CreateHotelForm, Hotel } from '@/types/hotel';
+import { amenities } from '@/data/amenities';
 import { hotelApi } from '@/lib/hotel/hotel';
 import { validationHotel } from '@/lib/yub/index';
-import { ImageUpload } from './common/image-upload';
+
 import { AddressForm } from './common/address-form';
 import { HotelSliderDialog } from './common/hotel-slider-dialog';
-import { amenities } from '@/data/amenities';
-import CheckBoxIcon from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import { ImageUpload } from './common/image-upload';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
@@ -64,17 +65,17 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
 
   useEffect(() => {
     async function fetchData(): Promise<void> {
-      const response = await hotelApi.getHotel(hotelId);
-      if (response.data) {
+      const response = (await hotelApi.getHotel(hotelId)).data?.hotel;
+      if (response) {
         void formik.setValues({
-          files: response.data.photos,
-          name: response.data.name ?? '',
-          description: response.data.description ?? '',
-          price: response.data.price ?? 0,
-          amenities: response.data.amenities ?? [],
-          address: response.data.address ?? { province: '', district: '', ward: '' },
-          startDate: response.data.startDate ?? '',
-          endDate: response.data.endDate ?? '',
+          files: response.photos,
+          name: response.name ?? '',
+          description: response.description ?? '',
+          price: response.price ?? 0,
+          amenities: response.amenities ?? [],
+          address: response.address ?? { province: '', district: '', ward: '' },
+          startDate: response.startDate ?? '',
+          endDate: response.endDate ?? '',
         });
       }
     }
@@ -191,10 +192,9 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
                         <TextField {...params} label="Amenities" placeholder="Select Amenities" />
                       )}
                       value={formik.values.amenities || []}
-                      onChange={(event, newValue) => formik.setFieldValue("amenities", newValue)}
+                      onChange={(event, newValue) => formik.setFieldValue('amenities', newValue)}
                       disabled
                     />
-
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -271,9 +271,9 @@ export function HotelView(props: HotelViewProps): React.ReactElement {
                   count={Math.ceil(hotels.length / 10)}
                   sx={{ display: 'flex', justifyContent: 'center' }}
                   color="primary"
-                // onChange={(_, newPage) => {
-                //   setPage(newPage);
-                // }}
+                  // onChange={(_, newPage) => {
+                  //   setPage(newPage);
+                  // }}
                 />
               ) : null}
             </Stack>
