@@ -92,7 +92,6 @@ class AuthClient {
       return { data: res.data.data };
     } catch (error) {
       localStorage.removeItem(localStorageConfig.accessToken);
-      Cookies.remove(localStorageConfig.refreshToken);
       return { error: 'User not found' };
     }
   }
@@ -134,13 +133,19 @@ class AuthClient {
   }
 
   async signOut(): Promise<{ error?: string }> {
-    await axios.post(`${envConfig.serverURL}/auth/logout`, {
-      refresh_token: Cookies.get(localStorageConfig.refreshToken),
-    });
+    try {
+      await axios.post(`${envConfig.serverURL}/auth/logout`, {
+        refresh_token: Cookies.get(localStorageConfig.refreshToken),
+      });
 
-    localStorage.removeItem(localStorageConfig.accessToken);
-    Cookies.remove(localStorageConfig.refreshToken);
-    return {};
+      localStorage.removeItem(localStorageConfig.accessToken);
+      Cookies.remove(localStorageConfig.refreshToken);
+      return {};
+    } catch (error) {
+      localStorage.removeItem(localStorageConfig.accessToken);
+      Cookies.remove(localStorageConfig.refreshToken);
+      return {};
+    }
   }
 }
 
