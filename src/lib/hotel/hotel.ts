@@ -1,11 +1,11 @@
 import axios, { type AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
 
-import type { CreateHotelForm, Hotel, SearchHotel } from '@/types/hotel';
+import type { CreateHotelForm, Hotel, Room, SearchHotel } from '@/types/hotel';
 import { envConfig } from '@/config';
 
 import { type SuccessResponse } from '../auth/client';
 import { setupAxiosInterceptors } from '../axios-instance';
-import { toast } from 'react-toastify';
 import { blobToFile, convertAndAppendFiles } from '../blob-to-file';
 
 class HotelApi {
@@ -20,7 +20,7 @@ class HotelApi {
         {
           params,
         }
-        );
+      );
       return { data: res.data.data?.data, total: res.data.data?.total };
     } catch (error) {
       return { error: 'Hotels not found' };
@@ -96,10 +96,23 @@ class HotelApi {
     }
   }
 
-  async getHotel(hotelId: string): Promise<{ data?: Hotel; error?: string }> {
+  async getHotel(hotelId: string): Promise<{
+    data?: {
+      hotel: Hotel;
+      rooms: Room[];
+    };
+    error?: string;
+  }> {
     try {
-      const res: AxiosResponse<SuccessResponse<Hotel>> = await axios.get(`${envConfig.serverURL}/hotels/${hotelId}`);
-      return { data: res.data?.data };
+      const res: AxiosResponse<
+        SuccessResponse<{
+          hotel: Hotel;
+          rooms: Room[];
+        }>
+      > = await axios.get(`${envConfig.serverURL}/hotels/${hotelId}`);
+      return {
+        data: res.data.data,
+      };
     } catch (error) {
       return { error: 'Hotel not found' };
     }
