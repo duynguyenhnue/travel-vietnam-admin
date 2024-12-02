@@ -189,7 +189,7 @@ export function UpdateHotel(props: HotelUpdateProps): React.ReactElement {
                           </li>
                         );
                       }}
-                      renderInput={(params) => <TextField {...params} label="Checkboxes" placeholder="Favorites" />}
+                      renderInput={(params) => <TextField {...params} label="Amenities" placeholder="Amenities" />}
                       value={formik.values.amenities || []}
                     />
                   </Box>

@@ -5,6 +5,7 @@ import { envConfig } from '@/config';
 
 import { type SuccessResponse } from '../auth/client';
 import { setupAxiosInterceptors } from '../axios-instance';
+import { Dayjs } from 'dayjs';
 
 export interface Address {
   province: string;
@@ -33,6 +34,9 @@ export enum Status {
   NOTACTIVATED = 'NOT ACTIVATED',
 }
 
+export enum Role {
+}
+
 export interface UpdateUserParams {
   email: string;
   fullName: string;
@@ -52,12 +56,23 @@ export interface SearchUsers {
   email: string;
 }
 
+export interface RegisterValues {
+  email: string;
+  fullName: string;
+  dateOfBirth: Dayjs | null;
+  address: Address;
+  phone: Phone;
+  role: string;
+  status: string;
+  avatar: string;
+  password?: string;
+}
 class UserApi {
   constructor() {
     setupAxiosInterceptors((): Promise<void> => Promise.resolve());
   }
 
-  async createUser(data: SignUpParams): Promise<{ error?: string }> {
+  async createUser(data: RegisterValues): Promise<{ error?: string }> {
     try {
       await axios.post(`${envConfig.serverURL}/auth/register`, data);
       return { error: '' };
@@ -114,6 +129,24 @@ class UserApi {
       return { error: 'Failed to update user' };
     }
   } 
+
+  async getAllRoles(): Promise<{ data?: string[]; error?: string }> {
+    try {
+      const res: AxiosResponse<SuccessResponse<string[]>> = await axios.get(`${envConfig.serverURL}/roles/get-all`);
+      return { data: res.data.data };
+    } catch (error) {
+      return { error: 'Failed to get all roles' };
+    }
+  }
+
+  async deleteUser(id: string): Promise<{ error?: string }> {
+    try {
+      await axios.delete(`${envConfig.serverURL}/users/${id}`);
+      return { error: '' };
+    } catch (error) {
+      return { error: 'Failed to delete user' };
+    }
+  }
 }
 
 export const userApi = new UserApi();

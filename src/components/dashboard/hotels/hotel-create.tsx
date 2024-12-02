@@ -176,7 +176,7 @@ export function CreateHotel(): React.ReactElement {
                         );
                       }}
                       renderInput={(params) => (
-                        <TextField {...params} label="Checkboxes" placeholder="Favorites" />
+                        <TextField {...params} label="Amenities" placeholder="Amenities" />
                       )}
                     />
                   </Box>
