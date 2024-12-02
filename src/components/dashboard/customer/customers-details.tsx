@@ -78,8 +78,7 @@ export function CustomersDetails(): React.ReactElement {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: async (): Promise<void> => {
-    },
+    onSubmit: () => {},
   });
 
   const handleDetailsClick = (): void => {

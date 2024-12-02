@@ -1,6 +1,37 @@
 import * as Yup from 'yup';
 
 import { Status } from '@/types/roles';
+import { RoomType } from '@/types/rooms';
+
+export const validationRoom = Yup.object().shape({
+  roomNumber: Yup.number()
+    .required('Room Number is required.')
+    .min(1, 'Room Number must be at least 1.'),
+
+  price: Yup.number()
+    .required('Price is required.')
+    .min(1, 'Price must be at least 1.')
+    .max(1000000000, 'Price cannot exceed 1000000000.'),
+
+  roomType: Yup.mixed().oneOf(Object.values(RoomType), 'Invalid room type.').required('Room type is required.'),
+
+  description: Yup.string()
+    .required('Description is required.')
+    .min(10, 'Description must be at least 10 characters long.')
+    .max(1000, 'Description cannot exceed 1000 characters.'),
+
+  maxOccupancy: Yup.number()
+    .required('Max Occupancy is required.')
+    .min(1, 'Max Occupancy must be at least 1.')
+    .max(10, 'Max Occupancy cannot exceed 10.'),
+
+  status: Yup.boolean().required('Status is required.'),
+
+  hotelName: Yup.string()
+    .required('Hotel Name is required.')
+    .min(3, 'Hotel Name must be at least 3 characters long.')
+    .max(100, 'Hotel Name cannot exceed 100 characters.'),
+});
 
 export const validationBooking = Yup.object().shape({
   userId: Yup.string()

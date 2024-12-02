@@ -6,7 +6,8 @@ import { User as UserIcon } from '@phosphor-icons/react/dist/ssr/User';
 import { Users as UsersIcon } from '@phosphor-icons/react/dist/ssr/Users';
 import { XSquare } from '@phosphor-icons/react/dist/ssr/XSquare';
 import { Airplane, Book, HouseLine, SealPercent } from '@phosphor-icons/react/dist/ssr';
-import { PersonArmsSpread } from '@phosphor-icons/react';
+import { Bed, PersonArmsSpread } from '@phosphor-icons/react';
+
 export const navIcons = {
   'chart-pie': ChartPieIcon,
   'gear-six': GearSixIcon,
@@ -15,6 +16,7 @@ export const navIcons = {
   'booking': Book,
   'tour': Airplane,
   'role': PersonArmsSpread,
+  'room': Bed,
   'plugs-connected': PlugsConnectedIcon,
   'x-square': XSquare,
   user: UserIcon,

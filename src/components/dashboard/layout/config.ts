@@ -9,6 +9,7 @@ export const navItems = [
   { key: 'bookings', title: 'Bookings', href: paths.dashboard.bookings, icon: 'booking', permission: 'BOOKING_VIEW' },
   { key: 'discounts', title: 'Discounts', href: paths.dashboard.discounts, icon: 'discount', permission: 'DISCOUNT_VIEW' },
   { key: 'roles', title: 'Roles', href: paths.dashboard.roles, icon: 'role', permission: 'ROLE_VIEW' },
+  { key: 'rooms', title: 'Rooms', href: paths.dashboard.rooms, icon: 'room', permission: 'ROOM_VIEW' },
   { key: 'settings', title: 'Settings', href: paths.dashboard.settings, icon: 'gear-six', permission: 'USER_VIEW' },
   { key: 'account', title: 'Account', href: paths.dashboard.account, icon: 'user', permission: 'USER_VIEW' },
 ] satisfies NavItemConfig[];

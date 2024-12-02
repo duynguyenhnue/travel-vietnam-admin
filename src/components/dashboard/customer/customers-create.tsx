@@ -77,8 +77,7 @@ export function RegisterForm(): React.ReactElement {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: async (): Promise<void> => {
-    },
+    onSubmit: () => {},
   });
   const [provinces, setProvinces] = useState<Location[]>([]);
   const [districts, setDistricts] = useState<Location[]>([]);
@@ -187,6 +186,7 @@ export function RegisterForm(): React.ReactElement {
                     boxShadow: '',
                     objectFit: 'cover',
                   }}
+                  src={imgProfile ? URL.createObjectURL(imgProfile) : ''}
                 />
                 <CameraEnhanceIcon
                   sx={{

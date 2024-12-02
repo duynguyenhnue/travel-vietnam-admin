@@ -117,6 +117,15 @@ class HotelApi {
       return { error: 'Hotel not found' };
     }
   }
+
+  async searchHotelName(): Promise<{ data?: { id: string; name: string }[]; error?: string }> {
+    try {
+      const res: AxiosResponse<SuccessResponse<{ id: string; name: string }[]>> = await axios.get(`${envConfig.serverURL}/hotels/name`);
+      return { data: res.data.data };
+    } catch (error) {
+      return { error: 'Hotel name not found' };
+    }
+  }
 }
 
 export const hotelApi = new HotelApi();

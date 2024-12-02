@@ -8,6 +8,7 @@ export const paths = {
     tours: '/dashboard/tours',
     hotels: '/dashboard/hotels',
     discounts: '/dashboard/discounts',
+    rooms: '/dashboard/rooms',
     bookings: '/dashboard/bookings',
     roles: '/dashboard/roles',
     integrations: '/dashboard/integrations',
