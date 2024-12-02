@@ -77,7 +77,9 @@ export function RegisterForm(): React.ReactElement {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: () => {},
+    onSubmit: (values) => {
+      console.log('Form submitted:', values);
+    },
   });
   const [provinces, setProvinces] = useState<Location[]>([]);
   const [districts, setDistricts] = useState<Location[]>([]);

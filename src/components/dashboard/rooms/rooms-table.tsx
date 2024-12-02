@@ -17,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import { useSelection } from '@/hooks/use-selection';
 import { ActionCell } from '@/components/common/action-cell';
 import { RoomFilters } from './rooms-filters';
-import { Room, RoomType, SearchRoom } from '@/types/rooms';
+import { Room, SearchRoom } from '@/types/rooms';
 import { roomApi } from '@/lib/room/room';
 
 export function RoomTable(): React.JSX.Element {
