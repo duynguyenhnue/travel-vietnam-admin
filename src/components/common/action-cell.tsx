@@ -12,7 +12,7 @@ import { ViewRoles } from '../dashboard/roles/roles-view';
 import { UpdateTour } from '../dashboard/tour/tour-update';
 import { TourView } from '../dashboard/tour/tour-view';
 import { CommonDelete } from './common-delete';
-import type { Hotel } from '@/types/hotel';
+import type { Hotel, Room } from '@/types/hotel';
 import { UpdateHotel } from '../dashboard/hotels/hotel-update';
 import { HotelView } from '../dashboard/hotels/hotel-view';
 import { Booking } from '@/types/booking';
@@ -22,9 +22,13 @@ import { UpdateDiscount } from '../dashboard/discounts/discounts-update';
 import { DiscountView } from '../dashboard/discounts/discounts-view';
 import { Discount } from '@/types/discounts';
 import { discountApi } from '@/lib/discount/discount';
+import { RoomUpdate } from '../dashboard/rooms/rooms-update';
+import { RoomView } from '../dashboard/rooms/rooms-view';
+import { roomApi } from '@/lib/room/room';
+import { toast } from 'react-toastify';
 
 interface ActionCellProps {
-  data: Tour | Roles | Hotel | Booking | Discount;
+  data: Tour | Roles | Hotel | Booking | Discount | Room;
 }
 
 export function ActionCell(props: ActionCellProps): React.ReactElement {
@@ -67,7 +71,7 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
   };
 
   const handleDelete = async (): Promise<void> => {
-    if ('hotelId' in data) {
+    if ('hotelId' in data && !('roomNumber' in data)) {
       await tourApi.deleteTour(data?._id || '');
     } else if ('name' in data) {
       await rolesApi.deleteRole('id' in data ? data?.id : '');
@@ -75,7 +79,10 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
       await bookingApi.deleteBooking(data?._id || '');
     } else if ('code' in data) {
       await discountApi.deleteDiscount(data?._id || '');
+    } else if ('maxOccupancy' in data) {
+      await roomApi.deleteRoom(data?._id || '');
     }
+    toast.success('Deleted successfully');
     handleCloseDiaLog();
   };
   return (
@@ -89,7 +96,7 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
         {data && !('amount' in data) && <MenuItem onClick={handleOpenDelete}>Delete</MenuItem>}
       </Menu>
       {data && 'amount' in data ? (
-        action === 'view' && <BookingView open={openDialog} onClose={handleCloseDiaLog} bookingId={data._id || ''} /> 
+        action === 'view' && <BookingView open={openDialog} onClose={handleCloseDiaLog} bookingId={data._id || ''} />
       ) : null}
       {data && 'min_order_value' in data ? (
         <>
@@ -105,7 +112,8 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
           {action === 'view' && <DiscountView open={openDialog} onClose={handleCloseDiaLog} discountId={data._id || ''} />}
         </>
       ) : null}
-      {data && 'hotelId' in data ? (
+
+      {data && 'hotelId' in data && !('roomNumber' in data) ? (
         <>
           {action === 'delete' && (
             <CommonDelete
@@ -117,6 +125,21 @@ export function ActionCell(props: ActionCellProps): React.ReactElement {
           )}
           {action === 'update' && <UpdateTour open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
           {action === 'view' && <TourView open={openDialog} onClose={handleCloseDiaLog} tourId={data._id || ''} />}
+        </>
+      ) : null}
+
+      {data && 'maxOccupancy' in data ? (
+        <>
+          {action === 'delete' && (
+            <CommonDelete
+              open={openDialog}
+              onClose={handleCloseDiaLog}
+              onDelete={handleDelete}
+              title={('roomNumber' in data && data?.roomNumber?.toString()) || ''}
+            />
+          )}
+          {action === 'update' && <RoomUpdate open={openDialog} onClose={handleCloseDiaLog} roomId={data._id || ''} />}
+          {action === 'view' && <RoomView open={openDialog} onClose={handleCloseDiaLog} roomId={data._id || ''} />}
         </>
       ) : null}
 

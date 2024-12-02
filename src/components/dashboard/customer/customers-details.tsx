@@ -13,37 +13,15 @@ import { useFormik } from 'formik';
 import { MuiTelInput } from 'mui-tel-input';
 import * as Yup from 'yup';
 
-import { type User } from '@/types/user';
+import { Status, type User } from '@/types/user';
 import { userApi } from '@/lib/user/user';
-import type { SignUpParams } from '@/lib/user/user';
+import type { RegisterValues } from '@/lib/user/user';
 import { useSelectorRedux } from '@/redux/store';
 import { toast } from 'react-toastify';
 
 interface Location {
   id: string;
   name: string;
-}
-
-interface Address {
-  province: string;
-  district: string;
-  ward: string;
-}
-
-interface Phone {
-  country: string;
-  number: string;
-}
-
-interface RegisterValues {
-  email: string;
-  fullName: string;
-  dateOfBirth: Dayjs | null;
-  address: Address;
-  phone: Phone;
-  role: string;
-  status: string;
-  avatar: string;
 }
 
 const initialValues: RegisterValues = {
@@ -63,11 +41,6 @@ const initialValues: RegisterValues = {
   status: 'ACTIVE',
   avatar: '',
 };
-
-interface Location {
-  id: string;
-  name: string;
-}
 
 const validationSchema = Yup.object({
   email: Yup.string()
@@ -94,6 +67,7 @@ const validationSchema = Yup.object({
       .matches(/^\d{8,11}$/, 'Phone number must be between 8 and 11 digits')
       .required('Phone number is required'),
   }),
+  role: Yup.string().required('Role is required'),
 });
 
 export function CustomersDetails(): React.ReactElement {
@@ -104,26 +78,8 @@ export function CustomersDetails(): React.ReactElement {
   const formik = useFormik({
     initialValues,
     validationSchema,
-    onSubmit: async (values: RegisterValues): Promise<void> => {
-      try {
-        const registerData: SignUpParams = {
-          email: values.email.toLowerCase(),
-          fullName: values.fullName,
-          dateOfBirth: values.dateOfBirth ? values.dateOfBirth.format('YYYY-MM-DD') : '',
-          address: {
-            province: values.address.province,
-            district: values.address.district,
-            ward: values.address.ward,
-          },
-          phone: {
-            country: values.phone.country,
-            number: values.phone.number,
-          },
-        };
-        void (await userApi.updateUser(customers[0], registerData));
-      } catch (err) {
-        toast.error(err as string);
-      }
+    onSubmit: async (): Promise<void> => {
+      toast.success('Update user successfully');
     },
   });
 
@@ -139,7 +95,8 @@ export function CustomersDetails(): React.ReactElement {
   const [provinces, setProvinces] = useState<Location[]>([]);
   const [districts, setDistricts] = useState<Location[]>([]);
   const [wards, setWards] = useState<Location[]>([]);
-  const status = ['ACTIVE', 'INACTIVATED', 'REMOVED', 'NOT ACTIVATED'];
+  const status = Object.values(Status);
+  const [roles, setRoles] = useState<string[]>([]);
 
   useEffect(() => {
     void fetch('https://esgoo.net/api-tinhthanh/1/0.htm')
@@ -147,6 +104,12 @@ export function CustomersDetails(): React.ReactElement {
       .then((data: { data?: Location[] }) => {
         setProvinces(data?.data || []);
       });
+    
+    const fetchRoles = async (): Promise<void> => {
+      const data = await userApi.getAllRoles();
+      setRoles(data?.data || []);
+    };
+    void fetchRoles();
   }, []);
 
   useEffect(() => {
@@ -188,9 +151,8 @@ export function CustomersDetails(): React.ReactElement {
             country: data.phone?.country ?? '',
             number: data.phone?.number ?? '',
           },
-          // policy: data.policy,
-          // role: data.role,
-          // status: data.status,
+          avatar: data.avatar ?? '',
+          role: data.role ?? '',
         });
       }
     };
@@ -202,11 +164,11 @@ export function CustomersDetails(): React.ReactElement {
     return () => {
       clearTimeout(timer);
     };
-  }, [showCustomer, formik]);
+  }, [showCustomer]);
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     const file = event.target?.files?.[0];
     if (file) {
       setImgProfile(file);
@@ -229,8 +191,34 @@ export function CustomersDetails(): React.ReactElement {
     // }
   };
 
-  const handleIconClick = () => {
+  const handleIconClick = (): void => {
     fileInputRef?.current?.click();
+  };
+
+  const handleSubmit = async (): Promise<void> => {
+    await userApi.updateUser(customers[0], {
+      email: formik.values.email.toLowerCase(),
+      fullName: formik.values.fullName,
+      dateOfBirth: formik.values.dateOfBirth ? formik.values.dateOfBirth.format('YYYY-MM-DD') : '',
+      address: {
+        province: formik.values.address.province,
+        district: formik.values.address.district,
+        ward: formik.values.address.ward,
+      },
+      phone: {
+        country: formik.values.phone.country,
+        number: formik.values.phone.number,
+      },
+      role: formik.values.role,
+    });
+    toast.success('Update user successfully');
+    handleCloseDialog();
+  };
+
+  const handleDelete = async (): Promise<void> => {
+    await userApi.deleteUser(customers[0]);
+    toast.success('Delete user successfully');
+    handleCloseDialog();
   };
 
   return (
@@ -416,8 +404,9 @@ export function CustomersDetails(): React.ReactElement {
               />
             </Grid>
           </Grid>
-          <TextField
-            select
+          <Grid item xs={12} md={6}>
+            <TextField
+              select
             label="Status"
             name="status"
             value={formik.values.status}
@@ -432,9 +421,32 @@ export function CustomersDetails(): React.ReactElement {
                 {s}
               </MenuItem>
             ))}
-          </TextField>
-          <Button variant="contained" type="submit" sx={{ marginTop: 2 }}>
+            </TextField>
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TextField
+              select
+                label="Role"
+                name="role"
+                value={formik.values.role}
+                onChange={(value) => formik.setFieldValue('role', value.target.value)}
+                onBlur={formik.handleBlur}
+                error={formik.touched.role ? Boolean(formik.errors.role) : undefined}
+                helperText={formik.touched.role ? formik.errors.role : undefined}
+                fullWidth
+              >
+                {roles.map((role) => (
+                  <MenuItem key={role} value={role}>
+                    {role}
+                  </MenuItem>
+                ))}
+            </TextField>
+          </Grid>
+          <Button variant="contained" type="submit" sx={{ marginTop: 2 }} onClick={handleSubmit}>
             Update User
+          </Button>
+          <Button variant="contained" color="error" type="submit" sx={{ marginTop: 2 }} onClick={handleDelete}>
+            Delete User
           </Button>
         </Stack>
       </Dialog>

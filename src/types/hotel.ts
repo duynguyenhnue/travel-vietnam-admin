@@ -45,14 +45,14 @@ export interface Hotel {
 }
 
 export interface Room {
-  _id: string;
-  hotelId: string;
-  images: string[];
-  roomNumber: number;
-  roomType: string;
-  name: string;
-  price: number;
-  description: string;
-  availability: boolean;
-  maxOccupancy: number;
+  _id?: string;
+  hotelId?: string;
+  images?: string[];
+  roomNumber?: number;
+  roomType?: string;
+  name?: string;
+  price?: number;
+  description?: string;
+  availability?: boolean;
+  maxOccupancy?: number;
 }
