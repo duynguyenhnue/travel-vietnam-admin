@@ -39,8 +39,7 @@ export function CreateRoom(): React.ReactElement {
       status: false,
     },
     validationSchema: validationRoom,
-    onSubmit: (values) => {
-      console.log('Form submitted:', values);
+    onSubmit: async (): Promise<void> => {
     },
   });
 
