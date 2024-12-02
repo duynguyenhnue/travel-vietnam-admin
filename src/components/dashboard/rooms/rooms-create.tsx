@@ -22,6 +22,7 @@ import { roomApi } from '@/lib/room/room';
 import { RoomType } from '@/types/rooms';
 import { CreateRoomRequestDto } from '@/types/rooms';
 import { hotelApi } from '@/lib/hotel/hotel';
+import { toast } from 'react-toastify';
 
 export function CreateRoom(): React.ReactElement {
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -40,6 +41,7 @@ export function CreateRoom(): React.ReactElement {
     },
     validationSchema: validationRoom,
     onSubmit: async (): Promise<void> => {
+      toast.success('Create room successfully');
     },
   });
 

@@ -78,6 +78,7 @@ export function RegisterForm(): React.ReactElement {
     initialValues,
     validationSchema,
     onSubmit: async (): Promise<void> => {
+      toast.success('Create user successfully');
     },
   });
   const [provinces, setProvinces] = useState<Location[]>([]);

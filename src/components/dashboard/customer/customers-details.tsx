@@ -79,6 +79,7 @@ export function CustomersDetails(): React.ReactElement {
     initialValues,
     validationSchema,
     onSubmit: async (): Promise<void> => {
+      toast.success('Update user successfully');
     },
   });
 
