@@ -34,9 +34,6 @@ export enum Status {
   NOTACTIVATED = 'NOT ACTIVATED',
 }
 
-export enum Role {
-}
-
 export interface UpdateUserParams {
   email: string;
   fullName: string;
