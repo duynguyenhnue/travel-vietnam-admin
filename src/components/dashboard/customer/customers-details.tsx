@@ -210,6 +210,7 @@ export function CustomersDetails(): React.ReactElement {
         number: formik.values.phone.number,
       },
       role: formik.values.role,
+      status: formik.values.status as Status,
     });
     toast.success('Update user successfully');
     handleCloseDialog();
